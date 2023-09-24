@@ -34,6 +34,7 @@ dagger-testing = { group = "com.google.dagger", name = "hilt-android-testing", v
 com-android-application = { id = "com.android.application", version.ref = "agp" }
 org-jetbrains-kotlin-android = { id = "org.jetbrains.kotlin.android", version.ref = "org-jetbrains-kotlin-android" }
 ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+dagger = { id = "com.google.dagger.hilt.android", version.ref = "dagger" }
 
 [bundles]
 
