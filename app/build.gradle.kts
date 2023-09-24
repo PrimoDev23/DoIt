@@ -66,6 +66,7 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
+    implementation(libs.compose.lifecycle)
 
     implementation(libs.dagger)
     ksp(libs.dagger.compiler)

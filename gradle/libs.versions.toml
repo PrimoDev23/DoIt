@@ -13,6 +13,7 @@ dagger = "2.48"
 hilt-navigation = "1.0.0"
 compose-destinations = "1.9.53"
 room = "2.5.2"
+compose-lifecycle = "2.6.2"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -38,6 +39,7 @@ compose-destinations-ksp = { group = "io.github.raamcosta.compose-destinations",
 room = { group = "androidx.room", name = "room-runtime", version.ref = "room" }
 room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
+compose-lifecycle = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "compose-lifecycle" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }
