@@ -1,6 +1,7 @@
 package com.example.doit.ui.composables
 
 import androidx.activity.compose.BackHandler
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -144,13 +145,18 @@ fun AddEntryBottomBar(
     enabled: Boolean,
     modifier: Modifier = Modifier
 ) {
-    Button(
-        modifier = modifier,
-        onClick = onSaveClicked,
-        enabled = enabled,
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Text(text = stringResource(id = R.string.add_entry_save_button))
+    AnimatedContent(
+        targetState = enabled,
+        label = "SaveButtonEnableAnimation"
+    ) { isEnabled ->
+        Button(
+            modifier = modifier,
+            onClick = onSaveClicked,
+            enabled = isEnabled,
+            shape = RoundedCornerShape(8.dp)
+        ) {
+            Text(text = stringResource(id = R.string.add_entry_save_button))
+        }
     }
 }
 
