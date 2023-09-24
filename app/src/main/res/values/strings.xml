@@ -1,4 +1,14 @@
 <resources>
     <string name="app_name">DoIt</string>
     <string name="todo_list_add">Add new entry</string>
+    <string name="add_entry_title">Add Task</string>
+    <string name="general_back">Back</string>
+    <string name="add_entry_title_title">Title</string>
+    <string name="general_yes">Yes</string>
+    <string name="general_no">No</string>
+    <string name="add_entry_dismiss_dialog_title">Dismiss changes?</string>
+    <string name="add_entry_dismiss_dialog_confirm">Dismiss</string>
+    <string name="general_cancel">Cancel</string>
+    <string name="add_entry_dismiss_dialog_text">Are you sure you want to dismiss all changes made to this task?</string>
+    <string name="add_entry_save_button">Save</string>
 </resources>

@@ -9,17 +9,23 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 
 class TodoItemRepositoryImpl @Inject constructor(
-    private val todoItemDao: TodoItemDao,
+    private val dao: TodoItemDao,
     private val mapper: TodoItemEntityMapper
 ) : TodoItemRepository {
 
     override fun getItemsFlow(): Result<Flow<List<TodoItem>>> {
         return Result.success(
-            todoItemDao.select().map { items ->
+            dao.select().map { items ->
                 items.map {
                     mapper.map(it)
                 }
             }
         )
+    }
+
+    override suspend fun saveTodoItem(item: TodoItem) {
+        val mappedItem = mapper.mapBack(item)
+
+        dao.insert(mappedItem)
     }
 }

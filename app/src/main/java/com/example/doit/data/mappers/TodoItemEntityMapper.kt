@@ -15,4 +15,13 @@ class TodoItemEntityMapper @Inject constructor(
             )
         }
     }
+
+    override fun mapBack(item: TodoItem): TodoItemEntity {
+        return with(item) {
+            TodoItemEntity(
+                id = id,
+                title = title
+            )
+        }
+    }
 }
