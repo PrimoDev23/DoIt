@@ -10,6 +10,8 @@ activity-compose = "1.7.2"
 compose-bom = "2023.09.01"
 ksp = "1.9.10-1.0.13"
 dagger = "2.48"
+hilt-navigation = "1.0.0"
+compose-destinations = "1.9.53"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -29,6 +31,9 @@ material3 = { group = "androidx.compose.material3", name = "material3" }
 dagger = { group = "com.google.dagger", name = "hilt-android", version.ref = "dagger" }
 dagger-compiler = { group = "com.google.dagger", name = "hilt-compiler", version.ref = "dagger" }
 dagger-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "dagger" }
+hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-navigation" }
+compose-destinations = { group = "io.github.raamcosta.compose-destinations", name = "core", version.ref = "compose-destinations" }
+compose-destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "compose-destinations" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }

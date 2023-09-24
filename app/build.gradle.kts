@@ -70,6 +70,11 @@ dependencies {
     androidTestImplementation(libs.dagger.testing)
     kspAndroidTest(libs.dagger.testing)
 
+    implementation(libs.hilt.navigation)
+
+    implementation(libs.compose.destinations)
+    ksp(libs.compose.destinations.ksp)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
