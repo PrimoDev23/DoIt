@@ -2,6 +2,7 @@
 plugins {
     alias(libs.plugins.com.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.ksp)
 }
 
 android {
@@ -60,6 +61,14 @@ dependencies {
     implementation(libs.ui.graphics)
     implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
+
+    implementation(libs.dagger)
+    ksp(libs.dagger.compiler)
+    testImplementation(libs.dagger.testing)
+    kspTest(libs.dagger.testing)
+    androidTestImplementation(libs.dagger.testing)
+    kspAndroidTest(libs.dagger.testing)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
     androidTestImplementation(libs.espresso.core)
