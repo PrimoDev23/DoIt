@@ -9,7 +9,8 @@ import com.example.doit.data.models.local.TodoItemEntity
     entities = [
         TodoItemEntity::class
     ],
-    version = 1
+    version = 1,
+    exportSchema = true
 )
 abstract class AppDatabase : RoomDatabase() {
     abstract fun todoItemDao(): TodoItemDao
