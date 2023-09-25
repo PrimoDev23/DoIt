@@ -12,6 +12,7 @@ class TodoItemEntityMapper @Inject constructor(
             TodoItem(
                 id = id,
                 title = title,
+                description = description,
                 done = done
             )
         }
@@ -22,6 +23,7 @@ class TodoItemEntityMapper @Inject constructor(
             TodoItemEntity(
                 id = id,
                 title = title,
+                description = description,
                 done = done
             )
         }

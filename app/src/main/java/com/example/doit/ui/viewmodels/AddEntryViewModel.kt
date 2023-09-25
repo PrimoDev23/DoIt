@@ -38,6 +38,10 @@ class AddEntryViewModel @Inject constructor(
         updateTitle(title)
     }
 
+    fun onDescriptionChanged(description: String) {
+        updateDescription(description)
+    }
+
     fun onSaveClicked() {
         viewModelScope.launch {
             val todoItem = state.value.toTodoItem()
@@ -61,10 +65,17 @@ class AddEntryViewModel @Inject constructor(
         }
     }
 
+    private fun updateDescription(description: String) {
+        _state.update {
+            it.copy(description = description)
+        }
+    }
+
 }
 
 data class AddEntryState(
-    val title: String = ""
+    val title: String = "",
+    val description: String = ""
 ) {
     fun isDefault(): Boolean {
         return this == AddEntryState()
@@ -74,8 +85,13 @@ data class AddEntryState(
         return TodoItem(
             id = 0,
             title = title,
+            description = description,
             done = false
         )
+    }
+
+    fun isValid(): Boolean {
+        return this.title.isNotBlank()
     }
 }
 

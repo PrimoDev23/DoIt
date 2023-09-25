@@ -3,6 +3,7 @@ package com.example.doit.ui.composables
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
@@ -51,9 +52,9 @@ fun AddEntryScreen(
     }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val hasChanges by remember {
+    val isValid by remember {
         derivedStateOf {
-            !state.isDefault()
+            state.isValid()
         }
     }
 
@@ -83,7 +84,7 @@ fun AddEntryScreen(
                     .height(56.dp)
                     .fillMaxWidth(),
                 onSaveClicked = viewModel::onSaveClicked,
-                enabled = hasChanges
+                enabled = isValid
             )
         }
     ) {
@@ -98,6 +99,15 @@ fun AddEntryScreen(
                 value = state.title,
                 onValueChange = viewModel::onTitleChanged,
                 label = stringResource(id = R.string.add_entry_title_title)
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            DoItTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = state.description,
+                onValueChange = viewModel::onDescriptionChanged,
+                label = stringResource(id = R.string.add_entry_description_title)
             )
         }
     }
