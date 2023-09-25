@@ -7,5 +7,6 @@ import androidx.room.PrimaryKey
 data class TodoItemEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long,
-    val title: String
+    val title: String,
+    val done: Boolean
 )

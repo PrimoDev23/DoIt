@@ -11,7 +11,8 @@ class TodoItemEntityMapper @Inject constructor(
         return with(item) {
             TodoItem(
                 id = id,
-                title = title
+                title = title,
+                done = done
             )
         }
     }
@@ -20,7 +21,8 @@ class TodoItemEntityMapper @Inject constructor(
         return with(item) {
             TodoItemEntity(
                 id = id,
-                title = title
+                title = title,
+                done = done
             )
         }
     }

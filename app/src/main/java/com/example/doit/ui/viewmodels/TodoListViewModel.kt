@@ -4,15 +4,18 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.usecases.interfaces.GetTodoItemsFlowUseCase
+import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
+import kotlinx.coroutines.launch
 import javax.inject.Inject
 
 @HiltViewModel
 class TodoListViewModel @Inject constructor(
-    getTodoItemsFlowUseCase: GetTodoItemsFlowUseCase
+    getTodoItemsFlowUseCase: GetTodoItemsFlowUseCase,
+    private val saveTodoItemUseCase: SaveTodoItemUseCase
 ) : ViewModel() {
 
     private val todoItems = getTodoItemsFlowUseCase.getItemFlow()
@@ -28,6 +31,14 @@ class TodoListViewModel @Inject constructor(
             started = SharingStarted.Eagerly,
             initialValue = TodoListState()
         )
+
+    fun onDoneChanged(item: TodoItem, done: Boolean) {
+        viewModelScope.launch {
+            val newItem = item.copy(done = done)
+
+            saveTodoItemUseCase.save(newItem)
+        }
+    }
 
 }
 

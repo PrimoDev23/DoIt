@@ -73,7 +73,8 @@ data class AddEntryState(
     fun toTodoItem(): TodoItem {
         return TodoItem(
             id = 0,
-            title = title
+            title = title,
+            done = false
         )
     }
 }
