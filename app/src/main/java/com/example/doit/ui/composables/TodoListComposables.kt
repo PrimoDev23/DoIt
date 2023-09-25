@@ -84,6 +84,7 @@ fun TodoListScreen(
                         viewModel.onDoneChanged(item, done)
                     },
                     title = item.title,
+                    description = item.description,
                     onClick = {}
                 )
             }
@@ -114,6 +115,7 @@ fun TodoItemListEntry(
     done: Boolean,
     onDoneChanged: (Boolean) -> Unit,
     title: String,
+    description: String,
     onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -171,6 +173,17 @@ fun TodoItemListEntry(
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+
+                if (description.isNotBlank()) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = description,
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                        maxLines = 2,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
             }
 
             Spacer(modifier = Modifier.width(16.dp))
