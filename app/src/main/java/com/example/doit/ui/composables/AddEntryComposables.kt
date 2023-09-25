@@ -98,7 +98,8 @@ fun AddEntryScreen(
                 modifier = Modifier.fillMaxWidth(),
                 value = state.title,
                 onValueChange = viewModel::onTitleChanged,
-                label = stringResource(id = R.string.add_entry_title_title)
+                label = stringResource(id = R.string.add_entry_title_title),
+                singleLine = true
             )
 
             Spacer(modifier = Modifier.height(24.dp))
@@ -107,8 +108,9 @@ fun AddEntryScreen(
                 modifier = Modifier.fillMaxWidth(),
                 value = state.description,
                 onValueChange = viewModel::onDescriptionChanged,
-                label = stringResource(id = R.string.add_entry_description_title)
-            )
+                label = stringResource(id = R.string.add_entry_description_title),
+
+                )
         }
     }
 
