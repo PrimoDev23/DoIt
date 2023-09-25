@@ -109,8 +109,9 @@ fun AddEntryScreen(
                 value = state.description,
                 onValueChange = viewModel::onDescriptionChanged,
                 label = stringResource(id = R.string.add_entry_description_title),
-
-                )
+                maxLines = 5,
+                minLines = 3
+            )
         }
     }
 
