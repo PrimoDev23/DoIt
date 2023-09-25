@@ -9,7 +9,7 @@ import javax.inject.Inject
 class GetTodoItemsFlowUseCaseImpl @Inject constructor(
     private val repo: TodoItemRepository
 ) : GetTodoItemsFlowUseCase {
-    override fun getItemFlow(): Result<Flow<List<TodoItem>>> {
+    override fun getItemFlow(): Flow<List<TodoItem>> {
         return repo.getItemsFlow()
     }
 }

@@ -13,14 +13,12 @@ class TodoItemRepositoryImpl @Inject constructor(
     private val mapper: TodoItemEntityMapper
 ) : TodoItemRepository {
 
-    override fun getItemsFlow(): Result<Flow<List<TodoItem>>> {
-        return Result.success(
-            dao.select().map { items ->
-                items.map {
-                    mapper.map(it)
-                }
+    override fun getItemsFlow(): Flow<List<TodoItem>> {
+        return dao.select().map { items ->
+            items.map {
+                mapper.map(it)
             }
-        )
+        }
     }
 
     override suspend fun saveTodoItem(item: TodoItem) {
