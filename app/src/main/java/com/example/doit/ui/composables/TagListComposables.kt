@@ -9,7 +9,6 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
-import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -20,9 +19,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
-import androidx.compose.foundation.lazy.grid.GridCells
-import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
-import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -62,6 +58,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
+@OptIn(ExperimentalLayoutApi::class)
 @RootNavGraph
 @Destination
 @Composable
@@ -88,21 +85,15 @@ fun TagListScreen(
             )
         }
     ) {
-        LazyVerticalGrid(
+        FlowRow(
             modifier = Modifier
                 .padding(it)
+                .padding(16.dp)
                 .fillMaxSize(),
-            columns = GridCells.Adaptive(164.dp),
-            contentPadding = PaddingValues(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp),
-            horizontalArrangement = Arrangement.spacedBy(16.dp)
+            horizontalArrangement = Arrangement.spacedBy(16.dp, Alignment.CenterHorizontally)
         ) {
-            items(
-                items = state.items,
-                key = { item ->
-                    item.id
-                }
-            ) { item ->
+            state.items.forEach { item ->
                 TagItem(
                     modifier = Modifier
                         .height(48.dp)
@@ -169,7 +160,6 @@ fun TagItem(
         contentAlignment = Alignment.Center
     ) {
         Text(
-            modifier = Modifier.fillMaxWidth(),
             text = title,
             color = color,
             maxLines = 1,
