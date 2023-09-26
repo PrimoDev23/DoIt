@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -18,8 +19,13 @@ import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.lazy.grid.GridCells
+import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
+import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
@@ -43,9 +49,12 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
+import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.doit.R
 import com.example.doit.ui.composables.modifiers.softClickable
 import com.example.doit.ui.viewmodels.TagListViewModel
@@ -61,6 +70,8 @@ fun TagListScreen(
     onMenuClicked: () -> Unit,
     viewModel: TagListViewModel = hiltViewModel()
 ) {
+    val state by viewModel.state.collectAsStateWithLifecycle()
+
     var createDialogVisible by remember {
         mutableStateOf(false)
     }
@@ -77,12 +88,29 @@ fun TagListScreen(
             )
         }
     ) {
-        Column(
+        LazyVerticalGrid(
             modifier = Modifier
                 .padding(it)
-                .fillMaxSize()
+                .fillMaxSize(),
+            columns = GridCells.Adaptive(164.dp),
+            contentPadding = PaddingValues(16.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-
+            items(
+                items = state.items,
+                key = { item ->
+                    item.id
+                }
+            ) { item ->
+                TagItem(
+                    modifier = Modifier
+                        .height(48.dp)
+                        .widthIn(max = 200.dp),
+                    title = item.title,
+                    color = item.color
+                )
+            }
         }
     }
 
@@ -116,6 +144,38 @@ fun TagListFloatingActionButton(
         Icon(
             painter = painterResource(id = R.drawable.baseline_add_24),
             contentDescription = stringResource(id = R.string.tag_list_fab)
+        )
+    }
+}
+
+@Composable
+fun TagItem(
+    title: String,
+    color: Color,
+    modifier: Modifier = Modifier,
+    shape: Shape = RoundedCornerShape(8.dp)
+) {
+    Box(
+        modifier = modifier
+            .clip(shape)
+            .background(
+                color = color.copy(alpha = 0.3f),
+                shape = shape
+            )
+            .padding(
+                horizontal = 16.dp,
+                vertical = 8.dp
+            ),
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            modifier = Modifier.fillMaxWidth(),
+            text = title,
+            color = color,
+            maxLines = 1,
+            overflow = TextOverflow.Ellipsis,
+            textAlign = TextAlign.Center,
+            style = MaterialTheme.typography.bodyMedium
         )
     }
 }

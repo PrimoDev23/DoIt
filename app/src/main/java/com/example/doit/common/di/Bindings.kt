@@ -5,10 +5,12 @@ import com.example.doit.data.repositories.TodoItemRepositoryImpl
 import com.example.doit.domain.repositories.TagRepository
 import com.example.doit.domain.repositories.TodoItemRepository
 import com.example.doit.domain.usecases.DeleteTodoItemUseCaseImpl
+import com.example.doit.domain.usecases.GetTagsFlowUseCaseImpl
 import com.example.doit.domain.usecases.GetTodoItemsFlowUseCaseImpl
 import com.example.doit.domain.usecases.SaveTagUseCaseImpl
 import com.example.doit.domain.usecases.SaveTodoItemUseCaseImpl
 import com.example.doit.domain.usecases.interfaces.DeleteTodoItemUseCase
+import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTagUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
@@ -51,5 +53,10 @@ abstract class Bindings {
     abstract fun bindSaveTagUseCase(
         impl: SaveTagUseCaseImpl
     ): SaveTagUseCase
+
+    @Binds
+    abstract fun bindGetTagsFlowUseCase(
+        impl: GetTagsFlowUseCaseImpl
+    ): GetTagsFlowUseCase
 
 }

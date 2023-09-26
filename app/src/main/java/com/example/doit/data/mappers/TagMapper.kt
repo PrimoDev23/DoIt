@@ -14,7 +14,7 @@ class TagMapper @Inject constructor(
             Tag(
                 id = id,
                 title = title,
-                color = Color(color)
+                color = Color(color.toULong())
             )
         }
     }
@@ -24,7 +24,7 @@ class TagMapper @Inject constructor(
             TagEntity(
                 id = id,
                 title = title,
-                color = color.value.toInt()
+                color = color.value.toString()
             )
         }
     }
