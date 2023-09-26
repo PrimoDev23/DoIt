@@ -56,6 +56,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Composable
 fun TodoListScreen(
     navigator: DestinationsNavigator,
+    onMenuClicked: () -> Unit,
     viewModel: TodoListViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -63,7 +64,10 @@ fun TodoListScreen(
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
-            TodoListTopBar(modifier = Modifier.fillMaxWidth())
+            TodoListTopBar(
+                modifier = Modifier.fillMaxWidth(),
+                onMenuClicked = onMenuClicked
+            )
         },
         floatingActionButton = {
             TodoListFloatingActionButton(
@@ -108,6 +112,7 @@ fun TodoListScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoListTopBar(
+    onMenuClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     CenterAlignedTopAppBar(
@@ -117,6 +122,9 @@ fun TodoListTopBar(
                 text = stringResource(id = R.string.todo_list_title),
                 fontWeight = FontWeight.Bold
             )
+        },
+        navigationIcon = {
+            DrawerMenuButton(onClick = onMenuClicked)
         }
     )
 }

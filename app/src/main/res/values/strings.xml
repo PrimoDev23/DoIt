@@ -14,4 +14,6 @@
     <string name="todo_list_title">Tasks</string>
     <string name="add_entry_description_title">Description</string>
     <string name="todo_list_delete">Delete</string>
+    <string name="drawer_menu_open">Open menu</string>
+    <string name="tag_overview_title">Tags</string>
 </resources>
