@@ -10,10 +10,14 @@
     <string name="add_entry_dismiss_dialog_confirm">Dismiss</string>
     <string name="general_cancel">Cancel</string>
     <string name="add_entry_dismiss_dialog_text">Are you sure you want to dismiss all changes made to this task?</string>
-    <string name="add_entry_save_button">Save</string>
+    <string name="general_save">Save</string>
     <string name="todo_list_title">Tasks</string>
     <string name="add_entry_description_title">Description</string>
     <string name="todo_list_delete">Delete</string>
     <string name="drawer_menu_open">Open menu</string>
     <string name="tag_overview_title">Tags</string>
+    <string name="tag_list_fab">Create new tag</string>
+    <string name="create_tag_dialog_title">Create Tag</string>
+    <string name="create_tag_dialog_name_title">Tag</string>
+    <string name="create_tag_dialog_colors_title">Tag color</string>
 </resources>

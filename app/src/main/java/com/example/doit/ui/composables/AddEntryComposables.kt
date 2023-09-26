@@ -168,7 +168,7 @@ fun AddEntryBottomBar(
             enabled = isEnabled,
             shape = RoundedCornerShape(8.dp)
         ) {
-            Text(text = stringResource(id = R.string.add_entry_save_button))
+            Text(text = stringResource(id = R.string.general_save))
         }
     }
 }

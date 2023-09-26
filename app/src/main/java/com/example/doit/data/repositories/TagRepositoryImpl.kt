@@ -1,0 +1,28 @@
+package com.example.doit.data.repositories
+
+import com.example.doit.data.daos.TagDao
+import com.example.doit.data.mappers.TagMapper
+import com.example.doit.domain.models.Tag
+import com.example.doit.domain.repositories.TagRepository
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.map
+import javax.inject.Inject
+
+class TagRepositoryImpl @Inject constructor(
+    private val dao: TagDao,
+    private val mapper: TagMapper
+) : TagRepository {
+    override suspend fun saveTag(tag: Tag) {
+        val mapped = mapper.mapBack(tag)
+
+        dao.insert(mapped)
+    }
+
+    override fun getTagsFlow(): Flow<List<Tag>> {
+        return dao.select().map { tags ->
+            tags.map { tag ->
+                mapper.map(tag)
+            }
+        }
+    }
+}

@@ -9,8 +9,9 @@ import dagger.hilt.android.components.ViewModelComponent
 @Module
 @InstallIn(ViewModelComponent::class)
 class ViewModelModule {
-
     @Provides
     fun provideTodoItemDao(database: AppDatabase) = database.todoItemDao()
 
+    @Provides
+    fun provideTagDao(database: AppDatabase) = database.tagDao()
 }
