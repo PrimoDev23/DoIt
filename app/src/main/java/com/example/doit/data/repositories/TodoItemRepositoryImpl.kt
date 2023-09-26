@@ -26,4 +26,10 @@ class TodoItemRepositoryImpl @Inject constructor(
 
         dao.insert(mappedItem)
     }
+
+    override suspend fun deleteTodoItem(item: TodoItem) {
+        val mappedItem = mapper.mapBack(item)
+
+        dao.delete(mappedItem)
+    }
 }

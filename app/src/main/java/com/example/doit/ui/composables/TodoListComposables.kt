@@ -1,6 +1,7 @@
 package com.example.doit.ui.composables
 
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
@@ -8,12 +9,14 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DismissDirection
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -21,13 +24,19 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SwipeToDismiss
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDismissState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.drawWithContent
 import androidx.compose.ui.geometry.Offset
+import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -85,7 +94,10 @@ fun TodoListScreen(
                     },
                     title = item.title,
                     description = item.description,
-                    onClick = {}
+                    onClick = {},
+                    onDismiss = {
+                        viewModel.onItemDismissed(item)
+                    }
                 )
             }
         }
@@ -117,85 +129,142 @@ fun TodoItemListEntry(
     title: String,
     description: String,
     onClick: () -> Unit,
+    onDismiss: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    ElevatedCard(
+    val config = LocalConfiguration.current
+
+    val dismissState = rememberDismissState(
+        positionalThreshold = {
+            (config.screenWidthDp.dp / 2f).toPx()
+        }
+    )
+    val isDismissed by remember {
+        derivedStateOf {
+            dismissState.isDismissed(DismissDirection.EndToStart)
+        }
+    }
+
+    LaunchedEffect(isDismissed) {
+        if (isDismissed) {
+            onDismiss()
+        }
+    }
+
+    SwipeToDismiss(
         modifier = modifier,
-        onClick = onClick,
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Row(
-            modifier = Modifier
-                .padding(
-                    start = 16.dp,
-                    top = 16.dp,
-                    end = 8.dp,
-                    bottom = 16.dp
-                )
-                .fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Column(modifier = Modifier.weight(1f)) {
-                val contentColor = LocalContentColor.current
-                val strikethroughProgress by animateFloatAsState(
-                    targetValue = if (done) {
-                        1f
-                    } else {
-                        0f
-                    },
-                    label = "StrikethroughAnimation"
-                )
+        state = dismissState,
+        directions = setOf(DismissDirection.EndToStart),
+        background = {
+            Row(
+                modifier = Modifier
+                    .padding((0.5).dp)
+                    .fillMaxSize()
+                    .background(
+                        color = MaterialTheme.colorScheme.error,
+                        shape = RoundedCornerShape(8.dp)
+                    ),
+                horizontalArrangement = Arrangement.End,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.outline_delete_24),
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.onError
+                    )
 
-                Text(
-                    modifier = Modifier
-                        .drawWithContent {
-                            drawContent()
+                    Spacer(modifier = Modifier.height(4.dp))
 
-                            val strokeWidth = (1.5).dp.toPx()
-                            val lineWidth = strikethroughProgress * this.size.width
-
-                            drawLine(
-                                color = contentColor,
-                                start = Offset(
-                                    x = 0f,
-                                    y = center.y
-                                ),
-                                end = Offset(
-                                    x = lineWidth,
-                                    y = center.y
-                                ),
-                                strokeWidth = strokeWidth
-                            )
-                        },
-                    text = title,
-                    style = MaterialTheme.typography.titleMedium,
-                    fontWeight = FontWeight.Bold,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis
-                )
-
-                if (description.isNotBlank()) {
                     Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = description,
-                        style = MaterialTheme.typography.labelMedium,
-                        color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
-                        maxLines = 2,
-                        overflow = TextOverflow.Ellipsis
+                        text = stringResource(id = R.string.todo_list_delete),
+                        color = MaterialTheme.colorScheme.onError
+                    )
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+            }
+        },
+        dismissContent = {
+            ElevatedCard(
+                modifier = modifier,
+                onClick = onClick,
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Row(
+                    modifier = Modifier
+                        .padding(
+                            start = 16.dp,
+                            top = 16.dp,
+                            end = 8.dp,
+                            bottom = 16.dp
+                        )
+                        .fillMaxWidth(),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Column(modifier = Modifier.weight(1f)) {
+                        val contentColor = LocalContentColor.current
+                        val strikethroughProgress by animateFloatAsState(
+                            targetValue = if (done) {
+                                1f
+                            } else {
+                                0f
+                            },
+                            label = "StrikethroughAnimation"
+                        )
+
+                        Text(
+                            modifier = Modifier
+                                .drawWithContent {
+                                    drawContent()
+
+                                    val strokeWidth = (1.5).dp.toPx()
+                                    val lineWidth = strikethroughProgress * this.size.width
+
+                                    drawLine(
+                                        color = contentColor,
+                                        start = Offset(
+                                            x = 0f,
+                                            y = center.y
+                                        ),
+                                        end = Offset(
+                                            x = lineWidth,
+                                            y = center.y
+                                        ),
+                                        strokeWidth = strokeWidth
+                                    )
+                                },
+                            text = title,
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold,
+                            maxLines = 1,
+                            overflow = TextOverflow.Ellipsis
+                        )
+
+                        if (description.isNotBlank()) {
+                            Text(
+                                modifier = Modifier.fillMaxWidth(),
+                                text = description,
+                                style = MaterialTheme.typography.labelMedium,
+                                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.6f),
+                                maxLines = 2,
+                                overflow = TextOverflow.Ellipsis
+                            )
+                        }
+                    }
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    DoItCheckbox(
+                        checked = done,
+                        onCheckedChange = {
+                            onDoneChanged(it)
+                        }
                     )
                 }
             }
-
-            Spacer(modifier = Modifier.width(16.dp))
-
-            DoItCheckbox(
-                checked = done,
-                onCheckedChange = {
-                    onDoneChanged(it)
-                }
-            )
         }
-    }
+    )
 }
 
 @Composable

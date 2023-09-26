@@ -3,6 +3,7 @@ package com.example.doit.ui.viewmodels
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.doit.domain.models.TodoItem
+import com.example.doit.domain.usecases.interfaces.DeleteTodoItemUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -15,7 +16,8 @@ import javax.inject.Inject
 @HiltViewModel
 class TodoListViewModel @Inject constructor(
     getTodoItemsFlowUseCase: GetTodoItemsFlowUseCase,
-    private val saveTodoItemUseCase: SaveTodoItemUseCase
+    private val saveTodoItemUseCase: SaveTodoItemUseCase,
+    private val deleteTodoItemUseCase: DeleteTodoItemUseCase
 ) : ViewModel() {
 
     private val todoItems = getTodoItemsFlowUseCase.getItemFlow()
@@ -37,6 +39,12 @@ class TodoListViewModel @Inject constructor(
             val newItem = item.copy(done = done)
 
             saveTodoItemUseCase.save(newItem)
+        }
+    }
+
+    fun onItemDismissed(item: TodoItem) {
+        viewModelScope.launch {
+            deleteTodoItemUseCase.delete(item)
         }
     }
 
