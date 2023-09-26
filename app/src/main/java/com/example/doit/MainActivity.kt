@@ -12,7 +12,9 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.doit.ui.composables.DrawerMenu
 import com.example.doit.ui.composables.NavGraphs
+import com.example.doit.ui.composables.TagListScreen
 import com.example.doit.ui.composables.TodoListScreen
+import com.example.doit.ui.composables.destinations.TagListScreenDestination
 import com.example.doit.ui.composables.destinations.TodoListScreenDestination
 import com.example.doit.ui.theme.DoItTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
@@ -51,6 +53,17 @@ class MainActivity : ComponentActivity() {
                     ) {
                         composable(TodoListScreenDestination) {
                             TodoListScreen(
+                                navigator = destinationsNavigator,
+                                onMenuClicked = {
+                                    scope.launch {
+                                        drawerState.open()
+                                    }
+                                }
+                            )
+                        }
+
+                        composable(TagListScreenDestination) {
+                            TagListScreen(
                                 navigator = destinationsNavigator,
                                 onMenuClicked = {
                                     scope.launch {

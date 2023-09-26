@@ -32,8 +32,10 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
+import androidx.navigation.NavOptionsBuilder
 import com.example.doit.R
 import com.example.doit.ui.composables.destinations.Destination
+import com.example.doit.ui.composables.destinations.TagListScreenDestination
 import com.example.doit.ui.composables.destinations.TodoListScreenDestination
 import com.ramcosta.composedestinations.navigation.navigate
 
@@ -80,7 +82,7 @@ fun DrawerMenu(
                 selected = currentDestination == TodoListScreenDestination,
                 onClick = {
                     navController.navigate(TodoListScreenDestination) {
-                        launchSingleTop = true
+                        buildNavigationOptions(navController)
                     }
                     onDismiss()
                 }
@@ -92,10 +94,10 @@ fun DrawerMenu(
                     .fillMaxWidth(),
                 icon = painterResource(id = R.drawable.outline_label_24),
                 title = stringResource(id = R.string.tag_overview_title),
-                selected = currentDestination == TodoListScreenDestination,
+                selected = currentDestination == TagListScreenDestination,
                 onClick = {
-                    navController.navigate(TodoListScreenDestination) {
-                        launchSingleTop = true
+                    navController.navigate(TagListScreenDestination) {
+                        buildNavigationOptions(navController)
                     }
                     onDismiss()
                 }
@@ -104,6 +106,20 @@ fun DrawerMenu(
             Spacer(modifier = Modifier.height(16.dp))
         }
     }
+}
+
+private fun NavOptionsBuilder.buildNavigationOptions(navController: NavController) {
+    // Pop up to the start destination of the graph to
+    // avoid building up a large stack of destinations
+    // on the back stack as users select items
+    popUpTo(navController.graph.startDestinationId) {
+        saveState = true
+    }
+    // Avoid multiple copies of the same destination when
+    // reselecting the same item
+    launchSingleTop = true
+    // Restore state when reselecting a previously selected item
+    restoreState = true
 }
 
 @Composable
