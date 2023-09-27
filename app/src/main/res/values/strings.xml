@@ -21,4 +21,6 @@
     <string name="create_tag_dialog_name_title">Tag</string>
     <string name="create_tag_dialog_colors_title">Tag color</string>
     <string name="add_entry_add_tags_title">Add tags</string>
+    <string name="add_entry_tag_search_placeholder">Search for tags...</string>
+    <string name="general_clear_textfield">Clear text</string>
 </resources>

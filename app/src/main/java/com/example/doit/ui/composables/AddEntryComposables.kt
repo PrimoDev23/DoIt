@@ -2,6 +2,7 @@ package com.example.doit.ui.composables
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -167,6 +168,7 @@ fun AddEntryTopBar(
     )
 }
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AddEntryTagSelection(
     tags: List<Tag>,
@@ -174,7 +176,49 @@ fun AddEntryTagSelection(
     modifier: Modifier = Modifier
 ) {
     Column(modifier = modifier) {
-        InputTitle(text = stringResource(id = R.string.add_entry_add_tags_title))
+        var searchTerm by remember {
+            mutableStateOf("")
+        }
+        val searchedTags by remember(tags) {
+            derivedStateOf {
+                if (searchTerm.isBlank()) {
+                    tags
+                } else {
+                    tags.filter { tag ->
+                        tag.title.contains(
+                            other = searchTerm,
+                            ignoreCase = true
+                        )
+                    }
+                }
+            }
+        }
+
+        DoItTextField(
+            modifier = Modifier.fillMaxWidth(),
+            label = stringResource(id = R.string.add_entry_add_tags_title),
+            value = searchTerm,
+            onValueChange = {
+                searchTerm = it
+            },
+            placeholder = {
+                Text(text = stringResource(id = R.string.add_entry_tag_search_placeholder))
+            },
+            trailingIcon = {
+                IconButton(
+                    onClick = {
+                        searchTerm = ""
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.outline_close_24),
+                        contentDescription = stringResource(id = R.string.general_clear_textfield)
+                    )
+                }
+            }
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
 
         LazyColumn(
             modifier = Modifier
@@ -182,13 +226,14 @@ fun AddEntryTagSelection(
                 .fillMaxWidth()
         ) {
             items(
-                items = tags,
+                items = searchedTags,
                 key = { tag ->
                     tag.id
                 }
             ) { tag ->
                 TagListEntry(
                     modifier = Modifier
+                        .animateItemPlacement()
                         .height(64.dp)
                         .fillMaxWidth()
                         .clickable {
