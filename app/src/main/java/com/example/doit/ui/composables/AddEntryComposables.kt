@@ -32,6 +32,7 @@ import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -236,6 +237,7 @@ fun AddEntryTagSelection(
                         .animateItemPlacement()
                         .height(64.dp)
                         .fillMaxWidth()
+                        .clip(RoundedCornerShape(8.dp))
                         .clickable {
                             onTagClicked(tag)
                         },
