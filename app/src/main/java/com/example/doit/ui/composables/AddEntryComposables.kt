@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.AlertDialog
@@ -33,6 +34,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.doit.R
+import com.example.doit.domain.models.Tag
 import com.example.doit.ui.viewmodels.AddEntryEvent
 import com.example.doit.ui.viewmodels.AddEntryViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -94,6 +96,21 @@ fun AddEntryScreen(
                 .padding(horizontal = 16.dp)
                 .fillMaxSize()
         ) {
+            val selectedTags by remember {
+                derivedStateOf {
+                    state.tags.filter { tag ->
+                        tag.selected
+                    }
+                }
+            }
+            val unselectedTags by remember {
+                derivedStateOf {
+                    state.tags.filter { tag ->
+                        !tag.selected
+                    }
+                }
+            }
+
             DoItTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = state.title,
@@ -111,6 +128,14 @@ fun AddEntryScreen(
                 label = stringResource(id = R.string.add_entry_description_title),
                 maxLines = 5,
                 minLines = 3
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            AddEntryTagSelection(
+                selectedTags = selectedTags,
+                unselectedTags = unselectedTags,
+                onTagClicked = viewModel::onTagClicked
             )
         }
     }
@@ -150,6 +175,36 @@ fun AddEntryTopBar(
             }
         }
     )
+}
+
+@Composable
+fun AddEntryTagSelection(
+    selectedTags: List<Tag>,
+    unselectedTags: List<Tag>,
+    onTagClicked: (Tag) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        InputTitle(text = stringResource(id = R.string.add_entry_add_tags_title))
+
+        TagBox(
+            modifier = Modifier
+                .heightIn(min = 160.dp)
+                .fillMaxWidth(),
+            tags = selectedTags,
+            onTagClicked = onTagClicked
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        TagBox(
+            modifier = Modifier
+                .heightIn(min = 160.dp)
+                .fillMaxWidth(),
+            tags = unselectedTags,
+            onTagClicked = onTagClicked
+        )
+    }
 }
 
 @Composable

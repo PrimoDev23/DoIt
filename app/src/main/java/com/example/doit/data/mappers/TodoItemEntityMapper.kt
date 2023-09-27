@@ -2,30 +2,42 @@ package com.example.doit.data.mappers
 
 import com.example.doit.data.models.local.TodoItemEntity
 import com.example.doit.domain.models.TodoItem
+import com.example.doit.domain.repositories.TagRepository
 import javax.inject.Inject
 
 class TodoItemEntityMapper @Inject constructor(
-
+    private val tagRepository: TagRepository
 ) : BaseMapper<TodoItemEntity, TodoItem>() {
-    override fun map(item: TodoItemEntity): TodoItem {
+    override suspend fun map(item: TodoItemEntity): TodoItem {
         return with(item) {
+            val tagIds = tags.split(SEPARATOR).map { it.toLong() }
+            val tags = tagRepository.getTagsByIds(tagIds)
+
             TodoItem(
                 id = id,
                 title = title,
                 description = description,
-                done = done
+                done = done,
+                tags = tags
             )
         }
     }
 
-    override fun mapBack(item: TodoItem): TodoItemEntity {
+    override suspend fun mapBack(item: TodoItem): TodoItemEntity {
         return with(item) {
+            val ids = tags.map { it.id }
+
             TodoItemEntity(
                 id = id,
                 title = title,
                 description = description,
-                done = done
+                done = done,
+                tags = ids.joinToString(SEPARATOR)
             )
         }
+    }
+
+    companion object {
+        private const val SEPARATOR = "|"
     }
 }

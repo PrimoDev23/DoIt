@@ -5,5 +5,6 @@ import androidx.compose.ui.graphics.Color
 data class Tag(
     val id: Long,
     val title: String,
-    val color: Color
+    val color: Color,
+    val selected: Boolean = false
 )

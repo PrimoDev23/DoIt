@@ -21,7 +21,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Card
 import androidx.compose.material3.FloatingActionButton
@@ -45,8 +44,6 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -135,37 +132,6 @@ fun TagListFloatingActionButton(
         Icon(
             painter = painterResource(id = R.drawable.baseline_add_24),
             contentDescription = stringResource(id = R.string.tag_list_fab)
-        )
-    }
-}
-
-@Composable
-fun TagItem(
-    title: String,
-    color: Color,
-    modifier: Modifier = Modifier,
-    shape: Shape = RoundedCornerShape(8.dp)
-) {
-    Box(
-        modifier = modifier
-            .clip(shape)
-            .background(
-                color = color.copy(alpha = 0.3f),
-                shape = shape
-            )
-            .padding(
-                horizontal = 16.dp,
-                vertical = 8.dp
-            ),
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = title,
-            color = color,
-            maxLines = 1,
-            overflow = TextOverflow.Ellipsis,
-            textAlign = TextAlign.Center,
-            style = MaterialTheme.typography.bodyMedium
         )
     }
 }

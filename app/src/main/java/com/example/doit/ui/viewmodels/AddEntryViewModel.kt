@@ -2,7 +2,9 @@ package com.example.doit.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
+import com.example.doit.domain.usecases.interfaces.GetTagsUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
@@ -15,7 +17,8 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddEntryViewModel @Inject constructor(
-    private val saveTodoItemUseCase: SaveTodoItemUseCase
+    private val saveTodoItemUseCase: SaveTodoItemUseCase,
+    private val getTagsUseCase: GetTagsUseCase
 ) : ViewModel() {
 
     private val _events = Channel<AddEntryEvent>()
@@ -23,6 +26,18 @@ class AddEntryViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(AddEntryState())
     val state = _state.asStateFlow()
+
+    init {
+        viewModelScope.launch {
+            loadTags()
+        }
+    }
+
+    private suspend fun loadTags() {
+        val tags = getTagsUseCase()
+
+        updateTags(tags)
+    }
 
     fun onBackClicked() {
         viewModelScope.launch {
@@ -40,6 +55,27 @@ class AddEntryViewModel @Inject constructor(
 
     fun onDescriptionChanged(description: String) {
         updateDescription(description)
+    }
+
+    fun onTagClicked(tag: Tag) {
+        toggleTagSelection(tag)
+    }
+
+    private fun toggleTagSelection(tag: Tag) {
+        _state.update {
+            val tags = it.tags.toMutableList()
+
+            val index = tags.indexOf(tag)
+
+            if (index == -1) {
+                return@update it
+            }
+
+            val newTag = tag.copy(selected = !tag.selected)
+            tags[index] = newTag
+
+            it.copy(tags = tags)
+        }
     }
 
     fun onSaveClicked() {
@@ -71,14 +107,23 @@ class AddEntryViewModel @Inject constructor(
         }
     }
 
+    private fun updateTags(tags: List<Tag>) {
+        _state.update {
+            it.copy(tags = tags)
+        }
+    }
+
 }
 
 data class AddEntryState(
     val title: String = "",
-    val description: String = ""
+    val description: String = "",
+    val tags: List<Tag> = emptyList()
 ) {
     fun isDefault(): Boolean {
-        return this == AddEntryState()
+        return title.isBlank() &&
+                description.isBlank() &&
+                tags.any { !it.selected }
     }
 
     fun toTodoItem(): TodoItem {
@@ -86,7 +131,8 @@ data class AddEntryState(
             id = 0,
             title = title,
             description = description,
-            done = false
+            done = false,
+            tags = tags.filter { it.selected }
         )
     }
 

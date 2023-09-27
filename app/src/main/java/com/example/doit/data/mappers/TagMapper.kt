@@ -9,17 +9,18 @@ class TagMapper @Inject constructor(
 
 ) : BaseMapper<TagEntity, Tag>() {
 
-    override fun map(item: TagEntity): Tag {
+    override suspend fun map(item: TagEntity): Tag {
         return with(item) {
             Tag(
                 id = id,
                 title = title,
-                color = Color(color.toULong())
+                color = Color(color.toULong()),
+                selected = false
             )
         }
     }
 
-    override fun mapBack(item: Tag): TagEntity {
+    override suspend fun mapBack(item: Tag): TagEntity {
         return with(item) {
             TagEntity(
                 id = id,

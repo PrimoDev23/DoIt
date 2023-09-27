@@ -19,10 +19,22 @@ class TagRepositoryImpl @Inject constructor(
     }
 
     override fun getTagsFlow(): Flow<List<Tag>> {
-        return dao.select().map { tags ->
+        return dao.selectFlow().map { tags ->
             tags.map { tag ->
                 mapper.map(tag)
             }
+        }
+    }
+
+    override suspend fun getTags(): List<Tag> {
+        return dao.select().map {
+            mapper.map(it)
+        }
+    }
+
+    override suspend fun getTagsByIds(ids: List<Long>): List<Tag> {
+        return dao.selectByIds(ids).map {
+            mapper.map(it)
         }
     }
 }
