@@ -123,7 +123,7 @@ data class AddEntryState(
     fun isDefault(): Boolean {
         return title.isBlank() &&
                 description.isBlank() &&
-                tags.any { !it.selected }
+                tags.none { it.selected }
     }
 
     fun toTodoItem(): TodoItem {
