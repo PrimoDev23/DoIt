@@ -1,6 +1,6 @@
 package com.example.doit.ui.composables
 
-import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -31,7 +31,7 @@ fun TagListEntry(
         modifier = modifier.padding(contentPadding),
         verticalAlignment = Alignment.CenterVertically
     ) {
-        AnimatedContent(
+        Crossfade(
             targetState = tag.selected,
             label = "LabelSelectionAnimation"
         ) { selected ->
