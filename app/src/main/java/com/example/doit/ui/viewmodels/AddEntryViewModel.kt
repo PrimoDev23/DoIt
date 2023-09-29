@@ -1,12 +1,16 @@
 package com.example.doit.ui.viewmodels
 
+import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.usecases.interfaces.GetTagsUseCase
+import com.example.doit.domain.usecases.interfaces.GetTodoItemUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
+import com.example.doit.ui.composables.navArgs
+import com.example.doit.ui.navigation.arguments.AddEntryNavArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -19,9 +23,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class AddEntryViewModel @Inject constructor(
+    savedStateHandle: SavedStateHandle,
     private val saveTodoItemUseCase: SaveTodoItemUseCase,
-    private val getTagsUseCase: GetTagsUseCase
+    private val getTagsUseCase: GetTagsUseCase,
+    private val getTodoItemUseCase: GetTodoItemUseCase
 ) : ViewModel() {
+
+    private val navArgs: AddEntryNavArgs = savedStateHandle.navArgs()
+
+    private val id: Long = navArgs.id
+    private var done = false
 
     private val _events = Channel<AddEntryEvent>()
     val events = _events.receiveAsFlow()
@@ -31,7 +42,40 @@ class AddEntryViewModel @Inject constructor(
 
     init {
         viewModelScope.launch {
-            loadTags()
+            launch {
+                initData()
+            }
+
+            launch {
+                loadTags()
+            }
+        }
+    }
+
+    private suspend fun initData() {
+        if (id != 0L) {
+            getTodoItemUseCase(id)?.let { item ->
+                done = item.done
+
+                _state.update { state ->
+                    val newTags = state.tags.map { tag ->
+                        val selected = item.tags.any { it.id == tag.id }
+
+                        if (selected) {
+                            tag.copy(selected = true)
+                        } else {
+                            tag
+                        }
+                    }
+
+                    state.copy(
+                        title = item.title,
+                        description = item.description,
+                        tags = newTags,
+                        priority = item.priority
+                    )
+                }
+            }
         }
     }
 
@@ -86,7 +130,10 @@ class AddEntryViewModel @Inject constructor(
 
     fun onSaveClicked() {
         viewModelScope.launch {
-            val todoItem = state.value.toTodoItem()
+            val todoItem = state.value.toTodoItem(
+                id = id,
+                done = done
+            )
 
             saveTodoItemUseCase.save(todoItem)
             sendPopBackStack()
@@ -141,12 +188,15 @@ data class AddEntryState(
                 priority == Priority.NONE
     }
 
-    fun toTodoItem(): TodoItem {
+    fun toTodoItem(
+        id: Long,
+        done: Boolean
+    ): TodoItem {
         return TodoItem(
-            id = 0,
+            id = id,
             title = title,
             description = description,
-            done = false,
+            done = done,
             tags = tags.filter { it.selected },
             priority = priority
         )

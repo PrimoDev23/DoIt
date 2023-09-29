@@ -21,6 +21,12 @@ class TodoItemRepositoryImpl @Inject constructor(
         }
     }
 
+    override suspend fun getItemById(id: Long): TodoItem? {
+        val entity = dao.selectById(id) ?: return null
+
+        return mapper.map(entity)
+    }
+
     override suspend fun saveTodoItem(item: TodoItem) {
         val mappedItem = mapper.mapBack(item)
 

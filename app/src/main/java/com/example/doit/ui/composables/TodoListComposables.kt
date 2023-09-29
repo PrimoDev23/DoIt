@@ -65,11 +65,26 @@ fun TodoListScreen(
         onMenuClicked = onMenuClicked,
         title = stringResource(id = R.string.todo_list_title),
         actions = {
+            val showEditAction by remember {
+                derivedStateOf {
+                    state.selectedItems.size == 1
+                }
+            }
+
             val showDeleteAction by remember {
                 derivedStateOf {
                     state.selectedItems.isNotEmpty()
                 }
             }
+
+            EditToolbarItem(
+                isVisible = showEditAction,
+                onClick = {
+                    val id = state.selectedItems.first().id
+
+                    navigator.navigate(AddEntryScreenDestination(id = id))
+                }
+            )
 
             DeleteToolbarItem(
                 isVisible = showDeleteAction,
@@ -79,7 +94,7 @@ fun TodoListScreen(
         floatingActionButton = {
             TodoListFloatingActionButton(
                 onClick = {
-                    navigator.navigate(AddEntryScreenDestination)
+                    navigator.navigate(AddEntryScreenDestination(id = 0))
                 }
             )
         }

@@ -47,6 +47,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.doit.R
 import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.Tag
+import com.example.doit.ui.navigation.arguments.AddEntryNavArgs
 import com.example.doit.ui.viewmodels.AddEntryEvent
 import com.example.doit.ui.viewmodels.AddEntryViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -55,7 +56,7 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.flow.collectLatest
 
 @RootNavGraph
-@Destination
+@Destination(navArgsDelegate = AddEntryNavArgs::class)
 @Composable
 fun AddEntryScreen(
     navigator: DestinationsNavigator,

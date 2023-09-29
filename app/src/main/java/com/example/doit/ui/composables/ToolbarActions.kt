@@ -1,6 +1,7 @@
 package com.example.doit.ui.composables
 
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.AnimatedVisibilityScope
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.scaleIn
 import androidx.compose.animation.scaleOut
@@ -13,10 +14,10 @@ import androidx.compose.ui.res.stringResource
 import com.example.doit.R
 
 @Composable
-fun DeleteToolbarItem(
+fun ToolbarItem(
     isVisible: Boolean,
-    onClick: () -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    content: @Composable AnimatedVisibilityScope.() -> Unit
 ) {
     AnimatedVisibility(
         modifier = modifier,
@@ -26,12 +27,44 @@ fun DeleteToolbarItem(
         ),
         exit = scaleOut(
             animationSpec = tween(durationMillis = 100)
-        )
+        ),
+        content = content
+    )
+}
+
+@Composable
+fun DeleteToolbarItem(
+    isVisible: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ToolbarItem(
+        modifier = modifier,
+        isVisible = isVisible
     ) {
         IconButton(onClick = onClick) {
             Icon(
                 painter = painterResource(id = R.drawable.outline_delete_24),
                 contentDescription = stringResource(id = R.string.general_delete)
+            )
+        }
+    }
+}
+
+@Composable
+fun EditToolbarItem(
+    isVisible: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ToolbarItem(
+        modifier = modifier,
+        isVisible = isVisible
+    ) {
+        IconButton(onClick = onClick) {
+            Icon(
+                painter = painterResource(id = R.drawable.outline_edit_24),
+                contentDescription = stringResource(id = R.string.general_edit)
             )
         }
     }
