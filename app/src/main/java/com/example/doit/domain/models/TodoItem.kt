@@ -5,5 +5,6 @@ data class TodoItem(
     val title: String,
     val description: String,
     val done: Boolean,
-    val tags: List<Tag>
+    val tags: List<Tag>,
+    val selected: Boolean = false
 )

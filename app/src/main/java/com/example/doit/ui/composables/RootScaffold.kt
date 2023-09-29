@@ -1,6 +1,7 @@
 package com.example.doit.ui.composables
 
 import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -16,6 +17,7 @@ fun RootScaffold(
     onMenuClicked: () -> Unit,
     title: String,
     modifier: Modifier = Modifier,
+    actions: @Composable RowScope.() -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
 ) {
@@ -32,7 +34,8 @@ fun RootScaffold(
                 },
                 navigationIcon = {
                     DrawerMenuButton(onClick = onMenuClicked)
-                }
+                },
+                actions = actions
             )
         },
         floatingActionButton = floatingActionButton,
