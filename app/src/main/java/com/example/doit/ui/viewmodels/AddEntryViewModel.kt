@@ -13,6 +13,7 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
 @HiltViewModel
@@ -115,6 +116,7 @@ class AddEntryViewModel @Inject constructor(
 
 }
 
+@Immutable
 data class AddEntryState(
     val title: String = "",
     val description: String = "",

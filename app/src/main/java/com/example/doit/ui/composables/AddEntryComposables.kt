@@ -3,7 +3,9 @@ package com.example.doit.ui.composables
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -21,6 +23,7 @@ import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -31,11 +34,13 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -176,25 +181,17 @@ fun AddEntryTagSelection(
     onTagClicked: (Tag) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Column(modifier = modifier) {
-        var searchTerm by remember {
-            mutableStateOf("")
-        }
-        val searchedTags by remember(tags) {
-            derivedStateOf {
-                if (searchTerm.isBlank()) {
-                    tags
-                } else {
-                    tags.filter { tag ->
-                        tag.title.contains(
-                            other = searchTerm,
-                            ignoreCase = true
-                        )
-                    }
-                }
-            }
-        }
+    var searchTerm by remember {
+        mutableStateOf("")
+    }
+    val searchedTags by remember(tags) {
+        derivedStateOf { tags.search(searchTerm) }
+    }
+    val hasTags = remember(searchedTags) {
+        searchedTags.isNotEmpty()
+    }
 
+    Column(modifier = modifier) {
         DoItTextField(
             modifier = Modifier.fillMaxWidth(),
             label = stringResource(id = R.string.add_entry_add_tags_title),
@@ -221,29 +218,63 @@ fun AddEntryTagSelection(
 
         Spacer(modifier = Modifier.height(8.dp))
 
-        LazyColumn(
+        Box(
             modifier = Modifier
                 .height(200.dp)
                 .fillMaxWidth()
+                .background(
+                    color = MaterialTheme.colorScheme.inverseOnSurface,
+                    shape = RoundedCornerShape(8.dp)
+                ),
+            contentAlignment = Alignment.Center
         ) {
-            items(
-                items = searchedTags,
-                key = { tag ->
-                    tag.id
+            AnimatedContent(
+                targetState = hasTags,
+                label = "TagListAnimation"
+            ) { innerHasTags ->
+                if (innerHasTags) {
+                    LazyColumn(modifier = Modifier.fillMaxSize()) {
+                        items(
+                            items = searchedTags,
+                            key = { tag ->
+                                tag.id
+                            }
+                        ) { tag ->
+                            TagListEntry(
+                                modifier = Modifier
+                                    .animateItemPlacement()
+                                    .height(64.dp)
+                                    .fillMaxWidth()
+                                    .clip(RoundedCornerShape(8.dp))
+                                    .clickable {
+                                        onTagClicked(tag)
+                                    },
+                                tag = tag
+                            )
+                        }
+                    }
+                } else {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(id = R.string.add_entry_tags_empty),
+                        style = MaterialTheme.typography.labelLarge,
+                        textAlign = TextAlign.Center
+                    )
                 }
-            ) { tag ->
-                TagListEntry(
-                    modifier = Modifier
-                        .animateItemPlacement()
-                        .height(64.dp)
-                        .fillMaxWidth()
-                        .clip(RoundedCornerShape(8.dp))
-                        .clickable {
-                            onTagClicked(tag)
-                        },
-                    tag = tag
-                )
             }
+        }
+    }
+}
+
+private fun List<Tag>.search(term: String): List<Tag> {
+    return if (term.isBlank()) {
+        this
+    } else {
+        this.filter { tag ->
+            tag.title.contains(
+                other = term,
+                ignoreCase = true
+            )
         }
     }
 }
