@@ -4,12 +4,14 @@ import com.example.doit.data.repositories.TagRepositoryImpl
 import com.example.doit.data.repositories.TodoItemRepositoryImpl
 import com.example.doit.domain.repositories.TagRepository
 import com.example.doit.domain.repositories.TodoItemRepository
+import com.example.doit.domain.usecases.DeleteTagsUseCaseImpl
 import com.example.doit.domain.usecases.DeleteTodoItemUseCaseImpl
 import com.example.doit.domain.usecases.GetTagsFlowUseCaseImpl
 import com.example.doit.domain.usecases.GetTagsUseCaseImpl
 import com.example.doit.domain.usecases.GetTodoItemsFlowUseCaseImpl
 import com.example.doit.domain.usecases.SaveTagUseCaseImpl
 import com.example.doit.domain.usecases.SaveTodoItemUseCaseImpl
+import com.example.doit.domain.usecases.interfaces.DeleteTagsUseCase
 import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsUseCase
@@ -65,5 +67,10 @@ abstract class Bindings {
     abstract fun bindGetTagsUseCase(
         impl: GetTagsUseCaseImpl
     ): GetTagsUseCase
+
+    @Binds
+    abstract fun bindDeleteTagsUseCase(
+        impl: DeleteTagsUseCaseImpl
+    ): DeleteTagsUseCase
 
 }

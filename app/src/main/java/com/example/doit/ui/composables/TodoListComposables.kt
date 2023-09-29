@@ -1,11 +1,7 @@
 package com.example.doit.ui.composables
 
-import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -26,7 +22,6 @@ import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
-import androidx.compose.material3.IconButton
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
@@ -76,26 +71,10 @@ fun TodoListScreen(
                 }
             }
 
-            AnimatedVisibility(
-                visible = showDeleteAction,
-                enter = scaleIn(
-                    animationSpec = tween(durationMillis = 100)
-                ),
-                exit = scaleOut(
-                    animationSpec = tween(durationMillis = 100)
-                )
-            ) {
-                IconButton(
-                    onClick = {
-                        viewModel.onDeleteClicked()
-                    }
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.outline_delete_24),
-                        contentDescription = stringResource(id = R.string.todo_list_title)
-                    )
-                }
-            }
+            DeleteToolbarItem(
+                isVisible = showDeleteAction,
+                onClick = viewModel::onDeleteClicked
+            )
         },
         floatingActionButton = {
             TodoListFloatingActionButton(

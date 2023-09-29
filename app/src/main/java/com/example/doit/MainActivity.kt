@@ -64,7 +64,6 @@ class MainActivity : ComponentActivity() {
 
                         composable(TagListScreenDestination) {
                             TagListScreen(
-                                navigator = destinationsNavigator,
                                 onMenuClicked = {
                                     scope.launch {
                                         drawerState.open()

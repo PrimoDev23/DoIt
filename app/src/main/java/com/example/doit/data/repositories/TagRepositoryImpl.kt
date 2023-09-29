@@ -37,4 +37,11 @@ class TagRepositoryImpl @Inject constructor(
             mapper.map(it)
         }
     }
+
+    override suspend fun deleteTags(tags: List<Tag>) {
+        val tagEntities = tags.map {
+            mapper.mapBack(it)
+        }
+        dao.delete(*tagEntities.toTypedArray())
+    }
 }

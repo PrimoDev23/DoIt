@@ -27,11 +27,29 @@ class TodoItemRepositoryImpl @Inject constructor(
         dao.insert(mappedItem)
     }
 
+    override suspend fun saveTodoItems(items: List<TodoItem>) {
+        val mappedItems = items.map {
+            mapper.mapBack(it)
+        }
+
+        dao.insert(*mappedItems.toTypedArray())
+    }
+
     override suspend fun deleteTodoItems(items: List<TodoItem>) {
         val mappedItems = items.map {
             mapper.mapBack(it)
         }
 
         dao.delete(*mappedItems.toTypedArray())
+    }
+
+    override suspend fun getItemsWithTagIds(ids: List<Long>): List<TodoItem> {
+        val entities = ids.flatMap {
+            dao.selectContainsTagId(it)
+        }.distinct()
+
+        return entities.map {
+            mapper.map(it)
+        }
     }
 }

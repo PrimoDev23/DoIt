@@ -2,8 +2,10 @@ package com.example.doit.ui.composables
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -55,14 +57,12 @@ import com.example.doit.ui.composables.modifiers.softClickable
 import com.example.doit.ui.viewmodels.TagListViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
-import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-@OptIn(ExperimentalLayoutApi::class)
+@OptIn(ExperimentalFoundationApi::class)
 @RootNavGraph
 @Destination
 @Composable
 fun TagListScreen(
-    navigator: DestinationsNavigator,
     onMenuClicked: () -> Unit,
     viewModel: TagListViewModel = hiltViewModel()
 ) {
@@ -76,6 +76,18 @@ fun TagListScreen(
         modifier = Modifier.fillMaxSize(),
         onMenuClicked = onMenuClicked,
         title = stringResource(id = R.string.tag_overview_title),
+        actions = {
+            val showDeleteAction by remember {
+                derivedStateOf {
+                    state.selectedTags.isNotEmpty()
+                }
+            }
+
+            DeleteToolbarItem(
+                isVisible = showDeleteAction,
+                onClick = viewModel::onDeleteClicked
+            )
+        },
         floatingActionButton = {
             TagListFloatingActionButton(
                 onClick = {
@@ -96,11 +108,28 @@ fun TagListScreen(
                     tag.id
                 }
             ) { item ->
+                val isSelected by remember {
+                    derivedStateOf {
+                        state.selectedTags.contains(item)
+                    }
+                }
+
                 TagListEntry(
                     modifier = Modifier
                         .height(64.dp)
-                        .fillMaxWidth(),
-                    tag = item
+                        .fillMaxWidth()
+                        .combinedClickable(
+                            onClick = {
+                                if (state.selectedTags.isNotEmpty()) {
+                                    viewModel.onTagSelected(item)
+                                }
+                            },
+                            onLongClick = {
+                                viewModel.onTagSelected(item)
+                            }
+                        ),
+                    tag = item,
+                    selected = isSelected
                 )
             }
         }

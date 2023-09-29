@@ -8,4 +8,5 @@ interface TagRepository {
     fun getTagsFlow(): Flow<List<Tag>>
     suspend fun getTags(): List<Tag>
     suspend fun getTagsByIds(ids: List<Long>): List<Tag>
+    suspend fun deleteTags(tags: List<Tag>)
 }
