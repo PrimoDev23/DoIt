@@ -6,6 +6,5 @@ data class TodoItem(
     val description: String,
     val done: Boolean,
     val tags: List<Tag>,
-    val priority: Priority,
-    val selected: Boolean = false
+    val priority: Priority
 )
