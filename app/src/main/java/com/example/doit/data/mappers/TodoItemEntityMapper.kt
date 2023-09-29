@@ -10,7 +10,11 @@ class TodoItemEntityMapper @Inject constructor(
 ) : BaseMapper<TodoItemEntity, TodoItem>() {
     override suspend fun map(item: TodoItemEntity): TodoItem {
         return with(item) {
-            val tagIds = tags.split(SEPARATOR).map { it.toLong() }
+            val tagIds = if (tags.isEmpty()) {
+                emptyList()
+            } else {
+                tags.split(SEPARATOR).map { it.toLong() }
+            }
             val tags = tagRepository.getTagsByIds(tagIds)
 
             TodoItem(
