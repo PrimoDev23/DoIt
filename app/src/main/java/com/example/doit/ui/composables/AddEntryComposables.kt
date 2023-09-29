@@ -5,10 +5,8 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -296,82 +294,31 @@ fun PrioritySelection(
     onPriorityChanged: (Priority) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    InputTitle(text = stringResource(id = R.string.add_entry_priority_title))
+    Column(modifier = modifier) {
+        InputTitle(text = stringResource(id = R.string.add_entry_priority_title))
 
-    Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(8.dp))
 
-    Column(
-        modifier = modifier,
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        val baseModifier = Modifier
-            .weight(1f)
-            .height(48.dp)
-
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+        VerticalGrid(
+            modifier = Modifier.fillMaxWidth(),
+            columns = 2,
+            items = Priority.entries
+        ) { item ->
             PriorityItem(
-                modifier = baseModifier,
-                selected = priority == Priority.NONE,
+                modifier = Modifier
+                    .height(48.dp)
+                    .fillMaxWidth(),
+                selected = priority == item,
                 icon = {
                     Icon(
                         painter = painterResource(id = R.drawable.outline_flag_24),
                         contentDescription = null,
-                        tint = Priority.NONE.color
+                        tint = item.color
                     )
                 },
-                text = stringResource(id = Priority.NONE.title),
+                text = stringResource(id = item.title),
                 onClick = {
-                    onPriorityChanged(Priority.NONE)
-                }
-            )
-
-            PriorityItem(
-                modifier = baseModifier,
-                selected = priority == Priority.LOW,
-                icon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.outline_flag_24),
-                        contentDescription = null,
-                        tint = Priority.LOW.color
-                    )
-                },
-                text = stringResource(id = Priority.LOW.title),
-                onClick = {
-                    onPriorityChanged(Priority.LOW)
-                }
-            )
-        }
-
-        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
-            PriorityItem(
-                modifier = baseModifier,
-                selected = priority == Priority.MEDIUM,
-                icon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.outline_flag_24),
-                        contentDescription = null,
-                        tint = Priority.MEDIUM.color
-                    )
-                },
-                text = stringResource(id = Priority.MEDIUM.title),
-                onClick = {
-                    onPriorityChanged(Priority.MEDIUM)
-                }
-            )
-
-            PriorityItem(
-                modifier = baseModifier,
-                selected = priority == Priority.HIGH,
-                icon = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.outline_flag_24),
-                        contentDescription = null,
-                        tint = Priority.HIGH.color
-                    )
-                },
-                text = stringResource(id = Priority.HIGH.title),
-                onClick = {
-                    onPriorityChanged(Priority.HIGH)
+                    onPriorityChanged(item)
                 }
             )
         }
