@@ -83,6 +83,7 @@ fun TodoListScreen(
                     val id = state.selectedItems.first().id
 
                     navigator.navigate(AddEntryScreenDestination(id = id))
+                    viewModel.onEditClicked()
                 }
             )
 

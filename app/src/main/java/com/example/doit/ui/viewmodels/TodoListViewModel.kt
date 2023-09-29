@@ -73,6 +73,12 @@ class TodoListViewModel @Inject constructor(
             }
         }
     }
+
+    fun onEditClicked() {
+        _state.update {
+            it.copy(selectedItems = emptyList())
+        }
+    }
 }
 
 data class TodoListViewModelState(
