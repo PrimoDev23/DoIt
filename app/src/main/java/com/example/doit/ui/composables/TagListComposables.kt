@@ -48,6 +48,7 @@ import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
@@ -96,42 +97,69 @@ fun TagListScreen(
             )
         }
     ) {
-        LazyColumn(
-            modifier = Modifier
+        val hasTags by remember {
+            derivedStateOf {
+                state.items.isNotEmpty()
+            }
+        }
+
+        AnimatedContent(
+            targetState = hasTags,
+            label = "TagListAnimation"
+        ) { innerHasTags ->
+            val modifier = Modifier
                 .padding(it)
-                .fillMaxSize(),
-            contentPadding = PaddingValues(vertical = 16.dp)
-        ) {
-            items(
-                items = state.items,
-                key = { tag ->
-                    tag.id
-                }
-            ) { item ->
-                val isSelected by remember {
-                    derivedStateOf {
-                        state.selectedTags.contains(item)
+                .fillMaxSize()
+
+            if (innerHasTags) {
+                LazyColumn(
+                    modifier = modifier,
+                    contentPadding = PaddingValues(vertical = 16.dp)
+                ) {
+                    items(
+                        items = state.items,
+                        key = { tag ->
+                            tag.id
+                        }
+                    ) { item ->
+                        val isSelected by remember {
+                            derivedStateOf {
+                                state.selectedTags.contains(item)
+                            }
+                        }
+
+                        TagListEntry(
+                            modifier = Modifier
+                                .animateItemPlacement()
+                                .height(64.dp)
+                                .fillMaxWidth()
+                                .combinedClickable(
+                                    onClick = {
+                                        if (state.selectedTags.isNotEmpty()) {
+                                            viewModel.onTagSelected(item)
+                                        }
+                                    },
+                                    onLongClick = {
+                                        viewModel.onTagSelected(item)
+                                    }
+                                ),
+                            tag = item,
+                            selected = isSelected
+                        )
                     }
                 }
-
-                TagListEntry(
-                    modifier = Modifier
-                        .animateItemPlacement()
-                        .height(64.dp)
-                        .fillMaxWidth()
-                        .combinedClickable(
-                            onClick = {
-                                if (state.selectedTags.isNotEmpty()) {
-                                    viewModel.onTagSelected(item)
-                                }
-                            },
-                            onLongClick = {
-                                viewModel.onTagSelected(item)
-                            }
-                        ),
-                    tag = item,
-                    selected = isSelected
-                )
+            } else {
+                Box(
+                    modifier = modifier,
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(
+                        modifier = Modifier.fillMaxWidth(),
+                        text = stringResource(id = R.string.tag_list_empty_text),
+                        style = MaterialTheme.typography.labelLarge,
+                        textAlign = TextAlign.Center
+                    )
+                }
             }
         }
     }

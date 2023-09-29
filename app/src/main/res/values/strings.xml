@@ -29,4 +29,5 @@
     <string name="general_priority_low">Low</string>
     <string name="general_priority_medium">Medium</string>
     <string name="general_priority_high">High</string>
+    <string name="tag_list_empty_text">There are currently no tags…</string>
 </resources>
