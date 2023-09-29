@@ -5,7 +5,7 @@ import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.repositories.TagRepository
 import javax.inject.Inject
 
-class TodoItemEntityMapper @Inject constructor(
+class TodoItemMapper @Inject constructor(
     private val tagRepository: TagRepository
 ) : BaseMapper<TodoItemEntity, TodoItem>() {
     override suspend fun map(item: TodoItemEntity): TodoItem {
@@ -22,7 +22,8 @@ class TodoItemEntityMapper @Inject constructor(
                 title = title,
                 description = description,
                 done = done,
-                tags = tags
+                tags = tags,
+                priority = priority
             )
         }
     }
@@ -36,7 +37,8 @@ class TodoItemEntityMapper @Inject constructor(
                 title = title,
                 description = description,
                 done = done,
-                tags = ids.joinToString(SEPARATOR)
+                tags = ids.joinToString(SEPARATOR),
+                priority = priority
             )
         }
     }

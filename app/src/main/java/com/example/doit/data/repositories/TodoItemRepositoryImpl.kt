@@ -1,7 +1,7 @@
 package com.example.doit.data.repositories
 
 import com.example.doit.data.daos.TodoItemDao
-import com.example.doit.data.mappers.TodoItemEntityMapper
+import com.example.doit.data.mappers.TodoItemMapper
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.repositories.TodoItemRepository
 import kotlinx.coroutines.flow.Flow
@@ -10,7 +10,7 @@ import javax.inject.Inject
 
 class TodoItemRepositoryImpl @Inject constructor(
     private val dao: TodoItemDao,
-    private val mapper: TodoItemEntityMapper
+    private val mapper: TodoItemMapper
 ) : TodoItemRepository {
 
     override fun getItemsFlow(): Flow<List<TodoItem>> {

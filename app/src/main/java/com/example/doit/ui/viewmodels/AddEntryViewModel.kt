@@ -2,6 +2,7 @@ package com.example.doit.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.usecases.interfaces.GetTagsUseCase
@@ -62,6 +63,10 @@ class AddEntryViewModel @Inject constructor(
         toggleTagSelection(tag)
     }
 
+    fun onPriorityChanged(priority: Priority) {
+        updatePriority(priority)
+    }
+
     private fun toggleTagSelection(tag: Tag) {
         _state.update {
             val tags = it.tags.toMutableList()
@@ -114,18 +119,26 @@ class AddEntryViewModel @Inject constructor(
         }
     }
 
+    private fun updatePriority(priority: Priority) {
+        _state.update {
+            it.copy(priority = priority)
+        }
+    }
+
 }
 
 @Immutable
 data class AddEntryState(
     val title: String = "",
     val description: String = "",
-    val tags: List<Tag> = emptyList()
+    val tags: List<Tag> = emptyList(),
+    val priority: Priority = Priority.NONE
 ) {
     fun isDefault(): Boolean {
         return title.isBlank() &&
                 description.isBlank() &&
-                tags.none { it.selected }
+                tags.none { it.selected } &&
+                priority == Priority.NONE
     }
 
     fun toTodoItem(): TodoItem {
@@ -134,7 +147,8 @@ data class AddEntryState(
             title = title,
             description = description,
             done = false,
-            tags = tags.filter { it.selected }
+            tags = tags.filter { it.selected },
+            priority = priority
         )
     }
 

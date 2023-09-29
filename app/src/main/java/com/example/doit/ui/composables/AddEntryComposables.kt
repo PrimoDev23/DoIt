@@ -5,8 +5,10 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -45,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.doit.R
+import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.Tag
 import com.example.doit.ui.viewmodels.AddEntryEvent
 import com.example.doit.ui.viewmodels.AddEntryViewModel
@@ -133,6 +136,14 @@ fun AddEntryScreen(
                 modifier = Modifier.fillMaxWidth(),
                 tags = state.tags,
                 onTagClicked = viewModel::onTagClicked
+            )
+
+            Spacer(modifier = Modifier.height(24.dp))
+
+            PrioritySelection(
+                modifier = Modifier.fillMaxWidth(),
+                priority = state.priority,
+                onPriorityChanged = viewModel::onPriorityChanged
             )
         }
     }
@@ -274,6 +285,94 @@ private fun List<Tag>.search(term: String): List<Tag> {
             tag.title.contains(
                 other = term,
                 ignoreCase = true
+            )
+        }
+    }
+}
+
+@Composable
+fun PrioritySelection(
+    priority: Priority,
+    onPriorityChanged: (Priority) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    InputTitle(text = stringResource(id = R.string.add_entry_priority_title))
+
+    Spacer(modifier = Modifier.height(8.dp))
+
+    Column(
+        modifier = modifier,
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        val baseModifier = Modifier
+            .weight(1f)
+            .height(48.dp)
+
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            PriorityItem(
+                modifier = baseModifier,
+                selected = priority == Priority.NONE,
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.outline_flag_24),
+                        contentDescription = null,
+                        tint = Priority.NONE.color
+                    )
+                },
+                text = stringResource(id = R.string.add_entry_priority_none),
+                onClick = {
+                    onPriorityChanged(Priority.NONE)
+                }
+            )
+
+            PriorityItem(
+                modifier = baseModifier,
+                selected = priority == Priority.LOW,
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.outline_flag_24),
+                        contentDescription = null,
+                        tint = Priority.LOW.color
+                    )
+                },
+                text = stringResource(id = R.string.add_entry_priority_low),
+                onClick = {
+                    onPriorityChanged(Priority.LOW)
+                }
+            )
+        }
+
+        Row(horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+            PriorityItem(
+                modifier = baseModifier,
+                selected = priority == Priority.MEDIUM,
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.outline_flag_24),
+                        contentDescription = null,
+                        tint = Priority.MEDIUM.color
+                    )
+                },
+                text = stringResource(id = R.string.add_entry_priority_medium),
+                onClick = {
+                    onPriorityChanged(Priority.MEDIUM)
+                }
+            )
+
+            PriorityItem(
+                modifier = baseModifier,
+                selected = priority == Priority.HIGH,
+                icon = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.outline_flag_24),
+                        contentDescription = null,
+                        tint = Priority.HIGH.color
+                    )
+                },
+                text = stringResource(id = R.string.add_entry_priority_high),
+                onClick = {
+                    onPriorityChanged(Priority.HIGH)
+                }
             )
         }
     }

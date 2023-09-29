@@ -24,4 +24,9 @@
     <string name="add_entry_tag_search_placeholder">Search for tags...</string>
     <string name="general_clear_textfield">Clear text</string>
     <string name="add_entry_tags_empty">No entries.</string>
+    <string name="add_entry_priority_title">Priority</string>
+    <string name="add_entry_priority_none">None</string>
+    <string name="add_entry_priority_low">Low</string>
+    <string name="add_entry_priority_medium">Medium</string>
+    <string name="add_entry_priority_high">High</string>
 </resources>
