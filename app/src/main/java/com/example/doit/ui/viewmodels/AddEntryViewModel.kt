@@ -32,7 +32,7 @@ class AddEntryViewModel @Inject constructor(
     private val navArgs: AddEntryNavArgs = savedStateHandle.navArgs()
 
     private val id: Long = navArgs.id
-    private var done = false
+    private var existingItem: TodoItem? = null
 
     private val _events = Channel<AddEntryEvent>()
     val events = _events.receiveAsFlow()
@@ -55,7 +55,7 @@ class AddEntryViewModel @Inject constructor(
     private suspend fun initData() {
         if (id != 0L) {
             getTodoItemUseCase(id)?.let { item ->
-                done = item.done
+                existingItem = item
 
                 _state.update { state ->
                     val newTags = state.tags.map { tag ->
@@ -87,7 +87,7 @@ class AddEntryViewModel @Inject constructor(
 
     fun onBackClicked() {
         viewModelScope.launch {
-            if (!state.value.isDefault()) {
+            if (state.value.hasChanges()) {
                 sendShowDismissDialog()
             } else {
                 sendPopBackStack()
@@ -130,10 +130,7 @@ class AddEntryViewModel @Inject constructor(
 
     fun onSaveClicked() {
         viewModelScope.launch {
-            val todoItem = state.value.toTodoItem(
-                id = id,
-                done = done
-            )
+            val todoItem = state.value.toTodoItem()
 
             saveTodoItemUseCase.save(todoItem)
             sendPopBackStack()
@@ -172,6 +169,36 @@ class AddEntryViewModel @Inject constructor(
         }
     }
 
+    private fun AddEntryState.toTodoItem(): TodoItem {
+        return TodoItem(
+            id = id,
+            title = title,
+            description = description,
+            done = existingItem?.done ?: false,
+            tags = tags.filter { it.selected },
+            priority = priority
+        )
+    }
+
+    fun AddEntryState.hasChanges(): Boolean {
+        val existingItem = this@AddEntryViewModel.existingItem
+
+        return if (existingItem != null) {
+            val selectedTags = tags.filter {
+                it.selected
+            }
+
+            title != existingItem.title ||
+                    description != existingItem.description ||
+                    selectedTags != existingItem.tags ||
+                    priority != existingItem.priority
+        } else {
+            title.isNotBlank() ||
+                    description.isNotBlank() ||
+                    tags.any { it.selected } ||
+                    priority != Priority.NONE
+        }
+    }
 }
 
 @Immutable
@@ -181,27 +208,6 @@ data class AddEntryState(
     val tags: List<Tag> = emptyList(),
     val priority: Priority = Priority.NONE
 ) {
-    fun isDefault(): Boolean {
-        return title.isBlank() &&
-                description.isBlank() &&
-                tags.none { it.selected } &&
-                priority == Priority.NONE
-    }
-
-    fun toTodoItem(
-        id: Long,
-        done: Boolean
-    ): TodoItem {
-        return TodoItem(
-            id = id,
-            title = title,
-            description = description,
-            done = done,
-            tags = tags.filter { it.selected },
-            priority = priority
-        )
-    }
-
     fun isValid(): Boolean {
         return this.title.isNotBlank()
     }
