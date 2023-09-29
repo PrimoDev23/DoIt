@@ -116,6 +116,7 @@ fun TagListScreen(
 
                 TagListEntry(
                     modifier = Modifier
+                        .animateItemPlacement()
                         .height(64.dp)
                         .fillMaxWidth()
                         .combinedClickable(
