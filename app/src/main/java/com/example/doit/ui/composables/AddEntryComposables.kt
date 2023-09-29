@@ -319,7 +319,7 @@ fun PrioritySelection(
                         tint = Priority.NONE.color
                     )
                 },
-                text = stringResource(id = R.string.add_entry_priority_none),
+                text = stringResource(id = Priority.NONE.title),
                 onClick = {
                     onPriorityChanged(Priority.NONE)
                 }
@@ -335,7 +335,7 @@ fun PrioritySelection(
                         tint = Priority.LOW.color
                     )
                 },
-                text = stringResource(id = R.string.add_entry_priority_low),
+                text = stringResource(id = Priority.LOW.title),
                 onClick = {
                     onPriorityChanged(Priority.LOW)
                 }
@@ -353,7 +353,7 @@ fun PrioritySelection(
                         tint = Priority.MEDIUM.color
                     )
                 },
-                text = stringResource(id = R.string.add_entry_priority_medium),
+                text = stringResource(id = Priority.MEDIUM.title),
                 onClick = {
                     onPriorityChanged(Priority.MEDIUM)
                 }
@@ -369,7 +369,7 @@ fun PrioritySelection(
                         tint = Priority.HIGH.color
                     )
                 },
-                text = stringResource(id = R.string.add_entry_priority_high),
+                text = stringResource(id = Priority.HIGH.title),
                 onClick = {
                     onPriorityChanged(Priority.HIGH)
                 }

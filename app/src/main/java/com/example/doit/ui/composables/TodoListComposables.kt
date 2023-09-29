@@ -47,6 +47,7 @@ import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.doit.R
+import com.example.doit.domain.models.Priority
 import com.example.doit.ui.composables.destinations.AddEntryScreenDestination
 import com.example.doit.ui.viewmodels.TodoListViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -137,6 +138,7 @@ fun TodoListScreen(
                         .animateItemPlacement()
                         .fillMaxWidth(),
                     backgroundColor = backgroundColor,
+                    priority = item.priority,
                     done = item.done,
                     onDoneChanged = { done ->
                         viewModel.onDoneChanged(item, done)
@@ -161,6 +163,7 @@ fun TodoListScreen(
 @Composable
 fun TodoItemListEntry(
     backgroundColor: Color,
+    priority: Priority,
     done: Boolean,
     onDoneChanged: (Boolean) -> Unit,
     title: String,
@@ -191,6 +194,14 @@ fun TodoItemListEntry(
                 .fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
+            Icon(
+                painter = painterResource(id = R.drawable.outline_flag_24),
+                contentDescription = stringResource(id = priority.title),
+                tint = priority.color
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
             Column(modifier = Modifier.weight(1f)) {
                 val contentColor = LocalContentColor.current
                 val strikethroughProgress by animateFloatAsState(
