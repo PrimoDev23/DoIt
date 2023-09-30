@@ -37,6 +37,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -59,6 +60,7 @@ import kotlinx.coroutines.flow.collectLatest
 @Destination(navArgsDelegate = AddEntryNavArgs::class)
 @Composable
 fun AddEntryScreen(
+    navArgs: AddEntryNavArgs,
     navigator: DestinationsNavigator,
     viewModel: AddEntryViewModel = hiltViewModel()
 ) {
@@ -110,8 +112,18 @@ fun AddEntryScreen(
                 .fillMaxSize()
                 .verticalScroll(state = rememberScrollState())
         ) {
+            val focusRequester = rememberFocusRequester()
+
+            LaunchedEffect(true) {
+                if (navArgs.id == 0L) {
+                    focusRequester.requestFocus()
+                }
+            }
+
             DoItTextField(
-                modifier = Modifier.fillMaxWidth(),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(focusRequester),
                 value = state.title,
                 onValueChange = viewModel::onTitleChanged,
                 label = stringResource(id = R.string.add_entry_title_title),

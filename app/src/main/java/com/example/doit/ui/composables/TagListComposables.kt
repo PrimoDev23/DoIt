@@ -35,6 +35,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -43,6 +44,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalConfiguration
@@ -270,7 +272,14 @@ fun CreateTagDialog(
                         .weight(1f)
                         .verticalScroll(state = rememberScrollState())
                 ) {
+                    val focusRequester = rememberFocusRequester()
+
+                    LaunchedEffect(true) {
+                        focusRequester.requestFocus()
+                    }
+
                     DoItTextField(
+                        modifier = modifier.focusRequester(focusRequester),
                         label = stringResource(id = R.string.create_tag_dialog_name_title),
                         value = tagName,
                         onValueChange = {
