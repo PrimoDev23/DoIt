@@ -39,7 +39,7 @@ fun PriorityItem(
     Row(
         modifier = modifier
             .border(
-                width = 1.dp,
+                width = 2.dp,
                 color = borderColor,
                 shape = shape
             )
