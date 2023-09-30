@@ -2,8 +2,10 @@ package com.example.doit.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
+import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -18,17 +20,21 @@ import javax.inject.Inject
 @HiltViewModel
 class TodoListViewModel @Inject constructor(
     getTodoItemsFlowUseCase: GetTodoItemsFlowUseCase,
+    getTagsFlowUseCase: GetTagsFlowUseCase,
     private val saveTodoItemUseCase: SaveTodoItemUseCase,
     private val deleteTodoItemsUseCase: DeleteTodoItemsUseCase
 ) : ViewModel() {
 
     private val todoItems = getTodoItemsFlowUseCase.getItemFlow()
+    private val tags = getTagsFlowUseCase.getFlow()
 
     private val _state = MutableStateFlow(TodoListViewModelState())
-    val state = combine(_state, todoItems) { state, items ->
+    val state = combine(_state, todoItems, tags) { state, items, tags ->
         TodoListState(
             items = items,
-            selectedItems = state.selectedItems
+            selectedItems = state.selectedItems,
+            tags = tags,
+            selectedTag = state.selectedTag
         )
     }
         .stateIn(
@@ -36,9 +42,17 @@ class TodoListViewModel @Inject constructor(
             started = SharingStarted.Eagerly,
             initialValue = TodoListState(
                 items = emptyList(),
-                selectedItems = emptyList()
+                selectedItems = emptyList(),
+                tags = emptyList(),
+                selectedTag = null
             )
         )
+
+    fun onTagFilterClicked(tag: Tag?) {
+        _state.update {
+            it.copy(selectedTag = tag)
+        }
+    }
 
     fun onItemSelected(item: TodoItem) {
         _state.update {
@@ -82,10 +96,13 @@ class TodoListViewModel @Inject constructor(
 }
 
 data class TodoListViewModelState(
-    val selectedItems: List<TodoItem> = emptyList()
+    val selectedItems: List<TodoItem> = emptyList(),
+    val selectedTag: Tag? = null
 )
 
 data class TodoListState(
     val items: List<TodoItem>,
-    val selectedItems: List<TodoItem>
+    val selectedItems: List<TodoItem>,
+    val tags: List<Tag>,
+    val selectedTag: Tag?
 )

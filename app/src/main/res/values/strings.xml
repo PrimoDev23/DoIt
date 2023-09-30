@@ -31,4 +31,6 @@
     <string name="general_priority_high">High</string>
     <string name="tag_list_empty_text">There are currently no tags…</string>
     <string name="general_edit">Edit</string>
+    <string name="todo_list_all_tags">All Tags</string>
+    <string name="todo_list_empty_text">There are no items to be displayed…</string>
 </resources>

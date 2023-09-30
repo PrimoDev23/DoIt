@@ -1,5 +1,6 @@
 package com.example.doit.ui.composables
 
+import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -7,6 +8,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
@@ -16,10 +18,13 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.ElevatedCard
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
@@ -49,7 +54,9 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 
-@OptIn(ExperimentalFoundationApi::class)
+private const val ALL_TAGS_KEY = "allTags"
+
+@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @RootNavGraph(start = true)
 @Destination
 @Composable
@@ -100,55 +107,127 @@ fun TodoListScreen(
             )
         }
     ) {
-        LazyColumn(
+        Column(
             modifier = Modifier
                 .padding(it)
-                .fillMaxSize(),
-            contentPadding = PaddingValues(16.dp),
-            verticalArrangement = Arrangement.spacedBy(16.dp)
+                .fillMaxSize()
         ) {
-            items(
-                items = state.items,
-                key = { item ->
-                    item.id
-                }
-            ) { item ->
-                val selected by remember {
-                    derivedStateOf {
-                        state.selectedItems.contains(item)
-                    }
-                }
-
-                val backgroundColor by animateColorAsState(
-                    targetValue = if (selected) {
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+            val filteredItems by remember {
+                derivedStateOf {
+                    if (state.selectedTag == null) {
+                        state.items
                     } else {
-                        Color.Unspecified
-                    },
-                    label = "TodoItemBackgroundAnimation"
-                )
-
-                TodoItemListEntry(
-                    modifier = Modifier
-                        .animateItemPlacement()
-                        .fillMaxWidth(),
-                    backgroundColor = backgroundColor,
-                    priority = item.priority,
-                    done = item.done,
-                    onDoneChanged = { done ->
-                        viewModel.onDoneChanged(item, done)
-                    },
-                    title = item.title,
-                    description = item.description,
-                    onClick = {
-                        if (state.selectedItems.isNotEmpty()) {
-                            viewModel.onItemSelected(item)
+                        state.items.filter { item ->
+                            item.tags.contains(state.selectedTag)
                         }
-                    },
-                    onLongClick = {
-                        viewModel.onItemSelected(item)
                     }
-                )
+                }
+            }
+            val hasItems = remember(filteredItems) {
+                filteredItems.isNotEmpty()
+            }
+
+            LazyRow(
+                modifier = Modifier.fillMaxWidth(),
+                contentPadding = PaddingValues(horizontal = 16.dp),
+                verticalAlignment = Alignment.CenterVertically,
+                horizontalArrangement = Arrangement.spacedBy(8.dp)
+            ) {
+                item(key = ALL_TAGS_KEY) {
+                    FilterChip(
+                        selected = state.selectedTag == null,
+                        onClick = {
+                            viewModel.onTagFilterClicked(null)
+                        },
+                        label = {
+                            Text(text = stringResource(id = R.string.todo_list_all_tags))
+                        }
+                    )
+                }
+
+                items(
+                    items = state.tags,
+                    key = { tag ->
+                        tag.id
+                    }
+                ) { item ->
+                    FilterChip(
+                        selected = state.selectedTag == item,
+                        onClick = {
+                            viewModel.onTagFilterClicked(item)
+                        },
+                        label = {
+                            Text(text = item.title)
+                        }
+                    )
+                }
+            }
+
+            AnimatedContent(
+                modifier = Modifier
+                    .weight(1f)
+                    .fillMaxWidth(),
+                targetState = hasItems,
+                label = "TodoListAnimation"
+            ) { innerHasItems ->
+                if (innerHasItems) {
+                    LazyColumn(
+                        modifier = Modifier.fillMaxSize(),
+                        contentPadding = PaddingValues(16.dp),
+                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                    ) {
+                        items(
+                            items = filteredItems,
+                            key = { item ->
+                                item.id
+                            }
+                        ) { item ->
+                            val selected by remember {
+                                derivedStateOf {
+                                    state.selectedItems.contains(item)
+                                }
+                            }
+
+                            val backgroundColor by animateColorAsState(
+                                targetValue = if (selected) {
+                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                                } else {
+                                    Color.Unspecified
+                                },
+                                label = "TodoItemBackgroundAnimation"
+                            )
+
+                            TodoItemListEntry(
+                                modifier = Modifier
+                                    .animateItemPlacement()
+                                    .fillMaxWidth(),
+                                backgroundColor = backgroundColor,
+                                priority = item.priority,
+                                done = item.done,
+                                onDoneChanged = { done ->
+                                    viewModel.onDoneChanged(item, done)
+                                },
+                                title = item.title,
+                                description = item.description,
+                                onClick = {
+                                    if (state.selectedItems.isNotEmpty()) {
+                                        viewModel.onItemSelected(item)
+                                    }
+                                },
+                                onLongClick = {
+                                    viewModel.onItemSelected(item)
+                                }
+                            )
+                        }
+                    }
+                } else {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(text = stringResource(id = R.string.todo_list_empty_text))
+                    }
+                }
             }
         }
     }
