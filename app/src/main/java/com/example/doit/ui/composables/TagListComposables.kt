@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -54,7 +55,6 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.doit.R
-import com.example.doit.ui.composables.modifiers.softClickable
 import com.example.doit.ui.viewmodels.TagListViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -363,7 +363,7 @@ fun CreateTagColorBubble(
                 shape = shape
             )
             .clip(shape)
-            .softClickable {
+            .clickable {
                 onClick(color)
             },
         contentAlignment = Alignment.Center
