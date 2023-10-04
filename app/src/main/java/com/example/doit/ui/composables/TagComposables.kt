@@ -21,20 +21,21 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.doit.R
-import com.example.doit.domain.models.Tag
 
 @Composable
 fun TagListEntry(
-    tag: Tag,
+    title: String,
+    color: Color,
     modifier: Modifier = Modifier,
     selected: Boolean = false,
+    highlighted: Boolean = false,
     contentPadding: PaddingValues = PaddingValues(
         horizontal = 16.dp,
         vertical = 8.dp
     )
 ) {
     val backgroundColor by animateColorAsState(
-        targetValue = if (selected) {
+        targetValue = if (highlighted) {
             MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
         } else {
             Color.Unspecified
@@ -49,20 +50,20 @@ fun TagListEntry(
         verticalAlignment = Alignment.CenterVertically
     ) {
         Crossfade(
-            targetState = tag.selected,
+            targetState = selected,
             label = "LabelSelectionAnimation"
         ) { selected ->
             if (selected) {
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_label_24),
                     contentDescription = null,
-                    tint = tag.color
+                    tint = color
                 )
             } else {
                 Icon(
                     painter = painterResource(id = R.drawable.outline_label_24),
                     contentDescription = null,
-                    tint = tag.color
+                    tint = color
                 )
             }
         }
@@ -71,7 +72,7 @@ fun TagListEntry(
 
         Text(
             modifier = Modifier.fillMaxWidth(),
-            text = tag.title,
+            text = title,
             maxLines = 1,
             overflow = TextOverflow.Ellipsis
         )

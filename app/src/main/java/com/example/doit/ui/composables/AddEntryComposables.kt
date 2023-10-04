@@ -271,7 +271,9 @@ fun AddEntryTagSelection(
                                     .clickable {
                                         onTagClicked(tag)
                                     },
-                                tag = tag
+                                title = tag.title,
+                                color = tag.color,
+                                selected = tag.selected
                             )
                         }
                     }

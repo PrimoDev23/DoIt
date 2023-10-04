@@ -145,8 +145,9 @@ fun TagListScreen(
                                         viewModel.onTagSelected(item)
                                     }
                                 ),
-                            tag = item,
-                            selected = isSelected
+                            title = item.title,
+                            color = item.color,
+                            highlighted = isSelected
                         )
                     }
                 }
