@@ -2,6 +2,7 @@ package com.example.doit.ui.viewmodels
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
@@ -35,7 +36,8 @@ class TodoListViewModel @Inject constructor(
             items = items,
             selectedItems = state.selectedItems,
             tags = tags,
-            selectedTag = state.selectedTag
+            selectedTag = state.selectedTag,
+            selectedPriority = state.selectedPriority
         )
     }
         .stateIn(
@@ -45,7 +47,8 @@ class TodoListViewModel @Inject constructor(
                 items = emptyList(),
                 selectedItems = emptyList(),
                 tags = emptyList(),
-                selectedTag = null
+                selectedTag = null,
+                selectedPriority = null
             )
         )
 
@@ -70,6 +73,12 @@ class TodoListViewModel @Inject constructor(
     fun onTagFilterClicked(tag: Tag?) {
         _state.update {
             it.copy(selectedTag = tag)
+        }
+    }
+
+    fun onPrioritySelected(priority: Priority?) {
+        _state.update {
+            it.copy(selectedPriority = priority)
         }
     }
 
@@ -116,12 +125,14 @@ class TodoListViewModel @Inject constructor(
 
 data class TodoListViewModelState(
     val selectedItems: List<TodoItem> = emptyList(),
-    val selectedTag: Tag? = null
+    val selectedTag: Tag? = null,
+    val selectedPriority: Priority? = null
 )
 
 data class TodoListState(
     val items: List<TodoItem>,
     val selectedItems: List<TodoItem>,
     val tags: List<Tag>,
-    val selectedTag: Tag?
+    val selectedTag: Tag?,
+    val selectedPriority: Priority?
 )

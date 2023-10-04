@@ -34,4 +34,6 @@
     <string name="todo_list_all_tags">All Tags</string>
     <string name="todo_list_empty_text">There are no items to be displayed…</string>
     <string name="todo_list_tags_filter_title">Tags</string>
+    <string name="todo_list_priority_filter_title">Priorities</string>
+    <string name="todo_list_all_priorities">All Priorities</string>
 </resources>
