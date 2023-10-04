@@ -448,7 +448,7 @@ fun TodoListTagFilterBottomSheet(
                         }
                     }
 
-                    Box(
+                    Row(
                         modifier = Modifier
                             .height(56.dp)
                             .fillMaxWidth()
@@ -460,18 +460,22 @@ fun TodoListTagFilterBottomSheet(
                             .clickable {
                                 onTagClicked(null)
                                 onDismiss()
-                            },
-                        contentAlignment = Alignment.CenterStart
+                            }
+                            .padding(
+                                horizontal = 16.dp,
+                                vertical = 8.dp
+                            ),
+                        verticalAlignment = Alignment.CenterVertically
                     ) {
+                        Icon(
+                            painter = painterResource(id = R.drawable.outline_label_24),
+                            contentDescription = null
+                        )
+
+                        Spacer(modifier = Modifier.width(16.dp))
+
                         Text(
-                            modifier = Modifier
-                                .padding(
-                                    start = 56.dp,
-                                    top = 8.dp,
-                                    end = 16.dp,
-                                    bottom = 8.dp
-                                )
-                                .fillMaxWidth(),
+                            modifier = Modifier.fillMaxWidth(),
                             text = stringResource(id = R.string.todo_list_all_tags)
                         )
                     }
