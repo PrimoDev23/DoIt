@@ -163,7 +163,9 @@ fun TodoListScreen(
                 FilterChip(
                     selected = tagFilterSelected,
                     onClick = {
-                        showBottomSheet = true
+                        if (state.tags.isNotEmpty()) {
+                            showBottomSheet = true
+                        }
                     },
                     label = {
                         val tag = state.selectedTag
