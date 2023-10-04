@@ -2,7 +2,6 @@ package com.example.doit.ui.composables
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.animation.animateContentSize
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
@@ -151,7 +150,6 @@ fun TodoListScreen(
                 }
 
                 FilterChip(
-                    modifier = Modifier.animateContentSize(),
                     selected = tagFilterSelected,
                     onClick = {
                         if (state.tags.isNotEmpty()) {
@@ -175,7 +173,6 @@ fun TodoListScreen(
                 )
 
                 FilterChip(
-                    modifier = Modifier.animateContentSize(),
                     selected = priorityFilterSelected,
                     onClick = {
                         showPrioFilterBottomSheet = true
@@ -187,14 +184,6 @@ fun TodoListScreen(
                             text = stringResource(
                                 id = priority?.title ?: R.string.todo_list_all_priorities
                             )
-                        )
-                    },
-                    leadingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.outline_flag_24),
-                            contentDescription = null,
-                            tint = state.selectedPriority?.color
-                                ?: MaterialTheme.colorScheme.onSurface
                         )
                     },
                     trailingIcon = {
