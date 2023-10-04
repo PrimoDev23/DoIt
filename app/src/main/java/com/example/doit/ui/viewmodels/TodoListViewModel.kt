@@ -11,6 +11,7 @@ import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -47,6 +48,24 @@ class TodoListViewModel @Inject constructor(
                 selectedTag = null
             )
         )
+
+    init {
+        viewModelScope.launch {
+            updateSelectedTag()
+        }
+    }
+
+    private suspend fun updateSelectedTag() {
+        tags.collectLatest {
+            val selectedTag = _state.value.selectedTag
+
+            if (selectedTag != null && !it.contains(selectedTag)) {
+                _state.update { state ->
+                    state.copy(selectedTag = null)
+                }
+            }
+        }
+    }
 
     fun onTagFilterClicked(tag: Tag?) {
         _state.update {
