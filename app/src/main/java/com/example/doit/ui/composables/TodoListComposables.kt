@@ -131,6 +131,16 @@ fun TodoListScreen(
                 .padding(it)
                 .fillMaxSize()
         ) {
+            val tagFilterSelected by remember {
+                derivedStateOf {
+                    state.selectedTag != null
+                }
+            }
+            val priorityFilterSelected by remember {
+                derivedStateOf {
+                    state.selectedPriority != null
+                }
+            }
             val filteredItems by remember {
                 derivedStateOf {
                     state.items.applyFilter(state.selectedTag, state.selectedPriority)
@@ -140,69 +150,24 @@ fun TodoListScreen(
                 filteredItems.isNotEmpty()
             }
 
-            Row(
+            TodoListSettingsRow(
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
                     .horizontalScroll(state = rememberScrollState()),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                val tagFilterSelected by remember {
-                    derivedStateOf {
-                        state.selectedTag != null
+                tagFilterSelected = tagFilterSelected,
+                onTagFilterClicked = {
+                    if (state.tags.isNotEmpty()) {
+                        showTagFilterBottomSheet = true
                     }
-                }
-                val priorityFilterSelected by remember {
-                    derivedStateOf {
-                        state.selectedPriority != null
-                    }
-                }
-
-                FilterChip(
-                    selected = tagFilterSelected,
-                    onClick = {
-                        if (state.tags.isNotEmpty()) {
-                            showTagFilterBottomSheet = true
-                        }
-                    },
-                    label = {
-                        val tag = state.selectedTag
-
-                        Text(
-                            text = tag?.title
-                                ?: stringResource(id = R.string.todo_list_all_tags)
-                        )
-                    },
-                    trailingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.outline_arrow_drop_down_24),
-                            contentDescription = null
-                        )
-                    }
-                )
-
-                FilterChip(
-                    selected = priorityFilterSelected,
-                    onClick = {
-                        showPrioFilterBottomSheet = true
-                    },
-                    label = {
-                        val priority = state.selectedPriority
-
-                        Text(
-                            text = stringResource(
-                                id = priority?.title ?: R.string.todo_list_all_priorities
-                            )
-                        )
-                    },
-                    trailingIcon = {
-                        Icon(
-                            painter = painterResource(id = R.drawable.outline_arrow_drop_down_24),
-                            contentDescription = null
-                        )
-                    }
-                )
-            }
+                },
+                selectedTag = state.selectedTag,
+                priorityFilterSelected = priorityFilterSelected,
+                onPriorityFilterClicked = {
+                    showPrioFilterBottomSheet = true
+                },
+                selectedPriority = state.selectedPriority
+            )
 
             AnimatedContent(
                 modifier = Modifier
@@ -291,6 +256,58 @@ fun TodoListScreen(
             onPrioritySelected = viewModel::onPrioritySelected,
             onDismiss = {
                 showPrioFilterBottomSheet = false
+            }
+        )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun TodoListSettingsRow(
+    tagFilterSelected: Boolean,
+    onTagFilterClicked: () -> Unit,
+    selectedTag: Tag?,
+    priorityFilterSelected: Boolean,
+    onPriorityFilterClicked: () -> Unit,
+    selectedPriority: Priority?,
+    modifier: Modifier = Modifier
+) {
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        FilterChip(
+            selected = tagFilterSelected,
+            onClick = onTagFilterClicked,
+            label = {
+                Text(
+                    text = selectedTag?.title
+                        ?: stringResource(id = R.string.todo_list_all_tags)
+                )
+            },
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.outline_arrow_drop_down_24),
+                    contentDescription = null
+                )
+            }
+        )
+
+        FilterChip(
+            selected = priorityFilterSelected,
+            onClick = onPriorityFilterClicked,
+            label = {
+                Text(
+                    text = stringResource(
+                        id = selectedPriority?.title ?: R.string.todo_list_all_priorities
+                    )
+                )
+            },
+            trailingIcon = {
+                Icon(
+                    painter = painterResource(id = R.drawable.outline_arrow_drop_down_24),
+                    contentDescription = null
+                )
             }
         )
     }
