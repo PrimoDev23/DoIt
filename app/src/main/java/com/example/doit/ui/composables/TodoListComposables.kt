@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -55,6 +56,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.doit.R
 import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.Tag
+import com.example.doit.domain.models.TodoItemSortType
 import com.example.doit.ui.composables.destinations.AddEntryScreenDestination
 import com.example.doit.ui.viewmodels.TodoListViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -158,6 +160,8 @@ fun TodoListScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
                     .horizontalScroll(state = rememberScrollState()),
+                sortType = state.sortType,
+                onSortTypeChanged = viewModel::onSortTypeChanged,
                 hideDoneItems = state.hideDoneItems,
                 onHideDoneItemsChanged = viewModel::onHideDoneItemsChanged,
                 tagFilterSelected = tagFilterSelected,
@@ -269,6 +273,8 @@ fun TodoListScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoListSettingsRow(
+    sortType: TodoItemSortType,
+    onSortTypeChanged: (TodoItemSortType) -> Unit,
     hideDoneItems: Boolean,
     onHideDoneItemsChanged: (Boolean) -> Unit,
     tagFilterSelected: Boolean,
@@ -305,6 +311,8 @@ fun TodoListSettingsRow(
                 onDismiss = {
                     sortMenuExpanded = false
                 },
+                sortType = sortType,
+                onSortTypeChanged = onSortTypeChanged,
                 hideDoneItems = hideDoneItems,
                 onHideDoneItemsChanged = onHideDoneItemsChanged
             )
@@ -351,6 +359,8 @@ fun TodoListSettingsRow(
 fun TodoListSortDropDownMenu(
     expanded: Boolean,
     onDismiss: () -> Unit,
+    sortType: TodoItemSortType,
+    onSortTypeChanged: (TodoItemSortType) -> Unit,
     hideDoneItems: Boolean,
     onHideDoneItemsChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier
@@ -360,6 +370,28 @@ fun TodoListSortDropDownMenu(
         expanded = expanded,
         onDismissRequest = onDismiss
     ) {
+        ToggleableDropDownMenuItem(
+            checked = sortType == TodoItemSortType.ALPHABETICAL,
+            onCheckedChange = {
+                if (it) {
+                    onSortTypeChanged(TodoItemSortType.ALPHABETICAL)
+                }
+            },
+            text = stringResource(id = R.string.sort_alphabetical)
+        )
+
+        ToggleableDropDownMenuItem(
+            checked = sortType == TodoItemSortType.PRIORITY,
+            onCheckedChange = {
+                if (it) {
+                    onSortTypeChanged(TodoItemSortType.PRIORITY)
+                }
+            },
+            text = stringResource(id = R.string.sort_priority)
+        )
+
+        Divider()
+
         ToggleableDropDownMenuItem(
             checked = hideDoneItems,
             onCheckedChange = onHideDoneItemsChanged,

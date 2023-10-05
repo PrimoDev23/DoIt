@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
+import com.example.doit.domain.models.TodoItemSortType
 import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemsFlowUseCase
@@ -39,10 +40,12 @@ class TodoListViewModel @Inject constructor(
         } else {
             items
         }
+        val sortedItems = filteredItems.sort(state.sortType)
 
         TodoListState(
-            items = filteredItems,
+            items = sortedItems,
             selectedItems = state.selectedItems,
+            sortType = state.sortType,
             hideDoneItems = state.hideDoneItems,
             tags = tags,
             selectedTag = state.selectedTag,
@@ -55,12 +58,25 @@ class TodoListViewModel @Inject constructor(
             initialValue = TodoListState(
                 items = emptyList(),
                 selectedItems = emptyList(),
+                sortType = TodoItemSortType.ALPHABETICAL,
                 hideDoneItems = false,
                 tags = emptyList(),
                 selectedTag = null,
                 selectedPriority = null
             )
         )
+
+    private fun List<TodoItem>.sort(type: TodoItemSortType): List<TodoItem> {
+        return when (type) {
+            TodoItemSortType.ALPHABETICAL -> this.sortedBy {
+                it.title.lowercase()
+            }
+
+            TodoItemSortType.PRIORITY -> this.sortedByDescending {
+                it.priority
+            }
+        }
+    }
 
     init {
         viewModelScope.launch {
@@ -143,10 +159,17 @@ class TodoListViewModel @Inject constructor(
             it.copy(hideDoneItems = hideDoneItems)
         }
     }
+
+    fun onSortTypeChanged(sortType: TodoItemSortType) {
+        _state.update {
+            it.copy(sortType = sortType)
+        }
+    }
 }
 
 data class TodoListViewModelState(
     val selectedItems: List<TodoItem> = emptyList(),
+    val sortType: TodoItemSortType = TodoItemSortType.ALPHABETICAL,
     val hideDoneItems: Boolean = false,
     val selectedTag: Tag? = null,
     val selectedPriority: Priority? = null
@@ -155,6 +178,7 @@ data class TodoListViewModelState(
 data class TodoListState(
     val items: List<TodoItem>,
     val selectedItems: List<TodoItem>,
+    val sortType: TodoItemSortType,
     val hideDoneItems: Boolean,
     val tags: List<Tag>,
     val selectedTag: Tag?,
