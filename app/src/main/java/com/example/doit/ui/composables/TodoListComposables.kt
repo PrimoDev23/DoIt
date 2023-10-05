@@ -69,6 +69,11 @@ fun TodoListScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val hasItemsSelected by remember {
+        derivedStateOf {
+            state.selectedItems.isNotEmpty()
+        }
+    }
     var showTagFilterBottomSheet by remember {
         mutableStateOf(false)
     }
@@ -82,20 +87,14 @@ fun TodoListScreen(
         onMenuClicked = onMenuClicked,
         title = stringResource(id = R.string.todo_list_title),
         actions = {
-            val showEditAction by remember {
+            val hasOneItemSelected by remember {
                 derivedStateOf {
                     state.selectedItems.size == 1
                 }
             }
 
-            val showDeleteAction by remember {
-                derivedStateOf {
-                    state.selectedItems.isNotEmpty()
-                }
-            }
-
             EditToolbarItem(
-                isVisible = showEditAction,
+                isVisible = hasOneItemSelected,
                 onClick = {
                     val id = state.selectedItems.first().id
 
@@ -105,7 +104,7 @@ fun TodoListScreen(
             )
 
             DeleteToolbarItem(
-                isVisible = showDeleteAction,
+                isVisible = hasItemsSelected,
                 onClick = viewModel::onDeleteClicked
             )
         },
@@ -115,6 +114,18 @@ fun TodoListScreen(
                     navigator.navigate(AddEntryScreenDestination(id = 0))
                 }
             )
+        },
+        navigationIcon = {
+            AnimatedContent(
+                targetState = hasItemsSelected,
+                label = "ShowClearIconAnimation"
+            ) { showClearSelection ->
+                if (showClearSelection) {
+                    ClearSelectionButton(onClick = viewModel::onClearSelectionClicked)
+                } else {
+                    DrawerMenuButton(onClick = onMenuClicked)
+                }
+            }
         }
     ) {
         Column(

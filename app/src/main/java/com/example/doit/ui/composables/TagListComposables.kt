@@ -71,6 +71,11 @@ fun TagListScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val hasTagsSelected by remember {
+        derivedStateOf {
+            state.selectedTags.isNotEmpty()
+        }
+    }
     var createDialogVisible by remember {
         mutableStateOf(false)
     }
@@ -80,14 +85,8 @@ fun TagListScreen(
         onMenuClicked = onMenuClicked,
         title = stringResource(id = R.string.tag_overview_title),
         actions = {
-            val showDeleteAction by remember {
-                derivedStateOf {
-                    state.selectedTags.isNotEmpty()
-                }
-            }
-
             DeleteToolbarItem(
-                isVisible = showDeleteAction,
+                isVisible = hasTagsSelected,
                 onClick = viewModel::onDeleteClicked
             )
         },
@@ -97,6 +96,18 @@ fun TagListScreen(
                     createDialogVisible = true
                 }
             )
+        },
+        navigationIcon = {
+            AnimatedContent(
+                targetState = hasTagsSelected,
+                label = "ShowClearIconAnimation"
+            ) { showClearSelection ->
+                if (showClearSelection) {
+                    ClearSelectionButton(onClick = viewModel::onClearSelectionClicked)
+                } else {
+                    DrawerMenuButton(onClick = onMenuClicked)
+                }
+            }
         }
     ) {
         val hasTags by remember {

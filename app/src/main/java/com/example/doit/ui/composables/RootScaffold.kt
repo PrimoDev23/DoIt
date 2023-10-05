@@ -5,11 +5,16 @@ import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import com.example.doit.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -17,6 +22,7 @@ fun RootScaffold(
     onMenuClicked: () -> Unit,
     title: String,
     modifier: Modifier = Modifier,
+    navigationIcon: @Composable () -> Unit = { DrawerMenuButton(onClick = onMenuClicked) },
     actions: @Composable RowScope.() -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit
@@ -32,13 +38,27 @@ fun RootScaffold(
                         fontWeight = FontWeight.Bold
                     )
                 },
-                navigationIcon = {
-                    DrawerMenuButton(onClick = onMenuClicked)
-                },
+                navigationIcon = navigationIcon,
                 actions = actions
             )
         },
         floatingActionButton = floatingActionButton,
         content = content
     )
+}
+
+@Composable
+fun ClearSelectionButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    IconButton(
+        modifier = modifier,
+        onClick = onClick
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.baseline_chevron_left_24),
+            contentDescription = stringResource(id = R.string.general_clear_selection)
+        )
+    }
 }

@@ -67,6 +67,12 @@ class TagListViewModel @Inject constructor(
         }
     }
 
+    fun onClearSelectionClicked() {
+        _state.update {
+            it.copy(selectedTags = emptyList())
+        }
+    }
+
     fun onDeleteClicked() {
         viewModelScope.launch {
             deleteTagsUseCase(state.value.selectedTags)

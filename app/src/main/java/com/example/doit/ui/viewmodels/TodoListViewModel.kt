@@ -70,6 +70,12 @@ class TodoListViewModel @Inject constructor(
         }
     }
 
+    fun onClearSelectionClicked() {
+        _state.update {
+            it.copy(selectedItems = emptyList())
+        }
+    }
+
     fun onTagFilterClicked(tag: Tag?) {
         _state.update {
             it.copy(selectedTag = tag)
