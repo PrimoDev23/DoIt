@@ -16,6 +16,7 @@ import com.example.doit.ui.composables.TagListScreen
 import com.example.doit.ui.composables.TodoListScreen
 import com.example.doit.ui.composables.destinations.TagListScreenDestination
 import com.example.doit.ui.composables.destinations.TodoListScreenDestination
+import com.example.doit.ui.composables.locals.DrawerStateProvider
 import com.example.doit.ui.theme.DoItTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
@@ -46,30 +47,19 @@ class MainActivity : ComponentActivity() {
                         )
                     }
                 ) {
-                    DestinationsNavHost(
-                        modifier = Modifier.fillMaxSize(),
-                        navGraph = NavGraphs.root,
-                        navController = navController
-                    ) {
-                        composable(TodoListScreenDestination) {
-                            TodoListScreen(
-                                navigator = destinationsNavigator,
-                                onMenuClicked = {
-                                    scope.launch {
-                                        drawerState.open()
-                                    }
-                                }
-                            )
-                        }
+                    DrawerStateProvider(drawerState = drawerState) {
+                        DestinationsNavHost(
+                            modifier = Modifier.fillMaxSize(),
+                            navGraph = NavGraphs.root,
+                            navController = navController
+                        ) {
+                            composable(TodoListScreenDestination) {
+                                TodoListScreen(navigator = destinationsNavigator)
+                            }
 
-                        composable(TagListScreenDestination) {
-                            TagListScreen(
-                                onMenuClicked = {
-                                    scope.launch {
-                                        drawerState.open()
-                                    }
-                                }
-                            )
+                            composable(TagListScreenDestination) {
+                                TagListScreen()
+                            }
                         }
                     }
                 }

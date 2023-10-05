@@ -66,7 +66,6 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 @Destination
 @Composable
 fun TagListScreen(
-    onMenuClicked: () -> Unit,
     viewModel: TagListViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -82,7 +81,6 @@ fun TagListScreen(
 
     RootScaffold(
         modifier = Modifier.fillMaxSize(),
-        onMenuClicked = onMenuClicked,
         title = stringResource(id = R.string.tag_overview_title),
         actions = {
             DeleteToolbarItem(
@@ -105,7 +103,7 @@ fun TagListScreen(
                 if (showClearSelection) {
                     ClearSelectionButton(onClick = viewModel::onClearSelectionClicked)
                 } else {
-                    DrawerMenuButton(onClick = onMenuClicked)
+                    DrawerMenuButton()
                 }
             }
         }

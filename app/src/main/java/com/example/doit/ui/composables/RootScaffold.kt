@@ -19,10 +19,9 @@ import com.example.doit.R
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RootScaffold(
-    onMenuClicked: () -> Unit,
     title: String,
+    navigationIcon: @Composable () -> Unit,
     modifier: Modifier = Modifier,
-    navigationIcon: @Composable () -> Unit = { DrawerMenuButton(onClick = onMenuClicked) },
     actions: @Composable RowScope.() -> Unit = {},
     floatingActionButton: @Composable () -> Unit = {},
     content: @Composable (PaddingValues) -> Unit

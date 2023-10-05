@@ -64,7 +64,6 @@ import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 @Composable
 fun TodoListScreen(
     navigator: DestinationsNavigator,
-    onMenuClicked: () -> Unit,
     viewModel: TodoListViewModel = hiltViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -84,7 +83,6 @@ fun TodoListScreen(
 
     RootScaffold(
         modifier = Modifier.fillMaxSize(),
-        onMenuClicked = onMenuClicked,
         title = stringResource(id = R.string.todo_list_title),
         actions = {
             val hasOneItemSelected by remember {
@@ -123,7 +121,7 @@ fun TodoListScreen(
                 if (showClearSelection) {
                     ClearSelectionButton(onClick = viewModel::onClearSelectionClicked)
                 } else {
-                    DrawerMenuButton(onClick = onMenuClicked)
+                    DrawerMenuButton()
                 }
             }
         }

@@ -23,6 +23,7 @@ import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -37,16 +38,24 @@ import com.example.doit.R
 import com.example.doit.ui.composables.destinations.Destination
 import com.example.doit.ui.composables.destinations.TagListScreenDestination
 import com.example.doit.ui.composables.destinations.TodoListScreenDestination
+import com.example.doit.ui.composables.locals.LocalDrawerState
 import com.ramcosta.composedestinations.navigation.navigate
+import kotlinx.coroutines.launch
 
 @Composable
 fun DrawerMenuButton(
-    onClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val drawerState = LocalDrawerState.current
+    val scope = rememberCoroutineScope()
+
     IconButton(
         modifier = modifier,
-        onClick = onClick
+        onClick = {
+            scope.launch {
+                drawerState.open()
+            }
+        }
     ) {
         Icon(
             painter = painterResource(id = R.drawable.outline_menu_24),
