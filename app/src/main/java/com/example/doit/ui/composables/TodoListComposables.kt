@@ -23,6 +23,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
@@ -30,6 +31,7 @@ import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -52,6 +54,7 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.doit.R
 import com.example.doit.domain.models.Priority
+import com.example.doit.domain.models.Tag
 import com.example.doit.ui.composables.destinations.AddEntryScreenDestination
 import com.example.doit.ui.viewmodels.TodoListViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -155,6 +158,8 @@ fun TodoListScreen(
                     .fillMaxWidth()
                     .padding(horizontal = 16.dp)
                     .horizontalScroll(state = rememberScrollState()),
+                hideDoneItems = state.hideDoneItems,
+                onHideDoneItemsChanged = viewModel::onHideDoneItemsChanged,
                 tagFilterSelected = tagFilterSelected,
                 onTagFilterClicked = {
                     if (state.tags.isNotEmpty()) {
@@ -264,6 +269,8 @@ fun TodoListScreen(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoListSettingsRow(
+    hideDoneItems: Boolean,
+    onHideDoneItemsChanged: (Boolean) -> Unit,
     tagFilterSelected: Boolean,
     onTagFilterClicked: () -> Unit,
     selectedTag: Tag?,
@@ -272,10 +279,37 @@ fun TodoListSettingsRow(
     selectedPriority: Priority?,
     modifier: Modifier = Modifier
 ) {
+    var sortMenuExpanded by remember {
+        mutableStateOf(false)
+    }
+
     Row(
         modifier = modifier,
         horizontalArrangement = Arrangement.spacedBy(8.dp)
     ) {
+        Row {
+            SuggestionChip(
+                onClick = {
+                    sortMenuExpanded = !sortMenuExpanded
+                },
+                label = {
+                    Icon(
+                        painter = painterResource(id = R.drawable.outline_sort_24),
+                        contentDescription = null
+                    )
+                }
+            )
+
+            TodoListSortDropDownMenu(
+                expanded = sortMenuExpanded,
+                onDismiss = {
+                    sortMenuExpanded = false
+                },
+                hideDoneItems = hideDoneItems,
+                onHideDoneItemsChanged = onHideDoneItemsChanged
+            )
+        }
+
         FilterChip(
             selected = tagFilterSelected,
             onClick = onTagFilterClicked,
@@ -309,6 +343,27 @@ fun TodoListSettingsRow(
                     contentDescription = null
                 )
             }
+        )
+    }
+}
+
+@Composable
+fun TodoListSortDropDownMenu(
+    expanded: Boolean,
+    onDismiss: () -> Unit,
+    hideDoneItems: Boolean,
+    onHideDoneItemsChanged: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    DropdownMenu(
+        modifier = modifier,
+        expanded = expanded,
+        onDismissRequest = onDismiss
+    ) {
+        ToggleableDropDownMenuItem(
+            checked = hideDoneItems,
+            onCheckedChange = onHideDoneItemsChanged,
+            text = stringResource(id = R.string.todo_list_hide_done_items)
         )
     }
 }

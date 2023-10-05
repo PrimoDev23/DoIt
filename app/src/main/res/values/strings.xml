@@ -37,4 +37,6 @@
     <string name="todo_list_priority_filter_title">Priorities</string>
     <string name="todo_list_all_priorities">All Priorities</string>
     <string name="general_clear_selection">Clear selection</string>
+    <string name="general_sort">Sort</string>
+    <string name="todo_list_hide_done_items">Hide items marked as done</string>
 </resources>

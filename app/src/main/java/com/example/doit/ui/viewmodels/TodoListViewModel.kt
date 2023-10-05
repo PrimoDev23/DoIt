@@ -32,9 +32,18 @@ class TodoListViewModel @Inject constructor(
 
     private val _state = MutableStateFlow(TodoListViewModelState())
     val state = combine(_state, todoItems, tags) { state, items, tags ->
+        val filteredItems = if (state.hideDoneItems) {
+            items.filter {
+                !it.done
+            }
+        } else {
+            items
+        }
+
         TodoListState(
-            items = items,
+            items = filteredItems,
             selectedItems = state.selectedItems,
+            hideDoneItems = state.hideDoneItems,
             tags = tags,
             selectedTag = state.selectedTag,
             selectedPriority = state.selectedPriority
@@ -46,6 +55,7 @@ class TodoListViewModel @Inject constructor(
             initialValue = TodoListState(
                 items = emptyList(),
                 selectedItems = emptyList(),
+                hideDoneItems = false,
                 tags = emptyList(),
                 selectedTag = null,
                 selectedPriority = null
@@ -127,10 +137,17 @@ class TodoListViewModel @Inject constructor(
             it.copy(selectedItems = emptyList())
         }
     }
+
+    fun onHideDoneItemsChanged(hideDoneItems: Boolean) {
+        _state.update {
+            it.copy(hideDoneItems = hideDoneItems)
+        }
+    }
 }
 
 data class TodoListViewModelState(
     val selectedItems: List<TodoItem> = emptyList(),
+    val hideDoneItems: Boolean = false,
     val selectedTag: Tag? = null,
     val selectedPriority: Priority? = null
 )
@@ -138,6 +155,7 @@ data class TodoListViewModelState(
 data class TodoListState(
     val items: List<TodoItem>,
     val selectedItems: List<TodoItem>,
+    val hideDoneItems: Boolean,
     val tags: List<Tag>,
     val selectedTag: Tag?,
     val selectedPriority: Priority?
