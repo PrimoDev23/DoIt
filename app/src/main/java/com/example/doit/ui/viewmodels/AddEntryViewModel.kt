@@ -1,5 +1,9 @@
 package com.example.doit.ui.viewmodels
 
+import androidx.compose.material3.DatePickerDefaults
+import androidx.compose.material3.DatePickerState
+import androidx.compose.material3.DisplayMode
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -18,9 +22,13 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.receiveAsFlow
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
+import java.time.Instant
+import java.time.LocalDate
+import java.time.ZoneId
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
 
+@OptIn(ExperimentalMaterial3Api::class)
 @HiltViewModel
 class AddEntryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
@@ -40,6 +48,13 @@ class AddEntryViewModel @Inject constructor(
     private val _state = MutableStateFlow(AddEntryState())
     val state = _state.asStateFlow()
 
+    val datePickerState = DatePickerState(
+        initialSelectedDateMillis = null,
+        initialDisplayedMonthMillis = null,
+        yearRange = DatePickerDefaults.YearRange,
+        initialDisplayMode = DisplayMode.Picker
+    )
+
     init {
         viewModelScope.launch {
             launch {
@@ -57,6 +72,10 @@ class AddEntryViewModel @Inject constructor(
             getTodoItemUseCase(id)?.let { item ->
                 existingItem = item
 
+                val millis =
+                    item.dueDate?.atStartOfDay(ZoneId.systemDefault())?.toInstant()?.toEpochMilli()
+                datePickerState.setSelection(millis)
+
                 _state.update { state ->
                     val newTags = state.tags.map { tag ->
                         val selected = item.tags.any { it.id == tag.id }
@@ -72,7 +91,8 @@ class AddEntryViewModel @Inject constructor(
                         title = item.title,
                         description = item.description,
                         tags = newTags,
-                        priority = item.priority
+                        priority = item.priority,
+                        dueDate = item.dueDate
                     )
                 }
             }
@@ -101,6 +121,24 @@ class AddEntryViewModel @Inject constructor(
 
     fun onDescriptionChanged(description: String) {
         updateDescription(description)
+    }
+
+    fun onDateCleared() {
+        datePickerState.setSelection(null)
+
+        _state.update {
+            it.copy(dueDate = null)
+        }
+    }
+
+    fun onDateConfirmed() {
+        datePickerState.selectedDateMillis?.let { millis ->
+            _state.update {
+                val date = Instant.ofEpochMilli(millis).atZone(ZoneId.systemDefault()).toLocalDate()
+
+                it.copy(dueDate = date)
+            }
+        }
     }
 
     fun onTagClicked(tag: Tag) {
@@ -176,11 +214,12 @@ class AddEntryViewModel @Inject constructor(
             description = description,
             done = existingItem?.done ?: false,
             tags = tags.filter { it.selected },
-            priority = priority
+            priority = priority,
+            dueDate = dueDate
         )
     }
 
-    fun AddEntryState.hasChanges(): Boolean {
+    private fun AddEntryState.hasChanges(): Boolean {
         val existingItem = this@AddEntryViewModel.existingItem
 
         return if (existingItem != null) {
@@ -191,12 +230,14 @@ class AddEntryViewModel @Inject constructor(
             title != existingItem.title ||
                     description != existingItem.description ||
                     selectedTags != existingItem.tags ||
-                    priority != existingItem.priority
+                    priority != existingItem.priority ||
+                    dueDate != existingItem.dueDate
         } else {
             title.isNotBlank() ||
                     description.isNotBlank() ||
                     tags.any { it.selected } ||
-                    priority != Priority.NONE
+                    priority != Priority.NONE ||
+                    dueDate != null
         }
     }
 }
@@ -205,6 +246,7 @@ class AddEntryViewModel @Inject constructor(
 data class AddEntryState(
     val title: String = "",
     val description: String = "",
+    val dueDate: LocalDate? = null,
     val tags: List<Tag> = emptyList(),
     val priority: Priority = Priority.NONE
 ) {

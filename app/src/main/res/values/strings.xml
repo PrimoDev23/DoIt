@@ -41,4 +41,8 @@
     <string name="todo_list_hide_done_items">Hide items marked as done</string>
     <string name="sort_alphabetical">Alphabetical</string>
     <string name="sort_priority">Priority</string>
+    <string name="add_entry_due_date_title">Due date</string>
+    <string name="general_ok">OK</string>
+    <string name="add_entry_due_date_dialog_title">Select due date</string>
+    <string name="general_clear">Clear</string>
 </resources>

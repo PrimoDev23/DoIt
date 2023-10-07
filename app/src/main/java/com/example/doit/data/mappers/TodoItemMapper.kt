@@ -3,7 +3,11 @@ package com.example.doit.data.mappers
 import com.example.doit.data.models.local.TodoItemEntity
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.repositories.TagRepository
+import java.time.LocalDate
+import java.time.format.DateTimeFormatter
 import javax.inject.Inject
+
+private val FORMATTER = DateTimeFormatter.ISO_DATE
 
 class TodoItemMapper @Inject constructor(
     private val tagRepository: TagRepository
@@ -16,6 +20,9 @@ class TodoItemMapper @Inject constructor(
                 tags.split(SEPARATOR).map { it.toLong() }
             }
             val tags = tagRepository.getTagsByIds(tagIds)
+            val date = item.dueDate?.let {
+                LocalDate.parse(it, FORMATTER)
+            }
 
             TodoItem(
                 id = id,
@@ -23,7 +30,8 @@ class TodoItemMapper @Inject constructor(
                 description = description,
                 done = done,
                 tags = tags,
-                priority = priority
+                priority = priority,
+                dueDate = date
             )
         }
     }
@@ -38,7 +46,8 @@ class TodoItemMapper @Inject constructor(
                 description = description,
                 done = done,
                 tags = ids.joinToString(SEPARATOR),
-                priority = priority
+                priority = priority,
+                dueDate = item.dueDate?.format(FORMATTER)
             )
         }
     }

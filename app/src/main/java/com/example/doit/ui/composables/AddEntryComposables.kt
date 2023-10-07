@@ -5,6 +5,7 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -20,6 +21,8 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
+import androidx.compose.material3.DatePicker
+import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -56,6 +59,7 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.flow.collectLatest
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RootNavGraph
 @Destination(navArgsDelegate = AddEntryNavArgs::class)
 @Composable
@@ -64,11 +68,15 @@ fun AddEntryScreen(
     navigator: DestinationsNavigator,
     viewModel: AddEntryViewModel = hiltViewModel()
 ) {
+    var showDatePickerDialog by remember {
+        mutableStateOf(false)
+    }
     var showDismissDialog by remember {
         mutableStateOf(false)
     }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+
     val isValid by remember {
         derivedStateOf {
             state.isValid()
@@ -110,7 +118,8 @@ fun AddEntryScreen(
                 .padding(it)
                 .padding(horizontal = 16.dp)
                 .fillMaxSize()
-                .verticalScroll(state = rememberScrollState())
+                .verticalScroll(state = rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
             val focusRequester = rememberFocusRequester()
 
@@ -130,8 +139,6 @@ fun AddEntryScreen(
                 singleLine = true
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
-
             DoItTextField(
                 modifier = Modifier.fillMaxWidth(),
                 value = state.description,
@@ -141,7 +148,14 @@ fun AddEntryScreen(
                 minLines = 3
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            DateTextField(
+                modifier = Modifier.fillMaxWidth(),
+                title = stringResource(id = R.string.add_entry_due_date_title),
+                value = state.dueDate,
+                onClick = {
+                    showDatePickerDialog = true
+                }
+            )
 
             AddEntryTagSelection(
                 modifier = Modifier.fillMaxWidth(),
@@ -149,12 +163,53 @@ fun AddEntryScreen(
                 onTagClicked = viewModel::onTagClicked
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
-
             PrioritySelection(
                 modifier = Modifier.fillMaxWidth(),
                 priority = state.priority,
                 onPriorityChanged = viewModel::onPriorityChanged
+            )
+        }
+    }
+
+    if (showDatePickerDialog) {
+        DatePickerDialog(
+            onDismissRequest = {
+                showDatePickerDialog = false
+            },
+            confirmButton = {
+                TextButton(
+                    onClick = {
+                        showDatePickerDialog = false
+                        viewModel.onDateConfirmed()
+                    }
+                ) {
+                    Text(text = stringResource(id = R.string.general_ok))
+                }
+            },
+            dismissButton = {
+                TextButton(
+                    onClick = {
+                        showDatePickerDialog = false
+
+                        viewModel.onDateCleared()
+                    }
+                ) {
+                    Text(text = stringResource(id = R.string.general_clear))
+                }
+            }
+        ) {
+            DatePicker(
+                state = viewModel.datePickerState,
+                title = {
+                    Text(
+                        modifier = Modifier.padding(
+                            start = 24.dp,
+                            end = 12.dp,
+                            top = 16.dp
+                        ),
+                        text = stringResource(id = R.string.add_entry_due_date_dialog_title)
+                    )
+                }
             )
         }
     }
