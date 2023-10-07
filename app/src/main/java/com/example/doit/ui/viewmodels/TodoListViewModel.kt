@@ -75,6 +75,10 @@ class TodoListViewModel @Inject constructor(
             TodoItemSortType.PRIORITY -> this.sortedByDescending {
                 it.priority
             }
+
+            TodoItemSortType.DUE_DATE -> this.sortedBy {
+                it.dueDate
+            }
         }
     }
 

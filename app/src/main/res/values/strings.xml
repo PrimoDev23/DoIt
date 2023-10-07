@@ -45,4 +45,5 @@
     <string name="general_ok">OK</string>
     <string name="add_entry_due_date_dialog_title">Select due date</string>
     <string name="general_clear">Clear</string>
+    <string name="sort_due_date">Due date</string>
 </resources>

@@ -379,25 +379,17 @@ fun TodoListSortDropDownMenu(
         expanded = expanded,
         onDismissRequest = onDismiss
     ) {
-        ToggleableDropDownMenuItem(
-            checked = sortType == TodoItemSortType.ALPHABETICAL,
-            onCheckedChange = {
-                if (it) {
-                    onSortTypeChanged(TodoItemSortType.ALPHABETICAL)
-                }
-            },
-            text = stringResource(id = R.string.sort_alphabetical)
-        )
-
-        ToggleableDropDownMenuItem(
-            checked = sortType == TodoItemSortType.PRIORITY,
-            onCheckedChange = {
-                if (it) {
-                    onSortTypeChanged(TodoItemSortType.PRIORITY)
-                }
-            },
-            text = stringResource(id = R.string.sort_priority)
-        )
+        TodoItemSortType.entries.forEach { type ->
+            ToggleableDropDownMenuItem(
+                checked = sortType == type,
+                onCheckedChange = {
+                    if (it) {
+                        onSortTypeChanged(type)
+                    }
+                },
+                text = stringResource(id = type.title)
+            )
+        }
 
         Divider()
 
