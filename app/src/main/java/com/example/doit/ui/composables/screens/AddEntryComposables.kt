@@ -1,4 +1,4 @@
-package com.example.doit.ui.composables
+package com.example.doit.ui.composables.screens
 
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
@@ -51,6 +51,13 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.doit.R
 import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.Tag
+import com.example.doit.ui.composables.DateTextField
+import com.example.doit.ui.composables.DoItTextField
+import com.example.doit.ui.composables.InputTitle
+import com.example.doit.ui.composables.PriorityItem
+import com.example.doit.ui.composables.TagListEntry
+import com.example.doit.ui.composables.VerticalGrid
+import com.example.doit.ui.composables.rememberFocusRequester
 import com.example.doit.ui.navigation.arguments.AddEntryNavArgs
 import com.example.doit.ui.viewmodels.AddEntryEvent
 import com.example.doit.ui.viewmodels.AddEntryViewModel

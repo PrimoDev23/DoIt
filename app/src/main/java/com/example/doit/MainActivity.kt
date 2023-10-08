@@ -12,11 +12,11 @@ import androidx.compose.ui.Modifier
 import androidx.navigation.compose.rememberNavController
 import com.example.doit.ui.composables.DrawerMenu
 import com.example.doit.ui.composables.NavGraphs
-import com.example.doit.ui.composables.TagListScreen
-import com.example.doit.ui.composables.TodoListScreen
 import com.example.doit.ui.composables.destinations.TagListScreenDestination
 import com.example.doit.ui.composables.destinations.TodoListScreenDestination
 import com.example.doit.ui.composables.locals.DrawerStateProvider
+import com.example.doit.ui.composables.screens.TagListScreen
+import com.example.doit.ui.composables.screens.TodoListScreen
 import com.example.doit.ui.theme.DoItTheme
 import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.manualcomposablecalls.composable

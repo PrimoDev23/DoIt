@@ -1,4 +1,4 @@
-package com.example.doit.ui.composables
+package com.example.doit.ui.composables.screens
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.AnimatedVisibility
@@ -57,6 +57,13 @@ import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.doit.R
+import com.example.doit.ui.composables.ClearSelectionButton
+import com.example.doit.ui.composables.DeleteToolbarItem
+import com.example.doit.ui.composables.DoItTextField
+import com.example.doit.ui.composables.DrawerMenuButton
+import com.example.doit.ui.composables.RootScaffold
+import com.example.doit.ui.composables.TagListEntry
+import com.example.doit.ui.composables.rememberFocusRequester
 import com.example.doit.ui.viewmodels.TagListViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
