@@ -42,6 +42,9 @@ class TagRepositoryImpl @Inject constructor(
         val tagEntities = tags.map {
             mapper.mapBack(it)
         }
-        dao.delete(*tagEntities.toTypedArray())
+
+        tagEntities.forEach {
+            dao.delete(it)
+        }
     }
 }

@@ -38,7 +38,9 @@ class TodoItemRepositoryImpl @Inject constructor(
             mapper.mapBack(it)
         }
 
-        dao.insert(*mappedItems.toTypedArray())
+        mappedItems.forEach {
+            dao.insert(it)
+        }
     }
 
     override suspend fun deleteTodoItems(items: List<TodoItem>) {
@@ -46,7 +48,9 @@ class TodoItemRepositoryImpl @Inject constructor(
             mapper.mapBack(it)
         }
 
-        dao.delete(*mappedItems.toTypedArray())
+        mappedItems.forEach {
+            dao.delete(it)
+        }
     }
 
     override suspend fun getItemsWithTagIds(ids: List<Long>): List<TodoItem> {
