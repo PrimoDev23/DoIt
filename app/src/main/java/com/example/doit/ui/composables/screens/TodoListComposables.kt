@@ -507,6 +507,25 @@ fun TodayInfoCard(
     onClick: (Boolean) -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val borderColor by animateColorAsState(
+        targetValue = if (filterActive) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.surface
+        },
+        label = "TodayInfoCardBorderAnimation"
+    )
+    val borderStroke = remember(filterActive, borderColor) {
+        BorderStroke(
+            width = if (filterActive) {
+                1.dp
+            } else {
+                0.dp
+            },
+            color = borderColor
+        )
+    }
+
     HeaderInfoCard(
         modifier = modifier,
         icon = {
@@ -519,17 +538,7 @@ fun TodayInfoCard(
         onClick = {
             onClick(!filterActive)
         },
-        border = if (filterActive) {
-            BorderStroke(
-                width = 1.dp,
-                color = MaterialTheme.colorScheme.primary
-            )
-        } else {
-            BorderStroke(
-                width = 0.dp,
-                color = Color.Unspecified
-            )
-        }
+        border = borderStroke
     ) {
         Row(
             modifier = Modifier.fillMaxWidth(),
