@@ -8,6 +8,7 @@ import com.example.doit.domain.usecases.DeleteTagsUseCaseImpl
 import com.example.doit.domain.usecases.DeleteTodoItemUseCaseImpl
 import com.example.doit.domain.usecases.GetTagsFlowUseCaseImpl
 import com.example.doit.domain.usecases.GetTagsUseCaseImpl
+import com.example.doit.domain.usecases.GetTodayTodoItemsFlowUseCaseImpl
 import com.example.doit.domain.usecases.GetTodoItemUseCaseImpl
 import com.example.doit.domain.usecases.GetTodoItemsFlowUseCaseImpl
 import com.example.doit.domain.usecases.SaveTagUseCaseImpl
@@ -16,6 +17,7 @@ import com.example.doit.domain.usecases.interfaces.DeleteTagsUseCase
 import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsUseCase
+import com.example.doit.domain.usecases.interfaces.GetTodayTodoItemsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTagUseCase
@@ -79,5 +81,10 @@ abstract class Bindings {
     abstract fun bindGetTodoItemUseCase(
         impl: GetTodoItemUseCaseImpl
     ): GetTodoItemUseCase
+
+    @Binds
+    abstract fun bindGetTodayTodoItemsFlowUseCase(
+        impl: GetTodayTodoItemsFlowUseCaseImpl
+    ): GetTodayTodoItemsFlowUseCase
 
 }

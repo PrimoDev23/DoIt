@@ -11,6 +11,9 @@ interface TodoItemDao : BaseDao<TodoItemEntity> {
     @Query("SELECT * FROM TodoItemEntity")
     fun select(): Flow<List<TodoItemEntity>>
 
+    @Query("SELECT * FROM TodoItemEntity WHERE dueDate = :date")
+    fun selectByDate(date: String): Flow<List<TodoItemEntity>>
+
     @Query("SELECT * FROM TodoItemEntity WHERE id = :id")
     suspend fun selectById(id: Long): TodoItemEntity?
 

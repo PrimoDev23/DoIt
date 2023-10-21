@@ -7,8 +7,6 @@ import java.time.LocalDate
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
-private val FORMATTER = DateTimeFormatter.ISO_DATE
-
 class TodoItemMapper @Inject constructor(
     private val tagRepository: TagRepository
 ) : BaseMapper<TodoItemEntity, TodoItem>() {
@@ -54,5 +52,7 @@ class TodoItemMapper @Inject constructor(
 
     companion object {
         private const val SEPARATOR = "|"
+
+        val FORMATTER = DateTimeFormatter.ISO_DATE
     }
 }

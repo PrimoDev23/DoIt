@@ -1,7 +1,9 @@
 package com.example.doit.ui.composables.screens
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.Crossfade
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
@@ -10,11 +12,13 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
@@ -22,6 +26,7 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ElevatedCard
@@ -30,6 +35,7 @@ import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
@@ -42,6 +48,7 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -158,6 +165,18 @@ fun TodoListScreen(
             val hasItems = remember(filteredItems) {
                 filteredItems.isNotEmpty()
             }
+
+            TodayInfoCard(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                filterActive = state.todayFilterActive,
+                undone = state.todayUndone,
+                done = state.todayDone,
+                onClick = viewModel::onTodayInfoCardClicked
+            )
+
+            Spacer(modifier = Modifier.height(16.dp))
 
             TodoListSettingsRow(
                 modifier = Modifier
@@ -409,6 +428,123 @@ fun TodoListSortDropDownMenu(
             onCheckedChange = onHideDoneItemsChanged,
             text = stringResource(id = R.string.todo_list_hide_done_items)
         )
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun HeaderInfoCard(
+    icon: @Composable () -> Unit,
+    title: String,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(16.dp),
+    shape: Shape = RoundedCornerShape(8.dp),
+    border: BorderStroke = CardDefaults.outlinedCardBorder(),
+    content: @Composable ColumnScope.() -> Unit
+) {
+    OutlinedCard(
+        modifier = modifier,
+        onClick = onClick,
+        shape = shape,
+        border = border,
+        elevation = CardDefaults.elevatedCardElevation()
+    ) {
+        Row(modifier = Modifier.padding(contentPadding)) {
+            icon()
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Column(
+                modifier = Modifier.weight(1f),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(
+                    text = title,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                content()
+            }
+        }
+    }
+}
+
+@Composable
+fun HeaderCardItemInfo(
+    title: String,
+    info: String,
+    modifier: Modifier = Modifier
+) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelLarge
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Crossfade(
+            targetState = info,
+            label = "HeaderCardItemInfoAnimation"
+        ) { text ->
+            Text(text = text)
+        }
+    }
+}
+
+@Composable
+fun TodayInfoCard(
+    filterActive: Boolean,
+    undone: Int,
+    done: Int,
+    onClick: (Boolean) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    HeaderInfoCard(
+        modifier = modifier,
+        icon = {
+            Icon(
+                painter = painterResource(id = R.drawable.outline_calendar_today_24),
+                contentDescription = null
+            )
+        },
+        title = stringResource(id = R.string.todo_list_today_card_title),
+        onClick = {
+            onClick(!filterActive)
+        },
+        border = if (filterActive) {
+            BorderStroke(
+                width = 1.dp,
+                color = MaterialTheme.colorScheme.primary
+            )
+        } else {
+            BorderStroke(
+                width = 0.dp,
+                color = Color.Unspecified
+            )
+        }
+    ) {
+        Row(
+            modifier = Modifier.fillMaxWidth(),
+            horizontalArrangement = Arrangement.SpaceEvenly
+        ) {
+            HeaderCardItemInfo(
+                title = stringResource(id = R.string.todo_list_undone_title),
+                info = undone.toString()
+            )
+
+            HeaderCardItemInfo(
+                title = stringResource(id = R.string.todo_list_done_title),
+                info = done.toString()
+            )
+        }
     }
 }
 

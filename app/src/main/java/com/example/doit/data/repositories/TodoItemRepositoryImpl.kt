@@ -6,6 +6,7 @@ import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.repositories.TodoItemRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
+import java.time.LocalDate
 import javax.inject.Inject
 
 class TodoItemRepositoryImpl @Inject constructor(
@@ -15,6 +16,16 @@ class TodoItemRepositoryImpl @Inject constructor(
 
     override fun getItemsFlow(): Flow<List<TodoItem>> {
         return dao.select().map { items ->
+            items.map {
+                mapper.map(it)
+            }
+        }
+    }
+
+    override fun getTodayItemsFlow(): Flow<List<TodoItem>> {
+        val today = LocalDate.now().format(TodoItemMapper.FORMATTER)
+
+        return dao.selectByDate(today).map { items ->
             items.map {
                 mapper.map(it)
             }

@@ -8,6 +8,7 @@ import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.models.TodoItemSortType
 import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
+import com.example.doit.domain.usecases.interfaces.GetTodayTodoItemsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -24,25 +25,39 @@ import javax.inject.Inject
 class TodoListViewModel @Inject constructor(
     getTodoItemsFlowUseCase: GetTodoItemsFlowUseCase,
     getTagsFlowUseCase: GetTagsFlowUseCase,
+    getTodayTodoItemsFlowUseCase: GetTodayTodoItemsFlowUseCase,
     private val saveTodoItemUseCase: SaveTodoItemUseCase,
-    private val deleteTodoItemsUseCase: DeleteTodoItemsUseCase
+    private val deleteTodoItemsUseCase: DeleteTodoItemsUseCase,
 ) : ViewModel() {
 
     private val todoItems = getTodoItemsFlowUseCase.getItemFlow()
     private val tags = getTagsFlowUseCase.getFlow()
+    private val todayItems = getTodayTodoItemsFlowUseCase()
 
     private val _state = MutableStateFlow(TodoListViewModelState())
-    val state = combine(_state, todoItems, tags) { state, items, tags ->
-        val filteredItems = if (state.hideDoneItems) {
-            items.filter {
-                !it.done
-            }
+    val state = combine(_state, todoItems, tags, todayItems) { state, items, tags, todayItems ->
+        val allItems = if (state.todayFilterActive) {
+            todayItems
         } else {
             items
         }
+
+        val filteredItems = if (state.hideDoneItems) {
+            allItems.filter {
+                !it.done
+            }
+        } else {
+            allItems
+        }
         val sortedItems = filteredItems.sort(state.sortType)
 
+        val todayUndone = todayItems.count { !it.done }
+        val todayDone = todayItems.count { it.done }
+
         TodoListState(
+            todayFilterActive = state.todayFilterActive,
+            todayUndone = todayUndone,
+            todayDone = todayDone,
             items = sortedItems,
             selectedItems = state.selectedItems,
             sortType = state.sortType,
@@ -56,6 +71,9 @@ class TodoListViewModel @Inject constructor(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = TodoListState(
+                todayFilterActive = false,
+                todayUndone = 0,
+                todayDone = 0,
                 items = emptyList(),
                 selectedItems = emptyList(),
                 sortType = TodoItemSortType.ALPHABETICAL,
@@ -103,6 +121,12 @@ class TodoListViewModel @Inject constructor(
     fun onClearSelectionClicked() {
         _state.update {
             it.copy(selectedItems = emptyList())
+        }
+    }
+
+    fun onTodayInfoCardClicked(filterActive: Boolean) {
+        _state.update {
+            it.copy(todayFilterActive = filterActive)
         }
     }
 
@@ -172,6 +196,7 @@ class TodoListViewModel @Inject constructor(
 }
 
 data class TodoListViewModelState(
+    val todayFilterActive: Boolean = false,
     val selectedItems: List<TodoItem> = emptyList(),
     val sortType: TodoItemSortType = TodoItemSortType.ALPHABETICAL,
     val hideDoneItems: Boolean = false,
@@ -180,6 +205,9 @@ data class TodoListViewModelState(
 )
 
 data class TodoListState(
+    val todayFilterActive: Boolean,
+    val todayUndone: Int,
+    val todayDone: Int,
     val items: List<TodoItem>,
     val selectedItems: List<TodoItem>,
     val sortType: TodoItemSortType,
