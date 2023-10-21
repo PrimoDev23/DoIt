@@ -35,10 +35,13 @@ import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
 import com.example.doit.R
-import com.example.doit.ui.composables.destinations.Destination
-import com.example.doit.ui.composables.destinations.TagListScreenDestination
-import com.example.doit.ui.composables.destinations.TodoListScreenDestination
 import com.example.doit.ui.composables.locals.LocalDrawerState
+import com.example.doit.ui.composables.screens.NavGraphs
+import com.example.doit.ui.composables.screens.appCurrentDestinationAsState
+import com.example.doit.ui.composables.screens.destinations.Destination
+import com.example.doit.ui.composables.screens.destinations.TagListScreenDestination
+import com.example.doit.ui.composables.screens.destinations.TodoListScreenDestination
+import com.example.doit.ui.composables.screens.startAppDestination
 import com.ramcosta.composedestinations.navigation.navigate
 import kotlinx.coroutines.launch
 

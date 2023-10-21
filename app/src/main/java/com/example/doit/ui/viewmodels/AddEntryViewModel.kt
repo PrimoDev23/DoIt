@@ -13,7 +13,7 @@ import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.usecases.interfaces.GetTagsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
-import com.example.doit.ui.composables.navArgs
+import com.example.doit.ui.composables.screens.navArgs
 import com.example.doit.ui.navigation.arguments.AddEntryNavArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel

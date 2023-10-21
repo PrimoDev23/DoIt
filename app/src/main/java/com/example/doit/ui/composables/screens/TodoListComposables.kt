@@ -64,7 +64,7 @@ import com.example.doit.ui.composables.TodoListPriorityFilterBottomSheet
 import com.example.doit.ui.composables.TodoListTagFilterBottomSheet
 import com.example.doit.ui.composables.ToggleableDropDownMenuItem
 import com.example.doit.ui.composables.applyFilter
-import com.example.doit.ui.composables.destinations.AddEntryScreenDestination
+import com.example.doit.ui.composables.screens.destinations.AddEntryScreenDestination
 import com.example.doit.ui.viewmodels.TodoListViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
