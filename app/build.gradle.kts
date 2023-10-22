@@ -75,6 +75,7 @@ dependencies {
     implementation(libs.hilt.navigation)
 
     implementation(libs.compose.destinations)
+    implementation(libs.compose.destinations.animations)
     ksp(libs.compose.destinations.ksp)
 
     implementation(libs.room)
