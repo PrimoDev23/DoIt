@@ -8,11 +8,14 @@ import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
@@ -23,10 +26,12 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
@@ -40,22 +45,27 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.doit.R
 import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.Tag
+import com.example.doit.domain.models.TodoItem
 import com.example.doit.ui.composables.DateTextField
+import com.example.doit.ui.composables.DoItCheckbox
 import com.example.doit.ui.composables.DoItTextField
 import com.example.doit.ui.composables.InputTitle
 import com.example.doit.ui.composables.PriorityItem
 import com.example.doit.ui.composables.TagListEntry
 import com.example.doit.ui.composables.VerticalGrid
+import com.example.doit.ui.composables.screens.destinations.AddEntryScreenDestination
 import com.example.doit.ui.navigation.arguments.AddEntryNavArgs
 import com.example.doit.ui.viewmodels.AddEntryEvent
 import com.example.doit.ui.viewmodels.AddEntryViewModel
@@ -63,6 +73,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.flow.collectLatest
+import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
 @RootNavGraph
@@ -104,6 +115,11 @@ fun AddEntryScreen(
         topBar = {
             AddEntryTopBar(
                 modifier = Modifier.fillMaxWidth(),
+                title = if (navArgs.parent == null) {
+                    stringResource(id = R.string.add_entry_title)
+                } else {
+                    stringResource(id = R.string.add_subtask_title)
+                },
                 onBackClicked = viewModel::onBackClicked
             )
         },
@@ -163,6 +179,24 @@ fun AddEntryScreen(
                 priority = state.priority,
                 onPriorityChanged = viewModel::onPriorityChanged
             )
+
+            SubtaskSection(
+                modifier = Modifier.fillMaxWidth(),
+                onAddSubtaskClicked = {
+                    navigator.navigate(
+                        AddEntryScreenDestination(
+                            id = UUID.randomUUID().toString(),
+                            parent = navArgs.id
+                        )
+                    )
+                },
+                subtasks = state.subtasks,
+                onSubtaskClicked = { item ->
+                    navigator.navigate(AddEntryScreenDestination(id = item.id, parent = navArgs.id))
+                },
+                onDoneChanged = viewModel::onSubtaskDoneChanged,
+                onRemoveClicked = viewModel::onSubtaskRemoveClicked
+            )
         }
     }
 
@@ -212,6 +246,7 @@ fun AddEntryScreen(
     if (showDismissDialog) {
         AddEntryDismissDialog(
             onConfirm = {
+                viewModel.onDismiss()
                 navigator.popBackStack()
             },
             onDismiss = {
@@ -225,13 +260,14 @@ fun AddEntryScreen(
 @Composable
 fun AddEntryTopBar(
     onBackClicked: () -> Unit,
+    title: String,
     modifier: Modifier = Modifier
 ) {
     CenterAlignedTopAppBar(
         modifier = modifier,
         title = {
             Text(
-                text = stringResource(id = R.string.add_entry_title),
+                text = title,
                 fontWeight = FontWeight.Bold
             )
         },
@@ -386,6 +422,110 @@ fun PrioritySelection(
                     onPriorityChanged(item)
                 }
             )
+        }
+    }
+}
+
+@Composable
+fun SubtaskSection(
+    onAddSubtaskClicked: () -> Unit,
+    subtasks: List<TodoItem>,
+    onSubtaskClicked: (TodoItem) -> Unit,
+    onDoneChanged: (TodoItem, Boolean) -> Unit,
+    onRemoveClicked: (TodoItem) -> Unit,
+    modifier: Modifier = Modifier,
+    itemShape: Shape = RoundedCornerShape(8.dp)
+) {
+    Column(modifier = modifier) {
+        InputTitle(text = stringResource(id = R.string.add_entry_subtask_title))
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Column(
+            modifier = Modifier.fillMaxWidth(),
+            verticalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            subtasks.forEach { task ->
+                SubtaskItem(
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = itemShape,
+                    done = task.done,
+                    onDoneChanged = {
+                        onDoneChanged(task, it)
+                    },
+                    title = task.title,
+                    onRemoveClicked = {
+                        onRemoveClicked(task)
+                    },
+                    onClick = {
+                        onSubtaskClicked(task)
+                    }
+                )
+            }
+
+            OutlinedButton(
+                modifier = Modifier.fillMaxWidth(),
+                onClick = onAddSubtaskClicked,
+                shape = itemShape
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.baseline_add_24),
+                    contentDescription = null
+                )
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Text(text = stringResource(id = R.string.add_entry_add_subtask))
+            }
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun SubtaskItem(
+    done: Boolean,
+    onDoneChanged: (Boolean) -> Unit,
+    title: String,
+    onRemoveClicked: () -> Unit,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(8.dp),
+    shape: Shape = RoundedCornerShape(8.dp)
+) {
+    ElevatedCard(
+        modifier = modifier,
+        shape = shape,
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(contentPadding)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            DoItCheckbox(
+                checked = done,
+                onCheckedChange = onDoneChanged
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Text(
+                modifier = Modifier.weight(1f),
+                text = title,
+                maxLines = 1,
+                overflow = TextOverflow.Ellipsis
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            IconButton(onClick = onRemoveClicked) {
+                Icon(
+                    painter = painterResource(id = R.drawable.outline_close_24),
+                    contentDescription = stringResource(id = R.string.add_entry_remove_subtask)
+                )
+            }
         }
     }
 }

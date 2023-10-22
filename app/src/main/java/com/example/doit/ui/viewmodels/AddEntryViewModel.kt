@@ -10,16 +10,21 @@ import androidx.lifecycle.viewModelScope
 import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
+import com.example.doit.domain.usecases.interfaces.DeleteItemsByParentUseCase
+import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemUseCase
+import com.example.doit.domain.usecases.interfaces.GetTodoItemsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import com.example.doit.ui.composables.screens.navArgs
 import com.example.doit.ui.navigation.arguments.AddEntryNavArgs
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -32,9 +37,12 @@ import javax.inject.Inject
 @HiltViewModel
 class AddEntryViewModel @Inject constructor(
     savedStateHandle: SavedStateHandle,
+    getTodoItemsFlowUseCase: GetTodoItemsFlowUseCase,
     private val saveTodoItemUseCase: SaveTodoItemUseCase,
     private val getTagsUseCase: GetTagsUseCase,
-    private val getTodoItemUseCase: GetTodoItemUseCase
+    private val getTodoItemUseCase: GetTodoItemUseCase,
+    private val deleteItemsByParentUseCase: DeleteItemsByParentUseCase,
+    private val deleteTodoItemsUseCase: DeleteTodoItemsUseCase
 ) : ViewModel() {
 
     private val navArgs: AddEntryNavArgs = savedStateHandle.navArgs()
@@ -45,8 +53,31 @@ class AddEntryViewModel @Inject constructor(
     private val _events = Channel<AddEntryEvent>()
     val events = _events.receiveAsFlow()
 
-    private val _state = MutableStateFlow(AddEntryState())
-    val state = _state.asStateFlow()
+    private val subtasks = getTodoItemsFlowUseCase.getItemFlow(navArgs.id)
+
+    private val _state = MutableStateFlow(AddEntryViewModelState())
+    val state = combine(_state, subtasks) { state, subtasks ->
+        AddEntryState(
+            title = state.title,
+            description = state.description,
+            dueDate = state.dueDate,
+            tags = state.tags,
+            priority = state.priority,
+            subtasks = subtasks
+        )
+    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.Eagerly,
+            initialValue = AddEntryState(
+                title = "",
+                description = "",
+                dueDate = null,
+                tags = emptyList(),
+                priority = Priority.NONE,
+                subtasks = emptyList()
+            )
+        )
 
     val datePickerState = DatePickerState(
         initialSelectedDateMillis = null,
@@ -113,6 +144,12 @@ class AddEntryViewModel @Inject constructor(
         }
     }
 
+    fun onDismiss() {
+        viewModelScope.launch {
+            deleteItemsByParentUseCase(navArgs.id)
+        }
+    }
+
     fun onTitleChanged(title: String) {
         updateTitle(title)
     }
@@ -145,6 +182,20 @@ class AddEntryViewModel @Inject constructor(
 
     fun onPriorityChanged(priority: Priority) {
         updatePriority(priority)
+    }
+
+    fun onSubtaskDoneChanged(todoItem: TodoItem, done: Boolean) {
+        viewModelScope.launch {
+            val updatedItem = todoItem.copy(done = done)
+
+            saveTodoItemUseCase.save(updatedItem)
+        }
+    }
+
+    fun onSubtaskRemoveClicked(todoItem: TodoItem) {
+        viewModelScope.launch {
+            deleteTodoItemsUseCase.delete(listOf(todoItem))
+        }
     }
 
     private fun toggleTagSelection(tag: Tag) {
@@ -213,7 +264,8 @@ class AddEntryViewModel @Inject constructor(
             done = existingItem?.done ?: false,
             tags = tags.filter { it.selected },
             priority = priority,
-            dueDate = dueDate
+            dueDate = dueDate,
+            parent = navArgs.parent
         )
     }
 
@@ -241,12 +293,22 @@ class AddEntryViewModel @Inject constructor(
 }
 
 @Immutable
-data class AddEntryState(
+data class AddEntryViewModelState(
     val title: String = "",
     val description: String = "",
     val dueDate: LocalDate? = null,
     val tags: List<Tag> = emptyList(),
     val priority: Priority = Priority.NONE
+)
+
+@Immutable
+data class AddEntryState(
+    val title: String,
+    val description: String,
+    val dueDate: LocalDate?,
+    val tags: List<Tag>,
+    val priority: Priority,
+    val subtasks: List<TodoItem>
 ) {
     fun isValid(): Boolean {
         return this.title.isNotBlank()

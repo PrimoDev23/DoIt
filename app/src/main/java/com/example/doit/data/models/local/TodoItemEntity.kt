@@ -13,5 +13,6 @@ data class TodoItemEntity(
     val done: Boolean,
     val tags: String,
     val priority: Priority,
-    val dueDate: String?
+    val dueDate: String?,
+    val parent: String?
 )

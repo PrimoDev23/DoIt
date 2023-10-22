@@ -4,6 +4,7 @@ import com.example.doit.data.repositories.TagRepositoryImpl
 import com.example.doit.data.repositories.TodoItemRepositoryImpl
 import com.example.doit.domain.repositories.TagRepository
 import com.example.doit.domain.repositories.TodoItemRepository
+import com.example.doit.domain.usecases.DeleteItemsByParentUseCaseImpl
 import com.example.doit.domain.usecases.DeleteTagsUseCaseImpl
 import com.example.doit.domain.usecases.DeleteTodoItemUseCaseImpl
 import com.example.doit.domain.usecases.GetTagsFlowUseCaseImpl
@@ -13,6 +14,7 @@ import com.example.doit.domain.usecases.GetTodoItemUseCaseImpl
 import com.example.doit.domain.usecases.GetTodoItemsFlowUseCaseImpl
 import com.example.doit.domain.usecases.SaveTagUseCaseImpl
 import com.example.doit.domain.usecases.SaveTodoItemUseCaseImpl
+import com.example.doit.domain.usecases.interfaces.DeleteItemsByParentUseCase
 import com.example.doit.domain.usecases.interfaces.DeleteTagsUseCase
 import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
@@ -86,5 +88,10 @@ abstract class Bindings {
     abstract fun bindGetTodayTodoItemsFlowUseCase(
         impl: GetTodayTodoItemsFlowUseCaseImpl
     ): GetTodayTodoItemsFlowUseCase
+
+    @Binds
+    abstract fun bindDeleteItemsByParentUseCase(
+        impl: DeleteItemsByParentUseCaseImpl
+    ): DeleteItemsByParentUseCase
 
 }

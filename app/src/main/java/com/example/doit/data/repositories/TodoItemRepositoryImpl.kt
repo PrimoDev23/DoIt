@@ -14,8 +14,26 @@ class TodoItemRepositoryImpl @Inject constructor(
     private val mapper: TodoItemMapper
 ) : TodoItemRepository {
 
-    override fun getItemsFlow(): Flow<List<TodoItem>> {
-        return dao.select().map { items ->
+    override suspend fun getItems(parent: String?): List<TodoItem> {
+        val items = if (parent == null) {
+            dao.selectWithoutParent()
+        } else {
+            dao.select(parent)
+        }
+
+        return items.map {
+            mapper.map(it)
+        }
+    }
+
+    override fun getItemsFlow(parent: String?): Flow<List<TodoItem>> {
+        val flow = if (parent == null) {
+            dao.selectWithoutParentFlow()
+        } else {
+            dao.selectFlow(parent)
+        }
+
+        return flow.map { items ->
             items.map {
                 mapper.map(it)
             }
@@ -62,6 +80,10 @@ class TodoItemRepositoryImpl @Inject constructor(
         mappedItems.forEach {
             dao.delete(it)
         }
+    }
+
+    override suspend fun deleteItemsByParent(parent: String) {
+        dao.deleteItemsByParent(parent)
     }
 
     override suspend fun getItemsWithTagIds(ids: List<Long>): List<TodoItem> {

@@ -8,10 +8,19 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface TodoItemDao : BaseDao<TodoItemEntity> {
 
-    @Query("SELECT * FROM TodoItemEntity")
-    fun select(): Flow<List<TodoItemEntity>>
+    @Query("SELECT * FROM TodoItemEntity WHERE parent = :parent")
+    suspend fun select(parent: String): List<TodoItemEntity>
 
-    @Query("SELECT * FROM TodoItemEntity WHERE dueDate = :date")
+    @Query("SELECT * FROM TodoItemEntity WHERE parent IS NULL")
+    suspend fun selectWithoutParent(): List<TodoItemEntity>
+
+    @Query("SELECT * FROM TodoItemEntity WHERE parent = :parent")
+    fun selectFlow(parent: String): Flow<List<TodoItemEntity>>
+
+    @Query("SELECT * FROM TodoItemEntity WHERE parent IS NULL")
+    fun selectWithoutParentFlow(): Flow<List<TodoItemEntity>>
+
+    @Query("SELECT * FROM TodoItemEntity WHERE dueDate = :date AND parent = null")
     fun selectByDate(date: String): Flow<List<TodoItemEntity>>
 
     @Query("SELECT * FROM TodoItemEntity WHERE id = :id")
@@ -19,5 +28,8 @@ interface TodoItemDao : BaseDao<TodoItemEntity> {
 
     @Query("SELECT * FROM TodoItemEntity WHERE tags LIKE '%' || :id || '%'")
     suspend fun selectContainsTagId(id: Long): List<TodoItemEntity>
+
+    @Query("DELETE FROM TodoItemEntity WHERE parent = :parent")
+    suspend fun deleteItemsByParent(parent: String)
 
 }

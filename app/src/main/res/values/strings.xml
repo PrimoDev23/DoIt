@@ -49,4 +49,8 @@
     <string name="todo_list_today_card_title">Today\'s items</string>
     <string name="todo_list_undone_title">Undone</string>
     <string name="todo_list_done_title">Done</string>
+    <string name="add_entry_subtask_title">Subtask</string>
+    <string name="add_entry_remove_subtask">Remove subtask</string>
+    <string name="add_entry_add_subtask">Add subtask</string>
+    <string name="add_subtask_title">Add subtask</string>
 </resources>

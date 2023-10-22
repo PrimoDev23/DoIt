@@ -9,5 +9,6 @@ data class TodoItem(
     val done: Boolean,
     val tags: List<Tag>,
     val priority: Priority,
-    val dueDate: LocalDate?
+    val dueDate: LocalDate?,
+    val parent: String?
 )

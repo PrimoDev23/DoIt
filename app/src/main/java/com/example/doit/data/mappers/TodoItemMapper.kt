@@ -29,7 +29,8 @@ class TodoItemMapper @Inject constructor(
                 done = done,
                 tags = tags,
                 priority = priority,
-                dueDate = date
+                dueDate = date,
+                parent = parent
             )
         }
     }
@@ -45,7 +46,8 @@ class TodoItemMapper @Inject constructor(
                 done = done,
                 tags = ids.joinToString(SEPARATOR),
                 priority = priority,
-                dueDate = item.dueDate?.format(FORMATTER)
+                dueDate = item.dueDate?.format(FORMATTER),
+                parent = parent
             )
         }
     }

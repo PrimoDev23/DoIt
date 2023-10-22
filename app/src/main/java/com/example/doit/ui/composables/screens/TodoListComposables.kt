@@ -117,7 +117,7 @@ fun TodoListScreen(
                 onEditClicked = {
                     val id = state.selectedItems.first().id
 
-                    navigator.navigate(AddEntryScreenDestination(id = id))
+                    navigator.navigate(AddEntryScreenDestination(id = id, parent = null))
                     viewModel.onEditClicked()
                 },
                 onDeleteClicked = viewModel::onDeleteClicked
@@ -126,7 +126,12 @@ fun TodoListScreen(
         floatingActionButton = {
             TodoListFloatingActionButton(
                 onClick = {
-                    navigator.navigate(AddEntryScreenDestination(id = UUID.randomUUID().toString()))
+                    navigator.navigate(
+                        AddEntryScreenDestination(
+                            id = UUID.randomUUID().toString(),
+                            parent = null
+                        )
+                    )
                 }
             )
         },

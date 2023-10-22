@@ -30,7 +30,7 @@ class TodoListViewModel @Inject constructor(
     private val deleteTodoItemsUseCase: DeleteTodoItemsUseCase,
 ) : ViewModel() {
 
-    private val todoItems = getTodoItemsFlowUseCase.getItemFlow()
+    private val todoItems = getTodoItemsFlowUseCase.getItemFlow(null)
     private val tags = getTagsFlowUseCase.getFlow()
     private val todayItems = getTodayTodoItemsFlowUseCase()
 
