@@ -136,17 +136,29 @@ class AddEntryViewModel @Inject constructor(
 
     fun onBackClicked() {
         viewModelScope.launch {
-            if (state.value.hasChanges()) {
-                sendShowDismissDialog()
+            if (state.value.isValid()) {
+                val todoItem = state.value.toTodoItem()
+
+                saveTodoItemUseCase.save(todoItem)
+                sendPopBackStack()
             } else {
+                deleteItemsByParentUseCase(navArgs.id)
+
                 sendPopBackStack()
             }
         }
     }
 
-    fun onDismiss() {
+    fun onDeleteClicked() {
         viewModelScope.launch {
-            deleteItemsByParentUseCase(navArgs.id)
+            val existingItem = this@AddEntryViewModel.existingItem
+
+            if (existingItem != null) {
+                deleteTodoItemsUseCase.delete(listOf(existingItem))
+                sendPopBackStack()
+            } else {
+                sendPopBackStack()
+            }
         }
     }
 
@@ -215,19 +227,6 @@ class AddEntryViewModel @Inject constructor(
         }
     }
 
-    fun onSaveClicked() {
-        viewModelScope.launch {
-            val todoItem = state.value.toTodoItem()
-
-            saveTodoItemUseCase.save(todoItem)
-            sendPopBackStack()
-        }
-    }
-
-    private suspend fun sendShowDismissDialog() {
-        _events.send(AddEntryEvent.ShowDismissDialog)
-    }
-
     private suspend fun sendPopBackStack() {
         _events.send(AddEntryEvent.PopBackStack)
     }
@@ -268,28 +267,6 @@ class AddEntryViewModel @Inject constructor(
             parent = navArgs.parent
         )
     }
-
-    private fun AddEntryState.hasChanges(): Boolean {
-        val existingItem = this@AddEntryViewModel.existingItem
-
-        return if (existingItem != null) {
-            val selectedTags = tags.filter {
-                it.selected
-            }
-
-            title != existingItem.title ||
-                    description != existingItem.description ||
-                    selectedTags != existingItem.tags ||
-                    priority != existingItem.priority ||
-                    dueDate != existingItem.dueDate
-        } else {
-            title.isNotBlank() ||
-                    description.isNotBlank() ||
-                    tags.any { it.selected } ||
-                    priority != Priority.NONE ||
-                    dueDate != null
-        }
-    }
 }
 
 @Immutable
@@ -316,6 +293,5 @@ data class AddEntryState(
 }
 
 sealed interface AddEntryEvent {
-    data object ShowDismissDialog : AddEntryEvent
     data object PopBackStack : AddEntryEvent
 }

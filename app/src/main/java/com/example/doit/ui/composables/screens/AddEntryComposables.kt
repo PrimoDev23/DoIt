@@ -21,8 +21,6 @@ import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.Button
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
@@ -87,24 +85,14 @@ fun AddEntryScreen(
     var showDatePickerDialog by remember {
         mutableStateOf(false)
     }
-    var showDismissDialog by remember {
-        mutableStateOf(false)
-    }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
-
-    val isValid by remember {
-        derivedStateOf {
-            state.isValid()
-        }
-    }
 
     BackHandler(onBack = viewModel::onBackClicked)
 
     LaunchedEffect(true) {
         viewModel.events.collectLatest {
             when (it) {
-                is AddEntryEvent.ShowDismissDialog -> showDismissDialog = true
                 is AddEntryEvent.PopBackStack -> navigator.popBackStack()
             }
         }
@@ -120,24 +108,19 @@ fun AddEntryScreen(
                 } else {
                     stringResource(id = R.string.add_subtask_title)
                 },
-                onBackClicked = viewModel::onBackClicked
-            )
-        },
-        bottomBar = {
-            AddEntryBottomBar(
-                modifier = Modifier
-                    .padding(16.dp)
-                    .height(56.dp)
-                    .fillMaxWidth(),
-                onSaveClicked = viewModel::onSaveClicked,
-                enabled = isValid
+                onBackClicked = viewModel::onBackClicked,
+                onDeleteClicked = viewModel::onDeleteClicked
             )
         }
     ) {
         Column(
             modifier = Modifier
                 .padding(it)
-                .padding(horizontal = 16.dp)
+                .padding(
+                    start = 16.dp,
+                    end = 16.dp,
+                    bottom = 16.dp
+                )
                 .fillMaxSize()
                 .verticalScroll(state = rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(24.dp)
@@ -242,18 +225,6 @@ fun AddEntryScreen(
             )
         }
     }
-
-    if (showDismissDialog) {
-        AddEntryDismissDialog(
-            onConfirm = {
-                viewModel.onDismiss()
-                navigator.popBackStack()
-            },
-            onDismiss = {
-                showDismissDialog = false
-            }
-        )
-    }
 }
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -261,6 +232,7 @@ fun AddEntryScreen(
 fun AddEntryTopBar(
     onBackClicked: () -> Unit,
     title: String,
+    onDeleteClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     CenterAlignedTopAppBar(
@@ -276,6 +248,14 @@ fun AddEntryTopBar(
                 Icon(
                     painter = painterResource(id = R.drawable.baseline_chevron_left_24),
                     contentDescription = stringResource(id = R.string.general_back)
+                )
+            }
+        },
+        actions = {
+            IconButton(onClick = onDeleteClicked) {
+                Icon(
+                    painter = painterResource(id = R.drawable.outline_delete_24),
+                    contentDescription = stringResource(id = R.string.general_delete)
                 )
             }
         }
@@ -528,53 +508,4 @@ fun SubtaskItem(
             }
         }
     }
-}
-
-@Composable
-fun AddEntryBottomBar(
-    onSaveClicked: () -> Unit,
-    enabled: Boolean,
-    modifier: Modifier = Modifier
-) {
-    AnimatedContent(
-        targetState = enabled,
-        label = "SaveButtonEnableAnimation"
-    ) { isEnabled ->
-        Button(
-            modifier = modifier,
-            onClick = onSaveClicked,
-            enabled = isEnabled,
-            shape = RoundedCornerShape(8.dp)
-        ) {
-            Text(text = stringResource(id = R.string.general_save))
-        }
-    }
-}
-
-@Composable
-fun AddEntryDismissDialog(
-    onConfirm: () -> Unit,
-    onDismiss: () -> Unit,
-    modifier: Modifier = Modifier
-) {
-    AlertDialog(
-        modifier = modifier,
-        title = {
-            Text(text = stringResource(id = R.string.add_entry_dismiss_dialog_title))
-        },
-        text = {
-            Text(text = stringResource(id = R.string.add_entry_dismiss_dialog_text))
-        },
-        dismissButton = {
-            TextButton(onClick = onDismiss) {
-                Text(text = stringResource(id = R.string.general_cancel))
-            }
-        },
-        onDismissRequest = onDismiss,
-        confirmButton = {
-            TextButton(onClick = onConfirm) {
-                Text(text = stringResource(id = R.string.add_entry_dismiss_dialog_confirm))
-            }
-        }
-    )
 }
