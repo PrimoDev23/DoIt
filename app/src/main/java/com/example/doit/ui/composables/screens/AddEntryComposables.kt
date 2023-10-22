@@ -116,11 +116,7 @@ fun AddEntryScreen(
         Column(
             modifier = Modifier
                 .padding(it)
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 16.dp
-                )
+                .padding(horizontal = 16.dp)
                 .fillMaxSize()
                 .verticalScroll(state = rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(24.dp)
@@ -180,6 +176,8 @@ fun AddEntryScreen(
                 onDoneChanged = viewModel::onSubtaskDoneChanged,
                 onRemoveClicked = viewModel::onSubtaskRemoveClicked
             )
+
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 
