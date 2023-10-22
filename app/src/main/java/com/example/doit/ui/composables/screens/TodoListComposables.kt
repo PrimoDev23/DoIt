@@ -76,6 +76,7 @@ import com.example.doit.ui.viewmodels.TodoListViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import java.util.UUID
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @RootNavGraph(start = true)
@@ -125,7 +126,7 @@ fun TodoListScreen(
         floatingActionButton = {
             TodoListFloatingActionButton(
                 onClick = {
-                    navigator.navigate(AddEntryScreenDestination(id = 0))
+                    navigator.navigate(AddEntryScreenDestination(id = UUID.randomUUID().toString()))
                 }
             )
         },

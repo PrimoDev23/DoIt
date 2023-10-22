@@ -32,7 +32,7 @@ class TodoItemRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun getItemById(id: Long): TodoItem? {
+    override suspend fun getItemById(id: String): TodoItem? {
         val entity = dao.selectById(id) ?: return null
 
         return mapper.map(entity)

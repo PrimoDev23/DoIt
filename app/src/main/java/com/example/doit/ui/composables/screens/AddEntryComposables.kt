@@ -40,7 +40,6 @@ import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -57,7 +56,6 @@ import com.example.doit.ui.composables.InputTitle
 import com.example.doit.ui.composables.PriorityItem
 import com.example.doit.ui.composables.TagListEntry
 import com.example.doit.ui.composables.VerticalGrid
-import com.example.doit.ui.composables.rememberFocusRequester
 import com.example.doit.ui.navigation.arguments.AddEntryNavArgs
 import com.example.doit.ui.viewmodels.AddEntryEvent
 import com.example.doit.ui.viewmodels.AddEntryViewModel
@@ -128,18 +126,8 @@ fun AddEntryScreen(
                 .verticalScroll(state = rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            val focusRequester = rememberFocusRequester()
-
-            LaunchedEffect(true) {
-                if (navArgs.id == 0L) {
-                    focusRequester.requestFocus()
-                }
-            }
-
             DoItTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(focusRequester),
+                modifier = Modifier.fillMaxWidth(),
                 value = state.title,
                 onValueChange = viewModel::onTitleChanged,
                 label = stringResource(id = R.string.add_entry_title_title),

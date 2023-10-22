@@ -8,7 +8,7 @@ import javax.inject.Inject
 class GetTodoItemUseCaseImpl @Inject constructor(
     private val todoItemRepository: TodoItemRepository
 ) : GetTodoItemUseCase {
-    override suspend operator fun invoke(id: Long): TodoItem? {
+    override suspend operator fun invoke(id: String): TodoItem? {
         return todoItemRepository.getItemById(id)
     }
 }

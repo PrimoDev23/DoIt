@@ -7,7 +7,7 @@ interface TodoItemRepository {
     fun getItemsFlow(): Flow<List<TodoItem>>
     fun getTodayItemsFlow(): Flow<List<TodoItem>>
 
-    suspend fun getItemById(id: Long): TodoItem?
+    suspend fun getItemById(id: String): TodoItem?
     suspend fun saveTodoItem(item: TodoItem)
     suspend fun saveTodoItems(items: List<TodoItem>)
     suspend fun deleteTodoItems(items: List<TodoItem>)

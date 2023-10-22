@@ -39,7 +39,7 @@ class AddEntryViewModel @Inject constructor(
 
     private val navArgs: AddEntryNavArgs = savedStateHandle.navArgs()
 
-    private val id: Long = navArgs.id
+    private val id: String = navArgs.id
     private var existingItem: TodoItem? = null
 
     private val _events = Channel<AddEntryEvent>()
@@ -68,33 +68,31 @@ class AddEntryViewModel @Inject constructor(
     }
 
     private suspend fun initData() {
-        if (id != 0L) {
-            getTodoItemUseCase(id)?.let { item ->
-                existingItem = item
+        getTodoItemUseCase(id)?.let { item ->
+            existingItem = item
 
-                val millis =
-                    item.dueDate?.atStartOfDay(ZoneId.systemDefault())?.toInstant()?.toEpochMilli()
-                datePickerState.setSelection(millis)
+            val millis =
+                item.dueDate?.atStartOfDay(ZoneId.systemDefault())?.toInstant()?.toEpochMilli()
+            datePickerState.setSelection(millis)
 
-                _state.update { state ->
-                    val newTags = state.tags.map { tag ->
-                        val selected = item.tags.any { it.id == tag.id }
+            _state.update { state ->
+                val newTags = state.tags.map { tag ->
+                    val selected = item.tags.any { it.id == tag.id }
 
-                        if (selected) {
-                            tag.copy(selected = true)
-                        } else {
-                            tag
-                        }
+                    if (selected) {
+                        tag.copy(selected = true)
+                    } else {
+                        tag
                     }
-
-                    state.copy(
-                        title = item.title,
-                        description = item.description,
-                        tags = newTags,
-                        priority = item.priority,
-                        dueDate = item.dueDate
-                    )
                 }
+
+                state.copy(
+                    title = item.title,
+                    description = item.description,
+                    tags = newTags,
+                    priority = item.priority,
+                    dueDate = item.dueDate
+                )
             }
         }
     }

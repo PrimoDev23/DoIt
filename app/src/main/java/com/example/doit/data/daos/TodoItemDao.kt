@@ -15,7 +15,7 @@ interface TodoItemDao : BaseDao<TodoItemEntity> {
     fun selectByDate(date: String): Flow<List<TodoItemEntity>>
 
     @Query("SELECT * FROM TodoItemEntity WHERE id = :id")
-    suspend fun selectById(id: Long): TodoItemEntity?
+    suspend fun selectById(id: String): TodoItemEntity?
 
     @Query("SELECT * FROM TodoItemEntity WHERE tags LIKE '%' || :id || '%'")
     suspend fun selectContainsTagId(id: Long): List<TodoItemEntity>

@@ -3,7 +3,7 @@ package com.example.doit.domain.models
 import java.time.LocalDate
 
 data class TodoItem(
-    val id: Long,
+    val id: String,
     val title: String,
     val description: String,
     val done: Boolean,

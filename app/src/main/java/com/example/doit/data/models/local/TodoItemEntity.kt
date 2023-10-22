@@ -6,8 +6,8 @@ import com.example.doit.domain.models.Priority
 
 @Entity
 data class TodoItemEntity(
-    @PrimaryKey(autoGenerate = true)
-    val id: Long,
+    @PrimaryKey
+    val id: String,
     val title: String,
     val description: String,
     val done: Boolean,
