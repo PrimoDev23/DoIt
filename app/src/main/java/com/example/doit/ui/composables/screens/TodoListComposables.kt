@@ -44,11 +44,13 @@ import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -71,11 +73,13 @@ import com.example.doit.ui.composables.TodoListPriorityFilterBottomSheet
 import com.example.doit.ui.composables.TodoListTagFilterBottomSheet
 import com.example.doit.ui.composables.ToggleableDropDownMenuItem
 import com.example.doit.ui.composables.applyFilter
+import com.example.doit.ui.composables.rememberSnackbarHostState
 import com.example.doit.ui.composables.screens.destinations.AddEntryScreenDestination
 import com.example.doit.ui.viewmodels.TodoListViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.coroutines.launch
 import java.util.UUID
 
 @OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
@@ -86,6 +90,8 @@ fun TodoListScreen(
     navigator: DestinationsNavigator,
     viewModel: TodoListViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val hasItemsSelected by remember {
@@ -99,6 +105,9 @@ fun TodoListScreen(
     var showPrioFilterBottomSheet by remember {
         mutableStateOf(false)
     }
+
+    val scope = rememberCoroutineScope()
+    val snackbarHostState = rememberSnackbarHostState()
     val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     RootScaffold(
@@ -153,7 +162,8 @@ fun TodoListScreen(
                     DrawerMenuButton()
                 }
             }
-        }
+        },
+        snackbarHostState = snackbarHostState
     ) {
         Column(
             modifier = Modifier
@@ -204,6 +214,10 @@ fun TodoListScreen(
                 onTagFilterClicked = {
                     if (state.tags.isNotEmpty()) {
                         showTagFilterBottomSheet = true
+                    } else {
+                        scope.launch {
+                            snackbarHostState.showSnackbar(message = context.getString(R.string.todo_list_no_tags))
+                        }
                     }
                 },
                 selectedTag = state.selectedTag,

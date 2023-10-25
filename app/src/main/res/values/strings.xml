@@ -53,4 +53,5 @@
     <string name="add_entry_remove_subtask">Remove subtask</string>
     <string name="add_entry_add_subtask">Add subtask</string>
     <string name="add_subtask_title">Add subtask</string>
+    <string name="todo_list_no_tags">You need to create a tag first…</string>
 </resources>
