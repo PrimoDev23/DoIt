@@ -428,6 +428,7 @@ fun TodoListSortDropDownMenu(
                 onCheckedChange = {
                     if (it) {
                         onSortTypeChanged(type)
+                        onDismiss()
                     }
                 },
                 text = stringResource(id = type.title)
@@ -438,7 +439,10 @@ fun TodoListSortDropDownMenu(
 
         ToggleableDropDownMenuItem(
             checked = hideDoneItems,
-            onCheckedChange = onHideDoneItemsChanged,
+            onCheckedChange = {
+                onHideDoneItemsChanged(it)
+                onDismiss()
+            },
             text = stringResource(id = R.string.todo_list_hide_done_items)
         )
     }
