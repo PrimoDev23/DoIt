@@ -73,6 +73,7 @@ dependencies {
     kspAndroidTest(libs.dagger.testing)
 
     implementation(libs.hilt.navigation)
+    implementation(libs.hilt.work)
 
     implementation(libs.compose.destinations)
     implementation(libs.compose.destinations.animations)
@@ -81,6 +82,8 @@ dependencies {
     implementation(libs.room)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
+
+    implementation(libs.work)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
