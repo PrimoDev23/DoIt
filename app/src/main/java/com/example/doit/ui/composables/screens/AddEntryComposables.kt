@@ -44,6 +44,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.focusRequester
+import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
@@ -125,20 +126,36 @@ fun AddEntryScreen(
         ) {
             val focusRequester = rememberFocusRequester()
 
+            var enableTitleFocusEvent by remember {
+                mutableStateOf(false)
+            }
+            var showTitleError by remember {
+                mutableStateOf(false)
+            }
+
             LaunchedEffect(true) {
                 if (!navArgs.edit) {
                     focusRequester.requestFocus()
                 }
+
+                enableTitleFocusEvent = true
             }
 
             DoItTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .focusRequester(focusRequester),
+                    .focusRequester(focusRequester)
+                    .onFocusChanged { focusState ->
+                        if (enableTitleFocusEvent && !focusState.isFocused) {
+                            showTitleError = state.title.isBlank()
+                        }
+                    },
                 value = state.title,
                 onValueChange = viewModel::onTitleChanged,
                 label = stringResource(id = R.string.add_entry_title_title),
-                singleLine = true
+                singleLine = true,
+                isError = showTitleError,
+                errorText = stringResource(id = R.string.add_entry_title_error)
             )
 
             DoItTextField(
