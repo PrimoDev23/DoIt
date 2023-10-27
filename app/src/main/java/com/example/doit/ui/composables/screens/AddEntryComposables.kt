@@ -167,10 +167,10 @@ fun AddEntryScreen(
                 minLines = 3
             )
 
-            DateTextField(
+            DueDateSection(
                 modifier = Modifier.fillMaxWidth(),
                 title = stringResource(id = R.string.add_entry_due_date_title),
-                value = state.dueDate,
+                date = state.dueDate,
                 onClick = {
                     showDatePickerDialog = true
                 }
@@ -294,6 +294,24 @@ fun AddEntryTopBar(
             }
         }
     )
+}
+
+@Composable
+fun DueDateSection(
+    title: String,
+    date: LocalDate?,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Column(modifier = modifier) {
+        InputTitle(text = title)
+
+        DateTextField(
+            modifier = Modifier.fillMaxWidth(),
+            value = date,
+            onClick = onClick
+        )
+    }
 }
 
 @OptIn(ExperimentalFoundationApi::class)
