@@ -8,6 +8,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import com.example.doit.R
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
@@ -22,9 +23,7 @@ fun DateTextField(
     formatter: DateTimeFormatter = remember {
         DateTimeFormatter.ofLocalizedDate(FormatStyle.SHORT)
     },
-    emptyDate: String = remember {
-        LocalDate.of(1000, 10, 31).format(formatter).replace(Regex("\\d"), "-")
-    }
+    emptyDate: String = stringResource(id = R.string.general_no_date)
 ) {
     val text = remember(value) {
         value?.format(formatter) ?: emptyDate

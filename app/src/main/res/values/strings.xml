@@ -54,4 +54,5 @@
     <string name="add_entry_add_subtask">Add subtask</string>
     <string name="add_subtask_title">Add subtask</string>
     <string name="todo_list_no_tags">You need to create a tag first…</string>
+    <string name="general_no_date">No date selected</string>
 </resources>
