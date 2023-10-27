@@ -58,4 +58,9 @@
     <string name="add_entry_title_error">You need to enter a title!</string>
     <string name="notification_item_channel_name">TodoItem notifications</string>
     <string name="notification_item_channel_description">Sends reminders for todo items</string>
+    <string name="add_entry_notification_title">Notification</string>
+    <string name="add_entry_notification_rationale">You need to grant notification permissions to use this feature!</string>
+    <string name="add_entry_edit_notification">Edit notification</string>
+    <string name="date_time_dialog_date">Date</string>
+    <string name="date_time_dialog_time">Time</string>
 </resources>

@@ -1,5 +1,7 @@
 package com.example.doit.ui.composables.screens
 
+import android.Manifest
+import android.os.Build
 import androidx.activity.compose.BackHandler
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.foundation.ExperimentalFoundationApi
@@ -33,6 +35,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
@@ -59,6 +62,7 @@ import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.ui.composables.DateTextField
+import com.example.doit.ui.composables.DateTimeDialog
 import com.example.doit.ui.composables.DoItCheckbox
 import com.example.doit.ui.composables.DoItTextField
 import com.example.doit.ui.composables.InputTitle
@@ -70,10 +74,17 @@ import com.example.doit.ui.composables.screens.destinations.AddEntryScreenDestin
 import com.example.doit.ui.navigation.arguments.AddEntryNavArgs
 import com.example.doit.ui.viewmodels.AddEntryEvent
 import com.example.doit.ui.viewmodels.AddEntryViewModel
+import com.google.accompanist.permissions.ExperimentalPermissionsApi
+import com.google.accompanist.permissions.isGranted
+import com.google.accompanist.permissions.rememberPermissionState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.coroutines.flow.collectLatest
+import java.time.LocalDate
+import java.time.LocalDateTime
+import java.time.format.DateTimeFormatter
+import java.time.format.FormatStyle
 import java.util.UUID
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -174,6 +185,13 @@ fun AddEntryScreen(
                 onClick = {
                     showDatePickerDialog = true
                 }
+            )
+
+            NotificationRow(
+                modifier = Modifier.fillMaxWidth(),
+                title = stringResource(id = R.string.add_entry_notification_title),
+                dateTime = state.notificationDateTime,
+                onDateTimePicked = viewModel::onNotificationDateTimePicked
             )
 
             AddEntryTagSelection(
@@ -311,6 +329,115 @@ fun DueDateSection(
             value = date,
             onClick = onClick
         )
+    }
+}
+
+@Composable
+fun NotificationRow(
+    title: String,
+    dateTime: LocalDateTime?,
+    onDateTimePicked: (LocalDateTime?) -> Unit,
+    modifier: Modifier = Modifier,
+    formatter: DateTimeFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT) }
+) {
+    NotificationRowWrapper(
+        modifier = modifier,
+        title = title
+    ) {
+        val text = remember(dateTime) {
+            dateTime?.format(formatter) ?: "/"
+        }
+        var showPickerDialog by remember {
+            mutableStateOf(false)
+        }
+
+        DoItTextField(
+            value = text,
+            onValueChange = {},
+            readOnly = true,
+            trailingIcon = {
+                IconButton(
+                    onClick = {
+                        showPickerDialog = true
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.outline_edit_notifications_24),
+                        contentDescription = stringResource(id = R.string.add_entry_edit_notification)
+                    )
+                }
+            }
+        )
+
+        if (showPickerDialog) {
+            DateTimeDialog(
+                value = dateTime,
+                onDismiss = {
+                    showPickerDialog = false
+                },
+                onConfirm = onDateTimePicked
+            )
+        }
+    }
+}
+
+@OptIn(ExperimentalPermissionsApi::class)
+@Composable
+fun NotificationRowWrapper(
+    title: String,
+    modifier: Modifier = Modifier,
+    content: @Composable () -> Unit
+) {
+    Column(modifier = modifier) {
+        InputTitle(text = title)
+
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+            val notificationPermissionState =
+                rememberPermissionState(permission = Manifest.permission.POST_NOTIFICATIONS)
+
+            if (notificationPermissionState.status.isGranted) {
+                content()
+            } else {
+                NotificationPermissionRationale(
+                    modifier = Modifier.fillMaxWidth(),
+                    onClick = {
+                        notificationPermissionState.launchPermissionRequest()
+                    }
+                )
+            }
+        } else {
+            content()
+        }
+    }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+fun NotificationPermissionRationale(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ElevatedCard(
+        modifier = Modifier
+            .minimumInteractiveComponentSize()
+            .then(modifier),
+        onClick = onClick
+    ) {
+        Row(
+            modifier = Modifier
+                .padding(16.dp)
+                .fillMaxWidth(),
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Icon(
+                painter = painterResource(id = R.drawable.outline_circle_notifications_24),
+                contentDescription = null
+            )
+
+            Spacer(modifier = Modifier.width(16.dp))
+
+            Text(text = stringResource(id = R.string.add_entry_notification_rationale))
+        }
     }
 }
 

@@ -29,7 +29,7 @@ interface TodoItemDao : BaseDao<TodoItemEntity> {
     @Query("SELECT * FROM TodoItemEntity WHERE tags LIKE '%' || :id || '%'")
     suspend fun selectContainsTagId(id: Long): List<TodoItemEntity>
 
-    @Query("DELETE FROM TodoItemEntity WHERE parent = :parent")
-    suspend fun deleteItemsByParent(parent: String)
+    @Query("DELETE FROM TodoItemEntity WHERE id = :id")
+    suspend fun deleteById(id: String)
 
 }

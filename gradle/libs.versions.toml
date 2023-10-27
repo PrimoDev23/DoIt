@@ -12,10 +12,12 @@ ksp = "1.9.10-1.0.13"
 dagger = "2.48"
 hilt-navigation = "1.0.0"
 hilt-work = "1.0.0"
+hilt-compiler = "1.1.0-rc01"
 compose-destinations = "1.9.53"
 room = "2.6.0"
 compose-lifecycle = "2.6.2"
 work = "2.8.1"
+accompanist-permissions = "0.32.0"
 
 [libraries]
 core-ktx = { group = "androidx.core", name = "core-ktx", version.ref = "core-ktx" }
@@ -37,6 +39,7 @@ dagger-compiler = { group = "com.google.dagger", name = "hilt-compiler", version
 dagger-testing = { group = "com.google.dagger", name = "hilt-android-testing", version.ref = "dagger" }
 hilt-navigation = { group = "androidx.hilt", name = "hilt-navigation-compose", version.ref = "hilt-navigation" }
 hilt-work = { group = "androidx.hilt", name = "hilt-work", version.ref = "hilt-work" }
+hilt-compiler = { group = "androidx.hilt", name = "hilt-compiler", version.ref = "hilt-compiler" }
 compose-destinations = { group = "io.github.raamcosta.compose-destinations", name = "core", version.ref = "compose-destinations" }
 compose-destinations-animations = { group = "io.github.raamcosta.compose-destinations", name = "animations-core", version.ref = "compose-destinations" }
 compose-destinations-ksp = { group = "io.github.raamcosta.compose-destinations", name = "ksp", version.ref = "compose-destinations" }
@@ -45,6 +48,7 @@ room-ktx = { group = "androidx.room", name = "room-ktx", version.ref = "room" }
 room-compiler = { group = "androidx.room", name = "room-compiler", version.ref = "room" }
 compose-lifecycle = { group = "androidx.lifecycle", name = "lifecycle-runtime-compose", version.ref = "compose-lifecycle" }
 work = { group = "androidx.work", name = "work-runtime-ktx", version.ref = "work" }
+accompanist-permissions = { group = "com.google.accompanist", name = "accompanist-permissions", version.ref = "accompanist-permissions" }
 
 [plugins]
 com-android-application = { id = "com.android.application", version.ref = "agp" }

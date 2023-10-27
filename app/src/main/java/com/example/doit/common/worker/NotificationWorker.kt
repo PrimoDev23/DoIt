@@ -11,6 +11,7 @@ import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.doit.DoItApplication
+import com.example.doit.R
 import com.example.doit.domain.usecases.interfaces.GetTodoItemUseCase
 import dagger.assisted.Assisted
 import dagger.assisted.AssistedInject
@@ -19,7 +20,7 @@ import dagger.assisted.AssistedInject
 class NotificationWorker @AssistedInject constructor(
     @Assisted private val context: Context,
     @Assisted params: WorkerParameters,
-    private val getTodoItemUseCase: GetTodoItemUseCase
+    val getTodoItemUseCase: GetTodoItemUseCase
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
@@ -28,6 +29,7 @@ class NotificationWorker @AssistedInject constructor(
         val item = getTodoItemUseCase(id) ?: return Result.failure()
 
         val notification = Notification.Builder(context, DoItApplication.ITEM_CHANNEL_NAME)
+            .setSmallIcon(R.drawable.notification_icon)
             .setContentTitle(item.title)
             .apply {
                 if (item.description.isNotBlank()) {

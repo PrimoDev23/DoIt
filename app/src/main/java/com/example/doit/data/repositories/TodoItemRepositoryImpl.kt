@@ -41,7 +41,7 @@ class TodoItemRepositoryImpl @Inject constructor(
     }
 
     override fun getTodayItemsFlow(): Flow<List<TodoItem>> {
-        val today = LocalDate.now().format(TodoItemMapper.FORMATTER)
+        val today = LocalDate.now().format(TodoItemMapper.DATE_FORMATTER)
 
         return dao.selectByDate(today).map { items ->
             items.map {
@@ -82,8 +82,8 @@ class TodoItemRepositoryImpl @Inject constructor(
         }
     }
 
-    override suspend fun deleteItemsByParent(parent: String) {
-        dao.deleteItemsByParent(parent)
+    override suspend fun deleteItemById(id: String) {
+        dao.deleteById(id)
     }
 
     override suspend fun getItemsWithTagIds(ids: List<Long>): List<TodoItem> {

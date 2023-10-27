@@ -4,6 +4,7 @@ import com.example.doit.data.models.local.TodoItemEntity
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.repositories.TagRepository
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
@@ -19,7 +20,10 @@ class TodoItemMapper @Inject constructor(
             }
             val tags = tagRepository.getTagsByIds(tagIds)
             val date = item.dueDate?.let {
-                LocalDate.parse(it, FORMATTER)
+                LocalDate.parse(it, DATE_FORMATTER)
+            }
+            val notificationDateTime = item.notificationDateTime?.let {
+                LocalDateTime.parse(it, DATE_TIME_FORMATTER)
             }
 
             TodoItem(
@@ -30,7 +34,8 @@ class TodoItemMapper @Inject constructor(
                 tags = tags,
                 priority = priority,
                 dueDate = date,
-                parent = parent
+                parent = parent,
+                notificationDateTime = notificationDateTime
             )
         }
     }
@@ -46,8 +51,9 @@ class TodoItemMapper @Inject constructor(
                 done = done,
                 tags = ids.joinToString(SEPARATOR),
                 priority = priority,
-                dueDate = item.dueDate?.format(FORMATTER),
-                parent = parent
+                dueDate = item.dueDate?.format(DATE_FORMATTER),
+                parent = parent,
+                notificationDateTime = notificationDateTime?.format(DATE_TIME_FORMATTER)
             )
         }
     }
@@ -55,6 +61,7 @@ class TodoItemMapper @Inject constructor(
     companion object {
         private const val SEPARATOR = "|"
 
-        val FORMATTER = DateTimeFormatter.ISO_DATE
+        val DATE_FORMATTER = DateTimeFormatter.ISO_DATE
+        val DATE_TIME_FORMATTER = DateTimeFormatter.ISO_DATE_TIME
     }
 }

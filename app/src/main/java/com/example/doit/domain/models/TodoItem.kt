@@ -1,6 +1,7 @@
 package com.example.doit.domain.models
 
 import java.time.LocalDate
+import java.time.LocalDateTime
 
 data class TodoItem(
     val id: String,
@@ -10,5 +11,6 @@ data class TodoItem(
     val tags: List<Tag>,
     val priority: Priority,
     val dueDate: LocalDate?,
-    val parent: String?
+    val parent: String?,
+    val notificationDateTime: LocalDateTime?
 )

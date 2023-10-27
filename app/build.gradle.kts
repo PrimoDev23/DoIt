@@ -74,6 +74,7 @@ dependencies {
 
     implementation(libs.hilt.navigation)
     implementation(libs.hilt.work)
+    ksp(libs.hilt.compiler)
 
     implementation(libs.compose.destinations)
     implementation(libs.compose.destinations.animations)
@@ -84,6 +85,8 @@ dependencies {
     ksp(libs.room.compiler)
 
     implementation(libs.work)
+
+    implementation(libs.accompanist.permissions)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

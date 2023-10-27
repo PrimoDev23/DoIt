@@ -27,11 +27,11 @@ import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
-import dagger.hilt.android.components.ViewModelComponent
+import dagger.hilt.components.SingletonComponent
 
 @Suppress("UNUSED")
 @Module
-@InstallIn(ViewModelComponent::class)
+@InstallIn(SingletonComponent::class)
 abstract class Bindings {
 
     @Binds

@@ -29,6 +29,7 @@ import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDate
+import java.time.LocalDateTime
 import java.time.ZoneId
 import javax.annotation.concurrent.Immutable
 import javax.inject.Inject
@@ -61,6 +62,7 @@ class AddEntryViewModel @Inject constructor(
             title = state.title,
             description = state.description,
             dueDate = state.dueDate,
+            notificationDateTime = state.notificationDateTime,
             tags = state.tags,
             priority = state.priority,
             subtasks = subtasks
@@ -73,6 +75,7 @@ class AddEntryViewModel @Inject constructor(
                 title = "",
                 description = "",
                 dueDate = null,
+                notificationDateTime = null,
                 tags = emptyList(),
                 priority = Priority.NONE,
                 subtasks = emptyList()
@@ -122,7 +125,8 @@ class AddEntryViewModel @Inject constructor(
                     description = item.description,
                     tags = newTags,
                     priority = item.priority,
-                    dueDate = item.dueDate
+                    dueDate = item.dueDate,
+                    notificationDateTime = item.notificationDateTime
                 )
             }
         }
@@ -185,6 +189,12 @@ class AddEntryViewModel @Inject constructor(
 
                 it.copy(dueDate = date)
             }
+        }
+    }
+
+    fun onNotificationDateTimePicked(localDateTime: LocalDateTime?) {
+        _state.update {
+            it.copy(notificationDateTime = localDateTime)
         }
     }
 
@@ -264,7 +274,8 @@ class AddEntryViewModel @Inject constructor(
             tags = tags.filter { it.selected },
             priority = priority,
             dueDate = dueDate,
-            parent = navArgs.parent
+            parent = navArgs.parent,
+            notificationDateTime = notificationDateTime
         )
     }
 }
@@ -274,6 +285,7 @@ data class AddEntryViewModelState(
     val title: String = "",
     val description: String = "",
     val dueDate: LocalDate? = null,
+    val notificationDateTime: LocalDateTime? = null,
     val tags: List<Tag> = emptyList(),
     val priority: Priority = Priority.NONE
 )
@@ -283,6 +295,7 @@ data class AddEntryState(
     val title: String,
     val description: String,
     val dueDate: LocalDate?,
+    val notificationDateTime: LocalDateTime?,
     val tags: List<Tag>,
     val priority: Priority,
     val subtasks: List<TodoItem>
