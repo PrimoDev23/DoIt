@@ -176,6 +176,15 @@ fun AddEntryScreen(
                 minLines = 3
             )
 
+            SubtaskSection(
+                modifier = Modifier.fillMaxWidth(),
+                onSubtaskAdded = viewModel::onSubtaskAdded,
+                subtasks = state.subtasks,
+                onTitleUpdated = viewModel::onSubtaskTitleUpdated,
+                onDoneChanged = viewModel::onSubtaskDoneChanged,
+                onRemoveClicked = viewModel::onSubtaskRemoveClicked
+            )
+
             DueDateSection(
                 modifier = Modifier.fillMaxWidth(),
                 title = stringResource(id = R.string.add_entry_due_date_title),
@@ -202,15 +211,6 @@ fun AddEntryScreen(
                 modifier = Modifier.fillMaxWidth(),
                 priority = state.priority,
                 onPriorityChanged = viewModel::onPriorityChanged
-            )
-
-            SubtaskSection(
-                modifier = Modifier.fillMaxWidth(),
-                onSubtaskAdded = viewModel::onSubtaskAdded,
-                subtasks = state.subtasks,
-                onTitleUpdated = viewModel::onSubtaskTitleUpdated,
-                onDoneChanged = viewModel::onSubtaskDoneChanged,
-                onRemoveClicked = viewModel::onSubtaskRemoveClicked
             )
 
             Spacer(modifier = Modifier.height(8.dp))
