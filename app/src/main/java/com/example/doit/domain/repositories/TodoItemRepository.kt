@@ -4,8 +4,7 @@ import com.example.doit.domain.models.TodoItem
 import kotlinx.coroutines.flow.Flow
 
 interface TodoItemRepository {
-    suspend fun getItems(parent: String?): List<TodoItem>
-    fun getItemsFlow(parent: String?): Flow<List<TodoItem>>
+    fun getItemsFlow(): Flow<List<TodoItem>>
     fun getTodayItemsFlow(): Flow<List<TodoItem>>
 
     suspend fun getItemById(id: String): TodoItem?

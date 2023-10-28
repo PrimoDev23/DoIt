@@ -63,4 +63,6 @@
     <string name="add_entry_edit_notification">Edit notification</string>
     <string name="date_time_dialog_date">Date</string>
     <string name="date_time_dialog_time">Time</string>
+    <string name="add_entry_add_subtask_dialog_title">Add subtask</string>
+    <string name="add_entry_add_subtask_dialog_description">Please enter a title</string>
 </resources>

@@ -6,6 +6,7 @@ import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
 import com.example.doit.common.worker.NotificationWorker
 import com.example.doit.domain.models.TodoItem
+import com.example.doit.domain.repositories.SubtaskRepository
 import com.example.doit.domain.repositories.TodoItemRepository
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import dagger.hilt.android.qualifiers.ApplicationContext
@@ -15,13 +16,15 @@ import javax.inject.Inject
 
 class SaveTodoItemUseCaseImpl @Inject constructor(
     @ApplicationContext private val context: Context,
-    private val todoItemRepository: TodoItemRepository
+    private val todoItemRepository: TodoItemRepository,
+    private val subtaskRepository: SubtaskRepository
 ) : SaveTodoItemUseCase {
 
     override suspend fun save(item: TodoItem) {
         val workManager = WorkManager.getInstance(context)
 
         todoItemRepository.saveTodoItem(item)
+        subtaskRepository.saveSubtasksForParent(item.id, item.subtasks)
 
         if (item.notificationDateTime != null) {
             val now = LocalDateTime.now()

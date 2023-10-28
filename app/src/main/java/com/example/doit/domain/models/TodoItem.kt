@@ -11,6 +11,6 @@ data class TodoItem(
     val tags: List<Tag>,
     val priority: Priority,
     val dueDate: LocalDate?,
-    val parent: String?,
+    val subtasks: List<Subtask>,
     val notificationDateTime: LocalDateTime?
 )

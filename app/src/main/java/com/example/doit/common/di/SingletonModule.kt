@@ -22,4 +22,13 @@ class SingletonModule {
         "doit-database"
     ).build()
 
+    @Provides
+    fun provideTodoItemDao(database: AppDatabase) = database.todoItemDao()
+
+    @Provides
+    fun provideTagDao(database: AppDatabase) = database.tagDao()
+
+    @Provides
+    fun provideSubtaskDao(database: AppDatabase) = database.subtaskDao()
+
 }

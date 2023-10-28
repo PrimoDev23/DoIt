@@ -33,6 +33,7 @@ import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
@@ -55,12 +56,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
+import androidx.compose.ui.window.Dialog
 import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.doit.R
 import com.example.doit.domain.models.Priority
+import com.example.doit.domain.models.Subtask
 import com.example.doit.domain.models.Tag
-import com.example.doit.domain.models.TodoItem
 import com.example.doit.ui.composables.DateTextField
 import com.example.doit.ui.composables.DateTimeDialog
 import com.example.doit.ui.composables.DoItCheckbox
@@ -70,7 +72,6 @@ import com.example.doit.ui.composables.PriorityItem
 import com.example.doit.ui.composables.TagListEntry
 import com.example.doit.ui.composables.VerticalGrid
 import com.example.doit.ui.composables.rememberFocusRequester
-import com.example.doit.ui.composables.screens.destinations.AddEntryScreenDestination
 import com.example.doit.ui.navigation.arguments.AddEntryNavArgs
 import com.example.doit.ui.viewmodels.AddEntryEvent
 import com.example.doit.ui.viewmodels.AddEntryViewModel
@@ -208,25 +209,8 @@ fun AddEntryScreen(
 
             SubtaskSection(
                 modifier = Modifier.fillMaxWidth(),
-                onAddSubtaskClicked = {
-                    navigator.navigate(
-                        AddEntryScreenDestination(
-                            id = UUID.randomUUID().toString(),
-                            parent = navArgs.id,
-                            edit = false
-                        )
-                    )
-                },
+                onSubtaskAdded = viewModel::onSubtaskAdded,
                 subtasks = state.subtasks,
-                onSubtaskClicked = { item ->
-                    navigator.navigate(
-                        AddEntryScreenDestination(
-                            id = item.id,
-                            parent = navArgs.id,
-                            edit = true
-                        )
-                    )
-                },
                 onDoneChanged = viewModel::onSubtaskDoneChanged,
                 onRemoveClicked = viewModel::onSubtaskRemoveClicked
             )
@@ -587,11 +571,10 @@ fun PrioritySelection(
 
 @Composable
 fun SubtaskSection(
-    onAddSubtaskClicked: () -> Unit,
-    subtasks: List<TodoItem>,
-    onSubtaskClicked: (TodoItem) -> Unit,
-    onDoneChanged: (TodoItem, Boolean) -> Unit,
-    onRemoveClicked: (TodoItem) -> Unit,
+    onSubtaskAdded: (Subtask) -> Unit,
+    subtasks: List<Subtask>,
+    onDoneChanged: (Subtask, Boolean) -> Unit,
+    onRemoveClicked: (Subtask) -> Unit,
     modifier: Modifier = Modifier,
     itemShape: Shape = RoundedCornerShape(8.dp)
 ) {
@@ -604,6 +587,10 @@ fun SubtaskSection(
             modifier = Modifier.fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
+            var addSubtaskDialogVisible by remember {
+                mutableStateOf(false)
+            }
+
             subtasks.forEach { task ->
                 SubtaskItem(
                     modifier = Modifier.fillMaxWidth(),
@@ -617,14 +604,16 @@ fun SubtaskSection(
                         onRemoveClicked(task)
                     },
                     onClick = {
-                        onSubtaskClicked(task)
+
                     }
                 )
             }
 
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
-                onClick = onAddSubtaskClicked,
+                onClick = {
+                    addSubtaskDialogVisible = true
+                },
                 shape = itemShape
             ) {
                 Icon(
@@ -635,6 +624,108 @@ fun SubtaskSection(
                 Spacer(modifier = Modifier.width(16.dp))
 
                 Text(text = stringResource(id = R.string.add_entry_add_subtask))
+            }
+
+            if (addSubtaskDialogVisible) {
+                AddSubtaskDialog(
+                    onDismiss = {
+                        addSubtaskDialogVisible = false
+                    },
+                    onConfirm = {
+                        val subtask = Subtask(
+                            id = UUID.randomUUID().toString(),
+                            title = it,
+                            done = false
+                        )
+
+                        onSubtaskAdded(subtask)
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun AddSubtaskDialog(
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit,
+    shape: Shape = RoundedCornerShape(8.dp)
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.surface,
+            shape = shape,
+            tonalElevation = 1.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(
+                        start = 16.dp,
+                        top = 16.dp,
+                        end = 16.dp,
+                        bottom = 8.dp
+                    )
+                    .fillMaxWidth()
+            ) {
+                val focusRequester = rememberFocusRequester()
+                var text by remember {
+                    mutableStateOf("")
+                }
+                val confirmEnabled by remember {
+                    derivedStateOf {
+                        text.isNotBlank()
+                    }
+                }
+
+                LaunchedEffect(true) {
+                    focusRequester.requestFocus()
+                }
+
+                Text(
+                    text = stringResource(id = R.string.add_entry_add_subtask_dialog_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = stringResource(id = R.string.add_entry_add_subtask_dialog_description),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                DoItTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
+                    value = text,
+                    onValueChange = {
+                        text = it
+                    }
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(modifier = Modifier.align(Alignment.End)) {
+                    TextButton(onClick = onDismiss) {
+                        Text(text = stringResource(id = R.string.general_cancel))
+                    }
+
+                    TextButton(
+                        enabled = confirmEnabled,
+                        onClick = {
+                            onConfirm(text)
+                            onDismiss()
+                        }
+                    ) {
+                        Text(text = stringResource(id = R.string.general_ok))
+                    }
+                }
             }
         }
     }

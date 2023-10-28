@@ -2,6 +2,7 @@ package com.example.doit.data.mappers
 
 import com.example.doit.data.models.local.TodoItemEntity
 import com.example.doit.domain.models.TodoItem
+import com.example.doit.domain.repositories.SubtaskRepository
 import com.example.doit.domain.repositories.TagRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -9,7 +10,8 @@ import java.time.format.DateTimeFormatter
 import javax.inject.Inject
 
 class TodoItemMapper @Inject constructor(
-    private val tagRepository: TagRepository
+    private val tagRepository: TagRepository,
+    private val subtaskRepository: SubtaskRepository,
 ) : BaseMapper<TodoItemEntity, TodoItem>() {
     override suspend fun map(item: TodoItemEntity): TodoItem {
         return with(item) {
@@ -26,6 +28,8 @@ class TodoItemMapper @Inject constructor(
                 LocalDateTime.parse(it, DATE_TIME_FORMATTER)
             }
 
+            val subtasks = subtaskRepository.getSubtasksByParent(id)
+
             TodoItem(
                 id = id,
                 title = title,
@@ -34,7 +38,7 @@ class TodoItemMapper @Inject constructor(
                 tags = tags,
                 priority = priority,
                 dueDate = date,
-                parent = parent,
+                subtasks = subtasks,
                 notificationDateTime = notificationDateTime
             )
         }
@@ -52,7 +56,6 @@ class TodoItemMapper @Inject constructor(
                 tags = ids.joinToString(SEPARATOR),
                 priority = priority,
                 dueDate = item.dueDate?.format(DATE_FORMATTER),
-                parent = parent,
                 notificationDateTime = notificationDateTime?.format(DATE_TIME_FORMATTER)
             )
         }

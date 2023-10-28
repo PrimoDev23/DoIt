@@ -14,26 +14,8 @@ class TodoItemRepositoryImpl @Inject constructor(
     private val mapper: TodoItemMapper
 ) : TodoItemRepository {
 
-    override suspend fun getItems(parent: String?): List<TodoItem> {
-        val items = if (parent == null) {
-            dao.selectWithoutParent()
-        } else {
-            dao.select(parent)
-        }
-
-        return items.map {
-            mapper.map(it)
-        }
-    }
-
-    override fun getItemsFlow(parent: String?): Flow<List<TodoItem>> {
-        val flow = if (parent == null) {
-            dao.selectWithoutParentFlow()
-        } else {
-            dao.selectFlow(parent)
-        }
-
-        return flow.map { items ->
+    override fun getItemsFlow(): Flow<List<TodoItem>> {
+        return dao.selectFlow().map { items ->
             items.map {
                 mapper.map(it)
             }
