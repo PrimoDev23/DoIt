@@ -191,6 +191,22 @@ class AddEntryViewModel @Inject constructor(
         }
     }
 
+    fun onSubtaskTitleUpdated(subtask: Subtask, title: String) {
+        _state.update { state ->
+            val subtasks = state.subtasks.toMutableList()
+            val index = subtasks.indexOf(subtask)
+
+            if (index == -1) {
+                return@update state
+            }
+
+            val newItem = subtask.copy(title = title)
+            subtasks[index] = newItem
+
+            state.copy(subtasks = subtasks)
+        }
+    }
+
     fun onSubtaskDoneChanged(subtask: Subtask, done: Boolean) {
         _state.update { state ->
             val subtasks = state.subtasks.toMutableList()

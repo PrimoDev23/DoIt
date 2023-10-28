@@ -50,6 +50,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.focusRequester
 import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -118,11 +119,7 @@ fun AddEntryScreen(
         topBar = {
             AddEntryTopBar(
                 modifier = Modifier.fillMaxWidth(),
-                title = if (navArgs.parent == null) {
-                    stringResource(id = R.string.add_entry_title)
-                } else {
-                    stringResource(id = R.string.add_subtask_title)
-                },
+                title = stringResource(id = R.string.add_entry_title),
                 onBackClicked = viewModel::onBackClicked,
                 onDeleteClicked = viewModel::onDeleteClicked
             )
@@ -211,6 +208,7 @@ fun AddEntryScreen(
                 modifier = Modifier.fillMaxWidth(),
                 onSubtaskAdded = viewModel::onSubtaskAdded,
                 subtasks = state.subtasks,
+                onTitleUpdated = viewModel::onSubtaskTitleUpdated,
                 onDoneChanged = viewModel::onSubtaskDoneChanged,
                 onRemoveClicked = viewModel::onSubtaskRemoveClicked
             )
@@ -573,11 +571,14 @@ fun PrioritySelection(
 fun SubtaskSection(
     onSubtaskAdded: (Subtask) -> Unit,
     subtasks: List<Subtask>,
+    onTitleUpdated: (Subtask, String) -> Unit,
     onDoneChanged: (Subtask, Boolean) -> Unit,
     onRemoveClicked: (Subtask) -> Unit,
     modifier: Modifier = Modifier,
     itemShape: Shape = RoundedCornerShape(8.dp)
 ) {
+    val focusManager = LocalFocusManager.current
+
     Column(modifier = modifier) {
         InputTitle(text = stringResource(id = R.string.add_entry_subtask_title))
 
@@ -589,6 +590,9 @@ fun SubtaskSection(
         ) {
             var addSubtaskDialogVisible by remember {
                 mutableStateOf(false)
+            }
+            var editSubtaskItem by remember {
+                mutableStateOf<Subtask?>(null)
             }
 
             subtasks.forEach { task ->
@@ -604,7 +608,8 @@ fun SubtaskSection(
                         onRemoveClicked(task)
                     },
                     onClick = {
-
+                        focusManager.clearFocus()
+                        editSubtaskItem = task
                     }
                 )
             }
@@ -612,6 +617,7 @@ fun SubtaskSection(
             OutlinedButton(
                 modifier = Modifier.fillMaxWidth(),
                 onClick = {
+                    focusManager.clearFocus()
                     addSubtaskDialogVisible = true
                 },
                 shape = itemShape
@@ -639,6 +645,18 @@ fun SubtaskSection(
                         )
 
                         onSubtaskAdded(subtask)
+                    }
+                )
+            }
+
+            editSubtaskItem?.let { subtask ->
+                EditSubtaskDialog(
+                    title = subtask.title,
+                    onDismiss = {
+                        editSubtaskItem = null
+                    },
+                    onConfirm = {
+                        onTitleUpdated(subtask, it)
                     }
                 )
             }
@@ -706,7 +724,95 @@ fun AddSubtaskDialog(
                     value = text,
                     onValueChange = {
                         text = it
+                    },
+                    singleLine = true
+                )
+
+                Spacer(modifier = Modifier.height(8.dp))
+
+                Row(modifier = Modifier.align(Alignment.End)) {
+                    TextButton(onClick = onDismiss) {
+                        Text(text = stringResource(id = R.string.general_cancel))
                     }
+
+                    TextButton(
+                        enabled = confirmEnabled,
+                        onClick = {
+                            onConfirm(text)
+                            onDismiss()
+                        }
+                    ) {
+                        Text(text = stringResource(id = R.string.general_ok))
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
+fun EditSubtaskDialog(
+    title: String,
+    onDismiss: () -> Unit,
+    onConfirm: (String) -> Unit,
+    shape: Shape = RoundedCornerShape(8.dp)
+) {
+    Dialog(onDismissRequest = onDismiss) {
+        Surface(
+            modifier = Modifier.fillMaxWidth(),
+            color = MaterialTheme.colorScheme.surface,
+            shape = shape,
+            tonalElevation = 1.dp
+        ) {
+            Column(
+                modifier = Modifier
+                    .padding(
+                        start = 16.dp,
+                        top = 16.dp,
+                        end = 16.dp,
+                        bottom = 8.dp
+                    )
+                    .fillMaxWidth()
+            ) {
+                val focusRequester = rememberFocusRequester()
+                var text by remember(title) {
+                    mutableStateOf(title)
+                }
+                val confirmEnabled by remember {
+                    derivedStateOf {
+                        text.isNotBlank()
+                    }
+                }
+
+                LaunchedEffect(true) {
+                    focusRequester.requestFocus()
+                }
+
+                Text(
+                    text = stringResource(id = R.string.add_entry_edit_subtask_dialog_title),
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
+
+                Spacer(modifier = Modifier.height(4.dp))
+
+                Text(
+                    text = stringResource(id = R.string.add_entry_edit_subtask_dialog_description),
+                    style = MaterialTheme.typography.labelLarge,
+                    color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.7f)
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                DoItTextField(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(focusRequester),
+                    value = text,
+                    onValueChange = {
+                        text = it
+                    },
+                    singleLine = true
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))

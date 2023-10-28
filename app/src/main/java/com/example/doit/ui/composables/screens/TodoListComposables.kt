@@ -129,7 +129,6 @@ fun TodoListScreen(
                     navigator.navigate(
                         AddEntryScreenDestination(
                             id = id,
-                            parent = null,
                             edit = true
                         )
                     )
@@ -144,7 +143,6 @@ fun TodoListScreen(
                     navigator.navigate(
                         AddEntryScreenDestination(
                             id = UUID.randomUUID().toString(),
-                            parent = null,
                             edit = false
                         )
                     )
