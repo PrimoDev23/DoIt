@@ -28,6 +28,7 @@ import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -48,7 +49,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.focus.focusRequester
-import androidx.compose.ui.focus.onFocusChanged
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
@@ -103,6 +103,10 @@ fun AddEntryScreen(
     }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val titleFocusRequester = rememberFocusRequester()
+    var showTitleError by remember {
+        mutableStateOf(false)
+    }
 
     BackHandler(onBack = viewModel::onBackClicked)
 
@@ -123,6 +127,18 @@ fun AddEntryScreen(
                 onBackClicked = viewModel::onBackClicked,
                 onDeleteClicked = viewModel::onDeleteClicked
             )
+        },
+        floatingActionButton = {
+            SaveFloatingActionButton(
+                onClick = {
+                    if (state.title.isBlank()) {
+                        showTitleError = true
+                        titleFocusRequester.requestFocus()
+                    } else {
+                        viewModel.onSaveClicked()
+                    }
+                }
+            )
         }
     ) {
         Column(
@@ -133,32 +149,16 @@ fun AddEntryScreen(
                 .verticalScroll(state = rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(24.dp)
         ) {
-            val focusRequester = rememberFocusRequester()
-
-            var enableTitleFocusEvent by remember {
-                mutableStateOf(false)
-            }
-            var showTitleError by remember {
-                mutableStateOf(false)
-            }
-
             LaunchedEffect(true) {
                 if (!navArgs.edit) {
-                    focusRequester.requestFocus()
+                    titleFocusRequester.requestFocus()
                 }
-
-                enableTitleFocusEvent = true
             }
 
             DoItTextField(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .focusRequester(focusRequester)
-                    .onFocusChanged { focusState ->
-                        if (enableTitleFocusEvent && !focusState.isFocused) {
-                            showTitleError = state.title.isBlank()
-                        }
-                    },
+                    .focusRequester(titleFocusRequester),
                 value = state.title,
                 onValueChange = viewModel::onTitleChanged,
                 label = stringResource(id = R.string.add_entry_title_title),
@@ -294,6 +294,22 @@ fun AddEntryTopBar(
             }
         }
     )
+}
+
+@Composable
+fun SaveFloatingActionButton(
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    FloatingActionButton(
+        modifier = modifier,
+        onClick = onClick
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.baseline_check_24),
+            contentDescription = stringResource(id = R.string.general_save)
+        )
+    }
 }
 
 @Composable

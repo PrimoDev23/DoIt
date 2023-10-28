@@ -121,12 +121,6 @@ class AddEntryViewModel @Inject constructor(
 
     fun onBackClicked() {
         viewModelScope.launch {
-            if (state.value.isValid()) {
-                val todoItem = state.value.toTodoItem()
-
-                saveTodoItemUseCase.save(todoItem)
-            }
-
             sendPopBackStack()
         }
     }
@@ -140,6 +134,18 @@ class AddEntryViewModel @Inject constructor(
             }
 
             sendPopBackStack()
+        }
+    }
+
+    fun onSaveClicked() {
+        viewModelScope.launch {
+            if (state.value.isValid()) {
+                val todoItem = state.value.toTodoItem()
+
+                saveTodoItemUseCase.save(todoItem)
+
+                sendPopBackStack()
+            }
         }
     }
 
