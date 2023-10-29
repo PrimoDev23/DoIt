@@ -12,6 +12,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
@@ -93,11 +94,15 @@ fun InfoTextSection(
     ) {
         Text(
             modifier = Modifier.weight(1f),
-            text = title
+            text = title,
+            style = MaterialTheme.typography.titleMedium
         )
 
         Spacer(modifier = Modifier.width(8.dp))
 
-        Text(text = text)
+        Text(
+            text = text,
+            style = MaterialTheme.typography.labelLarge
+        )
     }
 }
