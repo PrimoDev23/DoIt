@@ -67,4 +67,7 @@
     <string name="add_entry_add_subtask_dialog_description">Please enter a title for this subtask</string>
     <string name="add_entry_edit_subtask_dialog_title">Edit subtask</string>
     <string name="add_entry_edit_subtask_dialog_description">Please enter a new title for this subtask</string>
+    <string name="info_screen_title">About DoIt</string>
+    <string name="info_version_name">Version name</string>
+    <string name="info_version_code">Version code</string>
 </resources>

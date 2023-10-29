@@ -7,6 +7,7 @@ import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
@@ -16,6 +17,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ripple.rememberRipple
+import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -39,6 +41,7 @@ import com.example.doit.ui.composables.locals.LocalDrawerState
 import com.example.doit.ui.composables.screens.NavGraphs
 import com.example.doit.ui.composables.screens.appCurrentDestinationAsState
 import com.example.doit.ui.composables.screens.destinations.Destination
+import com.example.doit.ui.composables.screens.destinations.InfoScreenDestination
 import com.example.doit.ui.composables.screens.destinations.TagListScreenDestination
 import com.example.doit.ui.composables.screens.destinations.TodoListScreenDestination
 import com.example.doit.ui.composables.screens.startAppDestination
@@ -79,7 +82,7 @@ fun DrawerMenu(
     ModalDrawerSheet(modifier = modifier) {
         Column(
             modifier = Modifier
-                .fillMaxWidth()
+                .fillMaxSize()
                 .verticalScroll(state = rememberScrollState()),
             verticalArrangement = Arrangement.spacedBy(8.dp)
         ) {
@@ -115,7 +118,26 @@ fun DrawerMenu(
                 }
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
+            Spacer(modifier = Modifier.weight(1f))
+
+            Divider()
+
+            DrawerMenuItem(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                icon = painterResource(id = R.drawable.outline_info_24),
+                title = stringResource(id = R.string.info_screen_title),
+                selected = currentDestination == InfoScreenDestination,
+                onClick = {
+                    navController.navigate(InfoScreenDestination) {
+                        buildNavigationOptions(navController)
+                    }
+                    onDismiss()
+                }
+            )
+
+            Spacer(modifier = Modifier.height(0.dp))
         }
     }
 }
