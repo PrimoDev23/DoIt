@@ -4,19 +4,15 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
-import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
@@ -86,15 +82,15 @@ fun DrawerMenu(
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .verticalScroll(state = rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(8.dp)
+                .padding(
+                    vertical = 4.dp,
+                    horizontal = 12.dp
+                )
         ) {
             Spacer(modifier = Modifier.height(16.dp))
 
             DrawerMenuItem(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 icon = painterResource(id = R.drawable.outline_checklist_rtl_24),
                 title = stringResource(id = R.string.todo_list_title),
                 selected = currentDestination == TodoListScreenDestination,
@@ -107,9 +103,7 @@ fun DrawerMenu(
             )
 
             DrawerMenuItem(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 icon = painterResource(id = R.drawable.outline_label_24),
                 title = stringResource(id = R.string.tag_overview_title),
                 selected = currentDestination == TagListScreenDestination,
@@ -123,12 +117,10 @@ fun DrawerMenu(
 
             Spacer(modifier = Modifier.weight(1f))
 
-            Divider()
+            Divider(modifier = Modifier.padding(vertical = 4.dp))
 
             DrawerMenuItem(
-                modifier = Modifier
-                    .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
+                modifier = Modifier.fillMaxWidth(),
                 icon = painterResource(id = R.drawable.outline_info_24),
                 title = stringResource(id = R.string.info_screen_title),
                 selected = currentDestination == InfoScreenDestination,
@@ -179,7 +171,7 @@ fun DrawerMenuItem(
 
     Row(
         modifier = Modifier
-            .heightIn(min = 56.dp)
+            .height(56.dp)
             .then(modifier)
             .background(
                 color = backgroundColor,
@@ -201,6 +193,9 @@ fun DrawerMenuItem(
 
         Spacer(modifier = Modifier.width(16.dp))
 
-        Text(text = title)
+        Text(
+            text = title,
+            style = MaterialTheme.typography.labelLarge
+        )
     }
 }
