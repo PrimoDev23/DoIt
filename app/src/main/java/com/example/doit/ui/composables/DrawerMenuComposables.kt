@@ -1,5 +1,6 @@
 package com.example.doit.ui.composables
 
+import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
@@ -24,11 +25,13 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalDrawerSheet
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.res.painterResource
@@ -165,20 +168,23 @@ fun DrawerMenuItem(
     modifier: Modifier = Modifier,
     shape: Shape = CircleShape
 ) {
-    val backgroundModifier = if (selected) {
-        Modifier.background(
-            color = MaterialTheme.colorScheme.primary.copy(alpha = 0.3f),
-            shape = shape
-        )
-    } else {
-        Modifier
-    }
+    val backgroundColor by animateColorAsState(
+        targetValue = if (selected) {
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
+        } else {
+            Color.Transparent
+        },
+        label = "DrawerMenuItemBackgroundAnimation"
+    )
 
     Row(
         modifier = Modifier
             .heightIn(min = 56.dp)
             .then(modifier)
-            .then(backgroundModifier)
+            .background(
+                color = backgroundColor,
+                shape = shape
+            )
             .clip(shape)
             .clickable(
                 interactionSource = remember { MutableInteractionSource() },
