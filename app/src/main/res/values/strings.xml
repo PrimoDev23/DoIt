@@ -70,4 +70,5 @@
     <string name="info_screen_title">About DoIt</string>
     <string name="info_version_name">Version name</string>
     <string name="info_version_code">Version code</string>
+    <string name="info_screen_github">GitHub</string>
 </resources>

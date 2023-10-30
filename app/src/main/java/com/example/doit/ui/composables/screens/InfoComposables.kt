@@ -1,6 +1,11 @@
 package com.example.doit.ui.composables.screens
 
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.clickable
+import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
@@ -22,6 +27,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
 import com.example.doit.R
 import com.example.doit.ui.composables.DrawerMenuButton
@@ -29,6 +35,10 @@ import com.example.doit.ui.composables.RootScaffold
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 
+
+private const val GITHUB_URL = "https://github.com/PrimoDev23/DoIt"
+
+@OptIn(ExperimentalTextApi::class)
 @RootNavGraph
 @Destination
 @Composable
@@ -75,6 +85,12 @@ fun InfoScreen() {
                 title = stringResource(id = R.string.info_version_code),
                 text = packageInfo.longVersionCode.toString()
             )
+
+            Spacer(modifier = Modifier.weight(1f))
+
+            InfoProfileSection(modifier = Modifier.fillMaxWidth())
+
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }
@@ -103,6 +119,35 @@ fun InfoTextSection(
         Text(
             text = text,
             style = MaterialTheme.typography.labelLarge
+        )
+    }
+}
+
+@Composable
+fun InfoProfileSection(modifier: Modifier = Modifier) {
+    val context = LocalContext.current
+
+    Row(
+        modifier = modifier,
+        horizontalArrangement = Arrangement.Center
+    ) {
+        Image(
+            modifier = Modifier
+                .size(48.dp)
+                .clip(CircleShape)
+                .clickable {
+                    val browserIntent =
+                        Intent(Intent.ACTION_VIEW, Uri.parse(GITHUB_URL))
+                    context.startActivity(browserIntent)
+                },
+            painter = painterResource(
+                id = if (isSystemInDarkTheme()) {
+                    R.drawable.github_logo_white
+                } else {
+                    R.drawable.github_logo
+                }
+            ),
+            contentDescription = stringResource(id = R.string.info_screen_github)
         )
     }
 }
