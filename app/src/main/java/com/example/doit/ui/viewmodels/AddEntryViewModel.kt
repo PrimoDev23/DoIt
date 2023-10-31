@@ -63,7 +63,7 @@ class AddEntryViewModel @Inject constructor(
     val state = _state.asStateFlow()
 
     val datePickerState = DatePickerState(
-        initialSelectedDateMillis = null,
+        initialSelectedDateMillis = Instant.now().toEpochMilli(),
         initialDisplayedMonthMillis = null,
         yearRange = DatePickerDefaults.YearRange,
         initialDisplayMode = DisplayMode.Picker
