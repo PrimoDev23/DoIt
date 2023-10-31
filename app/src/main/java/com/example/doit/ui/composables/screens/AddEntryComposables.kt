@@ -244,18 +244,11 @@ fun AddEntryScreen(
                 }
             }
         ) {
+            Spacer(modifier = Modifier.height(16.dp))
+
             DatePicker(
                 state = viewModel.datePickerState,
-                title = {
-                    Text(
-                        modifier = Modifier.padding(
-                            start = 24.dp,
-                            end = 12.dp,
-                            top = 16.dp
-                        ),
-                        text = stringResource(id = R.string.add_entry_due_date_dialog_title)
-                    )
-                }
+                title = null
             )
         }
     }
