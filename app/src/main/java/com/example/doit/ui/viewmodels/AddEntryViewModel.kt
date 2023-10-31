@@ -85,8 +85,10 @@ class AddEntryViewModel @Inject constructor(
         getTodoItemUseCase(id)?.let { item ->
             existingItem = item
 
-            val millis =
-                item.dueDate?.atStartOfDay(ZoneId.systemDefault())?.toInstant()?.toEpochMilli()
+            val millis = item.dueDate?.let {
+                Instant.from(it.atStartOfDay()).toEpochMilli()
+            } ?: Instant.now().toEpochMilli()
+
             datePickerState.setSelection(millis)
 
             _state.update { state ->
@@ -158,7 +160,7 @@ class AddEntryViewModel @Inject constructor(
     }
 
     fun onDateCleared() {
-        datePickerState.setSelection(null)
+        datePickerState.setSelection(Instant.now().toEpochMilli())
 
         _state.update {
             it.copy(dueDate = null)
