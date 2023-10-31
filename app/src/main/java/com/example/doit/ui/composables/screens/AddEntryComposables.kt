@@ -336,14 +336,15 @@ fun NotificationRow(
     dateTime: LocalDateTime?,
     onDateTimePicked: (LocalDateTime?) -> Unit,
     modifier: Modifier = Modifier,
-    formatter: DateTimeFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT) }
+    formatter: DateTimeFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT) },
+    noNotificationString: String = stringResource(id = R.string.add_entry_notification_empty)
 ) {
     NotificationRowWrapper(
         modifier = modifier,
         title = title
     ) {
         val text = remember(dateTime) {
-            dateTime?.format(formatter) ?: "/"
+            dateTime?.format(formatter) ?: noNotificationString
         }
         var showPickerDialog by remember {
             mutableStateOf(false)
