@@ -35,7 +35,6 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
-import java.time.ZoneOffset
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -67,7 +66,11 @@ fun DateTimeDialog(
     }
 
     LaunchedEffect(value) {
-        datePickerState.setSelection(value?.toInstant(ZoneOffset.UTC)?.toEpochMilli())
+        val selectedDate = value?.let {
+            Instant.from(it).toEpochMilli()
+        } ?: Instant.now().toEpochMilli()
+
+        datePickerState.setSelection(selectedDate)
     }
 
     DatePickerDialog(
