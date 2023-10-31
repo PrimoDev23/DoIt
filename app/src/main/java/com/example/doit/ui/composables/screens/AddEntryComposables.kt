@@ -197,7 +197,8 @@ fun AddEntryScreen(
             NotificationRow(
                 modifier = Modifier.fillMaxWidth(),
                 title = stringResource(id = R.string.add_entry_notification_title),
-                dateTime = state.notificationDateTime,
+                notificationDateTime = state.notificationDateTime,
+                dueDate = state.dueDate,
                 onDateTimePicked = viewModel::onNotificationDateTimePicked
             )
 
@@ -326,7 +327,8 @@ fun DueDateSection(
 @Composable
 fun NotificationRow(
     title: String,
-    dateTime: LocalDateTime?,
+    notificationDateTime: LocalDateTime?,
+    dueDate: LocalDate?,
     onDateTimePicked: (LocalDateTime?) -> Unit,
     modifier: Modifier = Modifier,
     formatter: DateTimeFormatter = remember { DateTimeFormatter.ofLocalizedDateTime(FormatStyle.SHORT) },
@@ -336,8 +338,8 @@ fun NotificationRow(
         modifier = modifier,
         title = title
     ) {
-        val text = remember(dateTime) {
-            dateTime?.format(formatter) ?: noNotificationString
+        val text = remember(notificationDateTime) {
+            notificationDateTime?.format(formatter) ?: noNotificationString
         }
         var showPickerDialog by remember {
             mutableStateOf(false)
@@ -362,8 +364,12 @@ fun NotificationRow(
         )
 
         if (showPickerDialog) {
+            val realDate = remember(notificationDateTime, dueDate) {
+                notificationDateTime ?: dueDate?.atStartOfDay()
+            }
+
             DateTimeDialog(
-                value = dateTime,
+                value = realDate,
                 onDismiss = {
                     showPickerDialog = false
                 },

@@ -18,7 +18,6 @@ import androidx.compose.material3.TimePicker
 import androidx.compose.material3.TimePickerState
 import androidx.compose.material3.rememberDatePickerState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -35,6 +34,7 @@ import java.time.Instant
 import java.time.LocalDateTime
 import java.time.LocalTime
 import java.time.ZoneId
+import java.time.ZoneOffset
 
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
 @Composable
@@ -47,7 +47,10 @@ fun DateTimeDialog(
 
     val scope = rememberCoroutineScope()
     val pagerState = rememberPagerState(pageCount = { 2 })
-    val datePickerState = rememberDatePickerState()
+    val datePickerState = rememberDatePickerState(
+        initialSelectedDateMillis = value?.toInstant(ZoneOffset.UTC)?.toEpochMilli()
+            ?: Instant.now().toEpochMilli()
+    )
     val timePickerState = rememberSaveable(
         value?.hour,
         value?.minute,
@@ -63,14 +66,6 @@ fun DateTimeDialog(
         derivedStateOf {
             datePickerState.selectedDateMillis != null
         }
-    }
-
-    LaunchedEffect(value) {
-        val selectedDate = value?.let {
-            Instant.from(it).toEpochMilli()
-        } ?: Instant.now().toEpochMilli()
-
-        datePickerState.setSelection(selectedDate)
     }
 
     DatePickerDialog(
