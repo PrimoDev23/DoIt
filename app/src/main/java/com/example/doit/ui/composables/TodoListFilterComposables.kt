@@ -40,6 +40,7 @@ import com.example.doit.R
 import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
+import com.example.doit.domain.models.TodoItemSortType
 
 private const val ALL_TAGS_KEY = "allTags"
 
@@ -300,19 +301,40 @@ fun TodoListPriorityFilterBottomSheet(
     }
 }
 
-fun List<TodoItem>.applyFilter(tag: Tag?, priority: Priority?): List<TodoItem> {
+fun List<TodoItem>.applyFilter(
+    tag: Tag?,
+    priority: Priority?,
+    hideDoneItems: Boolean
+): List<TodoItem> {
     return this.filter {
-        val hasTag = if (tag != null) {
-            it.tags.contains(tag)
-        } else {
-            true
-        }
-        val hasPrio = if (priority != null) {
-            it.priority == priority
-        } else {
-            true
+        if (hideDoneItems && it.done) {
+            return@filter false
         }
 
-        hasTag && hasPrio
+        if (tag != null && !it.tags.contains(tag)) {
+            return@filter false
+        }
+
+        if (priority != null && it.priority != priority) {
+            return@filter false
+        }
+
+        return@filter true
+    }
+}
+
+fun List<TodoItem>.sort(type: TodoItemSortType): List<TodoItem> {
+    return when (type) {
+        TodoItemSortType.ALPHABETICAL -> this.sortedBy {
+            it.title.lowercase()
+        }
+
+        TodoItemSortType.PRIORITY -> this.sortedByDescending {
+            it.priority
+        }
+
+        TodoItemSortType.DUE_DATE -> this.sortedBy {
+            it.dueDate
+        }
     }
 }

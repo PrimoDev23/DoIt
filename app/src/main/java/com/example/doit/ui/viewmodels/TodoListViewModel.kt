@@ -42,15 +42,6 @@ class TodoListViewModel @Inject constructor(
             items
         }
 
-        val filteredItems = if (state.hideDoneItems) {
-            allItems.filter {
-                !it.done
-            }
-        } else {
-            allItems
-        }
-        val sortedItems = filteredItems.sort(state.sortType)
-
         val todayUndone = todayItems.count { !it.done }
         val todayDone = todayItems.count { it.done }
 
@@ -58,7 +49,7 @@ class TodoListViewModel @Inject constructor(
             todayFilterActive = state.todayFilterActive,
             todayUndone = todayUndone,
             todayDone = todayDone,
-            items = sortedItems,
+            items = allItems,
             selectedItems = state.selectedItems,
             sortType = state.sortType,
             hideDoneItems = state.hideDoneItems,
@@ -83,22 +74,6 @@ class TodoListViewModel @Inject constructor(
                 selectedPriority = null
             )
         )
-
-    private fun List<TodoItem>.sort(type: TodoItemSortType): List<TodoItem> {
-        return when (type) {
-            TodoItemSortType.ALPHABETICAL -> this.sortedBy {
-                it.title.lowercase()
-            }
-
-            TodoItemSortType.PRIORITY -> this.sortedByDescending {
-                it.priority
-            }
-
-            TodoItemSortType.DUE_DATE -> this.sortedBy {
-                it.dueDate
-            }
-        }
-    }
 
     init {
         viewModelScope.launch {

@@ -75,6 +75,7 @@ import com.example.doit.ui.composables.ToggleableDropDownMenuItem
 import com.example.doit.ui.composables.applyFilter
 import com.example.doit.ui.composables.rememberSnackbarHostState
 import com.example.doit.ui.composables.screens.destinations.AddEntryScreenDestination
+import com.example.doit.ui.composables.sort
 import com.example.doit.ui.viewmodels.TodoListViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -180,11 +181,22 @@ fun TodoListScreen(
             }
             val filteredItems by remember {
                 derivedStateOf {
-                    state.items.applyFilter(state.selectedTag, state.selectedPriority)
+                    state.items.applyFilter(
+                        state.selectedTag,
+                        state.selectedPriority,
+                        state.hideDoneItems
+                    )
                 }
             }
-            val hasItems = remember(filteredItems) {
-                filteredItems.isNotEmpty()
+            val sortedItems by remember {
+                derivedStateOf {
+                    filteredItems.sort(state.sortType)
+                }
+            }
+            val hasItems by remember {
+                derivedStateOf {
+                    filteredItems.isNotEmpty()
+                }
             }
 
             TodayInfoCard(
@@ -240,7 +252,7 @@ fun TodoListScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(
-                            items = filteredItems,
+                            items = sortedItems,
                             key = { item ->
                                 item.id
                             }
