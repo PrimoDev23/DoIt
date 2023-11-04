@@ -169,36 +169,6 @@ fun TodoListScreen(
                 .padding(it)
                 .fillMaxSize()
         ) {
-            val tagFilterSelected by remember {
-                derivedStateOf {
-                    state.selectedTag != null
-                }
-            }
-            val priorityFilterSelected by remember {
-                derivedStateOf {
-                    state.selectedPriority != null
-                }
-            }
-            val filteredItems by remember {
-                derivedStateOf {
-                    state.items.applyFilter(
-                        state.selectedTag,
-                        state.selectedPriority,
-                        state.hideDoneItems
-                    )
-                }
-            }
-            val sortedItems by remember {
-                derivedStateOf {
-                    filteredItems.sort(state.sortType)
-                }
-            }
-            val hasItems by remember {
-                derivedStateOf {
-                    filteredItems.isNotEmpty()
-                }
-            }
-
             TodayInfoCard(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
@@ -210,6 +180,17 @@ fun TodoListScreen(
             )
 
             Spacer(modifier = Modifier.height(16.dp))
+
+            val tagFilterSelected by remember {
+                derivedStateOf {
+                    state.selectedTag != null
+                }
+            }
+            val priorityFilterSelected by remember {
+                derivedStateOf {
+                    state.selectedPriority != null
+                }
+            }
 
             TodoListSettingsRow(
                 modifier = Modifier
@@ -238,6 +219,26 @@ fun TodoListScreen(
                 selectedPriority = state.selectedPriority
             )
 
+            val filteredItems by remember {
+                derivedStateOf {
+                    state.items.applyFilter(
+                        state.selectedTag,
+                        state.selectedPriority,
+                        state.hideDoneItems
+                    )
+                }
+            }
+            val sortedItems by remember {
+                derivedStateOf {
+                    filteredItems.sort(state.sortType)
+                }
+            }
+            val hasItems by remember {
+                derivedStateOf {
+                    filteredItems.isNotEmpty()
+                }
+            }
+
             AnimatedContent(
                 modifier = Modifier
                     .weight(1f)
@@ -257,26 +258,17 @@ fun TodoListScreen(
                                 item.id
                             }
                         ) { item ->
-                            val selected by remember {
+                            val selected by remember(item) {
                                 derivedStateOf {
                                     state.selectedItems.contains(item)
                                 }
                             }
 
-                            val backgroundColor by animateColorAsState(
-                                targetValue = if (selected) {
-                                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                                } else {
-                                    Color.Unspecified
-                                },
-                                label = "TodoItemBackgroundAnimation"
-                            )
-
                             TodoItemListEntry(
                                 modifier = Modifier
                                     .animateItemPlacement()
                                     .fillMaxWidth(),
-                                backgroundColor = backgroundColor,
+                                selected = selected,
                                 priority = item.priority,
                                 done = item.done,
                                 onDoneChanged = { done ->
@@ -601,7 +593,7 @@ fun TodayInfoCard(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun TodoItemListEntry(
-    backgroundColor: Color,
+    selected: Boolean,
     priority: Priority,
     done: Boolean,
     onDoneChanged: (Boolean) -> Unit,
@@ -611,6 +603,15 @@ fun TodoItemListEntry(
     onLongClick: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val backgroundColor by animateColorAsState(
+        targetValue = if (selected) {
+            MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+        } else {
+            Color.Unspecified
+        },
+        label = "TodoItemBackgroundAnimation"
+    )
+
     ElevatedCard(
         modifier = modifier,
         shape = RoundedCornerShape(8.dp)
