@@ -1,8 +1,10 @@
 package com.example.doit.common.di
 
+import com.example.doit.data.repositories.PreferencesRepositoryImpl
 import com.example.doit.data.repositories.SubtaskRepositoryImpl
 import com.example.doit.data.repositories.TagRepositoryImpl
 import com.example.doit.data.repositories.TodoItemRepositoryImpl
+import com.example.doit.domain.repositories.PreferencesRepository
 import com.example.doit.domain.repositories.SubtaskRepository
 import com.example.doit.domain.repositories.TagRepository
 import com.example.doit.domain.repositories.TodoItemRepository
@@ -11,19 +13,23 @@ import com.example.doit.domain.usecases.DeleteTodoItemUseCaseImpl
 import com.example.doit.domain.usecases.GetTagsFlowUseCaseImpl
 import com.example.doit.domain.usecases.GetTagsUseCaseImpl
 import com.example.doit.domain.usecases.GetTodayTodoItemsFlowUseCaseImpl
+import com.example.doit.domain.usecases.GetTodoItemSortTypeFlowUseCaseImpl
 import com.example.doit.domain.usecases.GetTodoItemUseCaseImpl
 import com.example.doit.domain.usecases.GetTodoItemsFlowUseCaseImpl
 import com.example.doit.domain.usecases.SaveTagUseCaseImpl
 import com.example.doit.domain.usecases.SaveTodoItemUseCaseImpl
+import com.example.doit.domain.usecases.SetTodoItemSortTypeUseCaseImpl
 import com.example.doit.domain.usecases.interfaces.DeleteTagsUseCase
 import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodayTodoItemsFlowUseCase
+import com.example.doit.domain.usecases.interfaces.GetTodoItemSortTypeFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTagUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
+import com.example.doit.domain.usecases.interfaces.SetTodoItemSortTypeUseCase
 import dagger.Binds
 import dagger.Module
 import dagger.hilt.InstallIn
@@ -93,5 +99,20 @@ abstract class Bindings {
     abstract fun bindSubtaskRepository(
         impl: SubtaskRepositoryImpl
     ): SubtaskRepository
+
+    @Binds
+    abstract fun bindPreferencesRepository(
+        impl: PreferencesRepositoryImpl
+    ): PreferencesRepository
+
+    @Binds
+    abstract fun bindGetTodoItemSortTypeFlowUseCase(
+        impl: GetTodoItemSortTypeFlowUseCaseImpl
+    ): GetTodoItemSortTypeFlowUseCase
+
+    @Binds
+    abstract fun bindSetTodoItemSortTypeUseCase(
+        impl: SetTodoItemSortTypeUseCaseImpl
+    ): SetTodoItemSortTypeUseCase
 
 }

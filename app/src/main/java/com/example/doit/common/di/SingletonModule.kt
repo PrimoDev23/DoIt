@@ -3,6 +3,7 @@ package com.example.doit.common.di
 import android.content.Context
 import androidx.room.Room
 import com.example.doit.common.AppDatabase
+import com.example.doit.data.dataStore
 import dagger.Module
 import dagger.Provides
 import dagger.hilt.InstallIn
@@ -30,5 +31,8 @@ class SingletonModule {
 
     @Provides
     fun provideSubtaskDao(database: AppDatabase) = database.subtaskDao()
+
+    @Provides
+    fun provideDataStore(@ApplicationContext context: Context) = context.dataStore
 
 }
