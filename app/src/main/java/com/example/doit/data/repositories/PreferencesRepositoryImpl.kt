@@ -18,7 +18,7 @@ class PreferencesRepositoryImpl @Inject constructor(
         return preferences.data.map { prefs ->
             val sortType = prefs[PreferencesKeys.TODO_ITEM_SORT_TYPE]?.let {
                 TodoItemSortType.valueOf(it)
-            } ?: TodoItemSortType.ALPHABETICAL
+            } ?: TodoItemSortType.CREATION_DATE
             val hideDoneItems = prefs[PreferencesKeys.HIDE_DONE_ITEMS] ?: false
 
             TodoListPreferences(

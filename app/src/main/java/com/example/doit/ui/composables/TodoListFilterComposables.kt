@@ -336,5 +336,9 @@ fun List<TodoItem>.sort(type: TodoItemSortType): List<TodoItem> {
         TodoItemSortType.DUE_DATE -> this.sortedBy {
             it.dueDate
         }
+
+        TodoItemSortType.CREATION_DATE -> this.sortedBy {
+            it.creationDateTime
+        }
     }
 }

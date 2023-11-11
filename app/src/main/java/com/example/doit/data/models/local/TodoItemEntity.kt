@@ -14,5 +14,6 @@ data class TodoItemEntity(
     val tags: String,
     val priority: Priority,
     val dueDate: String?,
-    val notificationDateTime: String?
+    val notificationDateTime: String?,
+    val creationDateTime: String
 )

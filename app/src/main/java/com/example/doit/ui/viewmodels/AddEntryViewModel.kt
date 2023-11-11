@@ -298,7 +298,8 @@ class AddEntryViewModel @Inject constructor(
             priority = priority,
             dueDate = dueDate,
             notificationDateTime = notificationDateTime,
-            subtasks = subtasks
+            subtasks = subtasks,
+            creationDateTime = existingItem?.creationDateTime ?: LocalDateTime.now()
         )
     }
 }

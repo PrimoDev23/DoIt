@@ -27,6 +27,7 @@ class TodoItemMapper @Inject constructor(
             val notificationDateTime = item.notificationDateTime?.let {
                 LocalDateTime.parse(it, DATE_TIME_FORMATTER)
             }
+            val creationDateTime = LocalDateTime.parse(item.creationDateTime, DATE_TIME_FORMATTER)
 
             val subtasks = subtaskRepository.getSubtasksByParent(id)
 
@@ -39,7 +40,8 @@ class TodoItemMapper @Inject constructor(
                 priority = priority,
                 dueDate = date,
                 subtasks = subtasks,
-                notificationDateTime = notificationDateTime
+                notificationDateTime = notificationDateTime,
+                creationDateTime = creationDateTime
             )
         }
     }
@@ -56,7 +58,8 @@ class TodoItemMapper @Inject constructor(
                 tags = ids.joinToString(SEPARATOR),
                 priority = priority,
                 dueDate = item.dueDate?.format(DATE_FORMATTER),
-                notificationDateTime = notificationDateTime?.format(DATE_TIME_FORMATTER)
+                notificationDateTime = notificationDateTime?.format(DATE_TIME_FORMATTER),
+                creationDateTime = creationDateTime.format(DATE_TIME_FORMATTER)
             )
         }
     }
