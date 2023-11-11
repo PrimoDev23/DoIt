@@ -13,22 +13,24 @@ import com.example.doit.domain.usecases.DeleteTodoItemUseCaseImpl
 import com.example.doit.domain.usecases.GetTagsFlowUseCaseImpl
 import com.example.doit.domain.usecases.GetTagsUseCaseImpl
 import com.example.doit.domain.usecases.GetTodayTodoItemsFlowUseCaseImpl
-import com.example.doit.domain.usecases.GetTodoItemSortTypeFlowUseCaseImpl
 import com.example.doit.domain.usecases.GetTodoItemUseCaseImpl
 import com.example.doit.domain.usecases.GetTodoItemsFlowUseCaseImpl
+import com.example.doit.domain.usecases.GetTodoListPreferencesUseCaseImpl
 import com.example.doit.domain.usecases.SaveTagUseCaseImpl
 import com.example.doit.domain.usecases.SaveTodoItemUseCaseImpl
+import com.example.doit.domain.usecases.SetHideDoneItemsUseCaseImpl
 import com.example.doit.domain.usecases.SetTodoItemSortTypeUseCaseImpl
 import com.example.doit.domain.usecases.interfaces.DeleteTagsUseCase
 import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodayTodoItemsFlowUseCase
-import com.example.doit.domain.usecases.interfaces.GetTodoItemSortTypeFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemsFlowUseCase
+import com.example.doit.domain.usecases.interfaces.GetTodoListPreferencesUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTagUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
+import com.example.doit.domain.usecases.interfaces.SetHideDoneItemsUseCase
 import com.example.doit.domain.usecases.interfaces.SetTodoItemSortTypeUseCase
 import dagger.Binds
 import dagger.Module
@@ -107,12 +109,17 @@ abstract class Bindings {
 
     @Binds
     abstract fun bindGetTodoItemSortTypeFlowUseCase(
-        impl: GetTodoItemSortTypeFlowUseCaseImpl
-    ): GetTodoItemSortTypeFlowUseCase
+        impl: GetTodoListPreferencesUseCaseImpl
+    ): GetTodoListPreferencesUseCase
 
     @Binds
     abstract fun bindSetTodoItemSortTypeUseCase(
         impl: SetTodoItemSortTypeUseCaseImpl
     ): SetTodoItemSortTypeUseCase
+
+    @Binds
+    abstract fun bindSetHideDoneItemsUseCase(
+        impl: SetHideDoneItemsUseCaseImpl
+    ): SetHideDoneItemsUseCase
 
 }
