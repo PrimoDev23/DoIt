@@ -107,9 +107,7 @@ fun TodoListScreen(
         mutableStateOf(false)
     }
 
-    val scope = rememberCoroutineScope()
     val snackbarHostState = rememberSnackbarHostState()
-    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     RootScaffold(
         modifier = Modifier.fillMaxSize(),
@@ -191,6 +189,7 @@ fun TodoListScreen(
                     state.selectedPriority != null
                 }
             }
+            val scope = rememberCoroutineScope()
 
             TodoListSettingsRow(
                 modifier = Modifier
@@ -293,6 +292,8 @@ fun TodoListScreen(
             }
         }
     }
+
+    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     if (showTagFilterBottomSheet) {
         TodoListTagFilterBottomSheet(
