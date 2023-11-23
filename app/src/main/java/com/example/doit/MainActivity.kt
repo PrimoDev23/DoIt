@@ -28,84 +28,90 @@ import com.ramcosta.composedestinations.DestinationsNavHost
 import com.ramcosta.composedestinations.animations.defaults.RootNavGraphDefaultAnimations
 import com.ramcosta.composedestinations.animations.rememberAnimatedNavHostEngine
 import com.ramcosta.composedestinations.manualcomposablecalls.composable
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
+import org.koin.androidx.compose.KoinAndroidContext
+import org.koin.core.annotation.KoinExperimentalAPI
 
-@AndroidEntryPoint
 class MainActivity : ComponentActivity() {
-    @OptIn(ExperimentalMaterialNavigationApi::class, ExperimentalAnimationApi::class)
+    @OptIn(
+        ExperimentalMaterialNavigationApi::class,
+        ExperimentalAnimationApi::class,
+        KoinExperimentalAPI::class
+    )
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
         setContent {
-            DoItTheme {
-                val scope = rememberCoroutineScope()
-                val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
-                val navController = rememberNavController()
-                val navHostEngine = rememberAnimatedNavHostEngine(
-                    rootDefaultAnimations = RootNavGraphDefaultAnimations(
-                        enterTransition = {
-                            slideIn(
-                                animationSpec = tween(200),
-                                initialOffset = {
-                                    IntOffset(it.width, 0)
-                                }
-                            )
-                        },
-                        exitTransition = {
-                            slideOut(
-                                animationSpec = tween(200),
-                                targetOffset = {
-                                    IntOffset(-it.width, 0)
-                                }
-                            )
-                        },
-                        popEnterTransition = {
-                            slideIn(
-                                animationSpec = tween(200),
-                                initialOffset = {
-                                    IntOffset(-it.width, 0)
-                                }
-                            )
-                        },
-                        popExitTransition = {
-                            slideOut(
-                                animationSpec = tween(200),
-                                targetOffset = {
-                                    IntOffset(it.width, 0)
+            KoinAndroidContext {
+                DoItTheme {
+                    val scope = rememberCoroutineScope()
+                    val drawerState = rememberDrawerState(initialValue = DrawerValue.Closed)
+                    val navController = rememberNavController()
+                    val navHostEngine = rememberAnimatedNavHostEngine(
+                        rootDefaultAnimations = RootNavGraphDefaultAnimations(
+                            enterTransition = {
+                                slideIn(
+                                    animationSpec = tween(200),
+                                    initialOffset = {
+                                        IntOffset(it.width, 0)
+                                    }
+                                )
+                            },
+                            exitTransition = {
+                                slideOut(
+                                    animationSpec = tween(200),
+                                    targetOffset = {
+                                        IntOffset(-it.width, 0)
+                                    }
+                                )
+                            },
+                            popEnterTransition = {
+                                slideIn(
+                                    animationSpec = tween(200),
+                                    initialOffset = {
+                                        IntOffset(-it.width, 0)
+                                    }
+                                )
+                            },
+                            popExitTransition = {
+                                slideOut(
+                                    animationSpec = tween(200),
+                                    targetOffset = {
+                                        IntOffset(it.width, 0)
+                                    }
+                                )
+                            }
+                        )
+                    )
+
+                    ModalNavigationDrawer(
+                        modifier = Modifier.fillMaxSize(),
+                        drawerState = drawerState,
+                        drawerContent = {
+                            DrawerMenu(
+                                navController = navController,
+                                onDismiss = {
+                                    scope.launch {
+                                        drawerState.close()
+                                    }
                                 }
                             )
                         }
-                    )
-                )
-
-                ModalNavigationDrawer(
-                    modifier = Modifier.fillMaxSize(),
-                    drawerState = drawerState,
-                    drawerContent = {
-                        DrawerMenu(
-                            navController = navController,
-                            onDismiss = {
-                                scope.launch {
-                                    drawerState.close()
+                    ) {
+                        DrawerStateProvider(drawerState = drawerState) {
+                            DestinationsNavHost(
+                                modifier = Modifier.fillMaxSize(),
+                                navGraph = NavGraphs.root,
+                                navController = navController,
+                                engine = navHostEngine
+                            ) {
+                                composable(TodoListScreenDestination) {
+                                    TodoListScreen(navigator = destinationsNavigator)
                                 }
-                            }
-                        )
-                    }
-                ) {
-                    DrawerStateProvider(drawerState = drawerState) {
-                        DestinationsNavHost(
-                            modifier = Modifier.fillMaxSize(),
-                            navGraph = NavGraphs.root,
-                            navController = navController,
-                            engine = navHostEngine
-                        ) {
-                            composable(TodoListScreenDestination) {
-                                TodoListScreen(navigator = destinationsNavigator)
-                            }
 
-                            composable(TagListScreenDestination) {
-                                TagListScreen()
+                                composable(TagListScreenDestination) {
+                                    TagListScreen()
+                                }
                             }
                         }
                     }

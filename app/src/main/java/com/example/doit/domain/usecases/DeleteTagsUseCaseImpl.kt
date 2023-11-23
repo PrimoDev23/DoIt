@@ -4,9 +4,8 @@ import com.example.doit.domain.models.Tag
 import com.example.doit.domain.repositories.TagRepository
 import com.example.doit.domain.repositories.TodoItemRepository
 import com.example.doit.domain.usecases.interfaces.DeleteTagsUseCase
-import javax.inject.Inject
 
-class DeleteTagsUseCaseImpl @Inject constructor(
+class DeleteTagsUseCaseImpl(
     private val tagRepository: TagRepository,
     private val todoItemRepository: TodoItemRepository
 ) : DeleteTagsUseCase {

@@ -7,19 +7,15 @@ import android.content.pm.PackageManager
 import android.os.Build
 import androidx.core.app.ActivityCompat
 import androidx.core.app.NotificationManagerCompat
-import androidx.hilt.work.HiltWorker
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.doit.DoItApplication
 import com.example.doit.R
 import com.example.doit.domain.usecases.interfaces.GetTodoItemUseCase
-import dagger.assisted.Assisted
-import dagger.assisted.AssistedInject
 
-@HiltWorker
-class NotificationWorker @AssistedInject constructor(
-    @Assisted private val context: Context,
-    @Assisted params: WorkerParameters,
+class NotificationWorker constructor(
+    private val context: Context,
+    params: WorkerParameters,
     val getTodoItemUseCase: GetTodoItemUseCase
 ) : CoroutineWorker(context, params) {
 

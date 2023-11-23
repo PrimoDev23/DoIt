@@ -9,13 +9,11 @@ import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.repositories.SubtaskRepository
 import com.example.doit.domain.repositories.TodoItemRepository
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
-import dagger.hilt.android.qualifiers.ApplicationContext
 import java.time.Duration
 import java.time.LocalDateTime
-import javax.inject.Inject
 
-class SaveTodoItemUseCaseImpl @Inject constructor(
-    @ApplicationContext private val context: Context,
+class SaveTodoItemUseCaseImpl(
+    private val context: Context,
     private val todoItemRepository: TodoItemRepository,
     private val subtaskRepository: SubtaskRepository
 ) : SaveTodoItemUseCase {

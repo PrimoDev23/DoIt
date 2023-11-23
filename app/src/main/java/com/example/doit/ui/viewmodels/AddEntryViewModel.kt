@@ -4,6 +4,7 @@ import androidx.compose.material3.DatePickerDefaults
 import androidx.compose.material3.DatePickerState
 import androidx.compose.material3.DisplayMode
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.SavedStateHandle
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -17,7 +18,6 @@ import com.example.doit.domain.usecases.interfaces.GetTodoItemUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import com.example.doit.ui.composables.screens.navArgs
 import com.example.doit.ui.navigation.arguments.AddEntryNavArgs
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -28,12 +28,9 @@ import java.time.Instant
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.ZoneId
-import javax.annotation.concurrent.Immutable
-import javax.inject.Inject
 
 @OptIn(ExperimentalMaterial3Api::class)
-@HiltViewModel
-class AddEntryViewModel @Inject constructor(
+class AddEntryViewModel(
     savedStateHandle: SavedStateHandle,
     private val saveTodoItemUseCase: SaveTodoItemUseCase,
     private val getTagsUseCase: GetTagsUseCase,

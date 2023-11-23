@@ -5,9 +5,8 @@ import com.example.doit.data.mappers.SubtaskMapper
 import com.example.doit.data.models.local.SubtaskEntity
 import com.example.doit.domain.models.Subtask
 import com.example.doit.domain.repositories.SubtaskRepository
-import javax.inject.Inject
 
-class SubtaskRepositoryImpl @Inject constructor(
+class SubtaskRepositoryImpl(
     private val subtaskDao: SubtaskDao,
     private val mapper: SubtaskMapper
 ) : SubtaskRepository {

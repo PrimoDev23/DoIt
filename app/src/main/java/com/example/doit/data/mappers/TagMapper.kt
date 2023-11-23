@@ -3,11 +3,8 @@ package com.example.doit.data.mappers
 import androidx.compose.ui.graphics.Color
 import com.example.doit.data.models.local.TagEntity
 import com.example.doit.domain.models.Tag
-import javax.inject.Inject
 
-class TagMapper @Inject constructor(
-
-) : BaseMapper<TagEntity, Tag>() {
+class TagMapper : BaseMapper<TagEntity, Tag>() {
 
     override suspend fun map(item: TagEntity): Tag {
         return with(item) {

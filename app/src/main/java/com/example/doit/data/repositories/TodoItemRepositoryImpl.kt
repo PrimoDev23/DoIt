@@ -7,9 +7,8 @@ import com.example.doit.domain.repositories.TodoItemRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
-import javax.inject.Inject
 
-class TodoItemRepositoryImpl @Inject constructor(
+class TodoItemRepositoryImpl(
     private val dao: TodoItemDao,
     private val mapper: TodoItemMapper
 ) : TodoItemRepository {

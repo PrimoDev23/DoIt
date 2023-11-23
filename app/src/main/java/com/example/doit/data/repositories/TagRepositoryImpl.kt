@@ -6,9 +6,8 @@ import com.example.doit.domain.models.Tag
 import com.example.doit.domain.repositories.TagRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
-import javax.inject.Inject
 
-class TagRepositoryImpl @Inject constructor(
+class TagRepositoryImpl(
     private val dao: TagDao,
     private val mapper: TagMapper
 ) : TagRepository {

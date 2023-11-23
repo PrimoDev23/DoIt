@@ -54,7 +54,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
-import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.doit.R
 import com.example.doit.ui.composables.ClearSelectionButton
@@ -67,13 +66,14 @@ import com.example.doit.ui.composables.rememberFocusRequester
 import com.example.doit.ui.viewmodels.TagListViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
+import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
 @RootNavGraph
 @Destination
 @Composable
 fun TagListScreen(
-    viewModel: TagListViewModel = hiltViewModel()
+    viewModel: TagListViewModel = getViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 

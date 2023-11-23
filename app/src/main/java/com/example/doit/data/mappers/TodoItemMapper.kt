@@ -7,9 +7,8 @@ import com.example.doit.domain.repositories.TagRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
-import javax.inject.Inject
 
-class TodoItemMapper @Inject constructor(
+class TodoItemMapper(
     private val tagRepository: TagRepository,
     private val subtaskRepository: SubtaskRepository,
 ) : BaseMapper<TodoItemEntity, TodoItem>() {

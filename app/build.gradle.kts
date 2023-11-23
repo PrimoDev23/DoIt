@@ -3,7 +3,6 @@ plugins {
     alias(libs.plugins.com.android.application)
     alias(libs.plugins.org.jetbrains.kotlin.android)
     alias(libs.plugins.ksp)
-    alias(libs.plugins.dagger)
 }
 
 android {
@@ -65,16 +64,8 @@ dependencies {
     implementation(libs.material3)
     implementation(libs.compose.lifecycle)
 
-    implementation(libs.dagger)
-    ksp(libs.dagger.compiler)
-    testImplementation(libs.dagger.testing)
-    kspTest(libs.dagger.testing)
-    androidTestImplementation(libs.dagger.testing)
-    kspAndroidTest(libs.dagger.testing)
-
-    implementation(libs.hilt.navigation)
-    implementation(libs.hilt.work)
-    ksp(libs.hilt.compiler)
+    implementation(libs.koin.compose)
+    implementation(libs.koin.workmanager)
 
     implementation(libs.compose.destinations)
     implementation(libs.compose.destinations.animations)

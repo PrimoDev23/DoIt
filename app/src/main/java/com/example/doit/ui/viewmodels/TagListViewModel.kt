@@ -1,5 +1,6 @@
 package com.example.doit.ui.viewmodels
 
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -7,17 +8,14 @@ import com.example.doit.domain.models.Tag
 import com.example.doit.domain.usecases.interfaces.DeleteTagsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTagUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class TagListViewModel @Inject constructor(
+class TagListViewModel(
     getTagsFlowUseCase: GetTagsFlowUseCase,
     private val saveTagUseCase: SaveTagUseCase,
     private val deleteTagsUseCase: DeleteTagsUseCase
@@ -89,6 +87,7 @@ data class TagListViewModelState(
     val selectedTags: List<Tag> = emptyList()
 )
 
+@Immutable
 data class TagListState(
     val items: List<Tag>,
     val selectedTags: List<Tag>

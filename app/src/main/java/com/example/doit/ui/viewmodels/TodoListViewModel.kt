@@ -1,5 +1,6 @@
 package com.example.doit.ui.viewmodels
 
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.doit.domain.models.Priority
@@ -14,7 +15,6 @@ import com.example.doit.domain.usecases.interfaces.GetTodoListPreferencesUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import com.example.doit.domain.usecases.interfaces.SetHideDoneItemsUseCase
 import com.example.doit.domain.usecases.interfaces.SetTodoItemSortTypeUseCase
-import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
@@ -22,10 +22,8 @@ import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class TodoListViewModel @Inject constructor(
+class TodoListViewModel(
     getTodoListPreferencesUseCase: GetTodoListPreferencesUseCase,
     getTodoItemsFlowUseCase: GetTodoItemsFlowUseCase,
     getTagsFlowUseCase: GetTagsFlowUseCase,
@@ -190,6 +188,7 @@ data class TodoListViewModelState(
     val selectedPriority: Priority? = null
 )
 
+@Immutable
 data class TodoListState(
     val todayFilterActive: Boolean,
     val todayUndone: Int,
