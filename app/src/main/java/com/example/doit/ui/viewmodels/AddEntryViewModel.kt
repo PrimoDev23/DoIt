@@ -83,7 +83,8 @@ class AddEntryViewModel(
             existingItem = item
 
             val millis = item.dueDate?.let {
-                Instant.from(it.atStartOfDay()).toEpochMilli()
+                val startOfDay = it.atStartOfDay().atZone(ZoneId.systemDefault())
+                startOfDay.toInstant().toEpochMilli()
             } ?: Instant.now().toEpochMilli()
 
             datePickerState.setSelection(millis)
