@@ -39,6 +39,7 @@ import com.example.doit.R
 import com.example.doit.ui.composables.locals.LocalDrawerState
 import com.example.doit.ui.composables.screens.NavGraphs
 import com.example.doit.ui.composables.screens.appCurrentDestinationAsState
+import com.example.doit.ui.composables.screens.destinations.CalendarScreenDestination
 import com.example.doit.ui.composables.screens.destinations.Destination
 import com.example.doit.ui.composables.screens.destinations.InfoScreenDestination
 import com.example.doit.ui.composables.screens.destinations.TagListScreenDestination
@@ -109,6 +110,19 @@ fun DrawerMenu(
                 selected = currentDestination == TagListScreenDestination,
                 onClick = {
                     navController.navigate(TagListScreenDestination) {
+                        buildNavigationOptions(navController)
+                    }
+                    onDismiss()
+                }
+            )
+
+            DrawerMenuItem(
+                modifier = Modifier.fillMaxWidth(),
+                icon = painterResource(id = R.drawable.outline_calendar_month_24),
+                title = stringResource(id = R.string.calendar_title),
+                selected = currentDestination == CalendarScreenDestination,
+                onClick = {
+                    navController.navigate(CalendarScreenDestination) {
                         buildNavigationOptions(navController)
                     }
                     onDismiss()

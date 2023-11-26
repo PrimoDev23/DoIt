@@ -27,6 +27,7 @@ import com.example.doit.domain.usecases.SaveTagUseCaseImpl
 import com.example.doit.domain.usecases.SaveTodoItemUseCaseImpl
 import com.example.doit.domain.usecases.SetHideDoneItemsUseCaseImpl
 import com.example.doit.domain.usecases.SetTodoItemSortTypeUseCaseImpl
+import com.example.doit.domain.usecases.UpdateDoneUseCaseImpl
 import com.example.doit.domain.usecases.interfaces.DeleteTagsUseCase
 import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
@@ -39,7 +40,9 @@ import com.example.doit.domain.usecases.interfaces.SaveTagUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import com.example.doit.domain.usecases.interfaces.SetHideDoneItemsUseCase
 import com.example.doit.domain.usecases.interfaces.SetTodoItemSortTypeUseCase
+import com.example.doit.domain.usecases.interfaces.UpdateDoneUseCase
 import com.example.doit.ui.viewmodels.AddEntryViewModel
+import com.example.doit.ui.viewmodels.CalendarViewModel
 import com.example.doit.ui.viewmodels.TagListViewModel
 import com.example.doit.ui.viewmodels.TodoListViewModel
 import org.koin.android.ext.koin.androidContext
@@ -53,6 +56,7 @@ val viewModelModule = module {
     viewModelOf(::AddEntryViewModel)
     viewModelOf(::TagListViewModel)
     viewModelOf(::TodoListViewModel)
+    viewModelOf(::CalendarViewModel)
 }
 
 val databaseModule = module {
@@ -89,6 +93,7 @@ val useCaseModule = module {
     factoryOf(::SaveTodoItemUseCaseImpl) bind SaveTodoItemUseCase::class
     factoryOf(::SetHideDoneItemsUseCaseImpl) bind SetHideDoneItemsUseCase::class
     factoryOf(::SetTodoItemSortTypeUseCaseImpl) bind SetTodoItemSortTypeUseCase::class
+    factoryOf(::UpdateDoneUseCaseImpl) bind UpdateDoneUseCase::class
 }
 
 val mapperModule = module {
