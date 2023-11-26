@@ -31,7 +31,7 @@ private const val ITEM_SIZE = 32
 
 @Composable
 fun Calendar(
-    selectedDate: LocalDate,
+    displayMonth: LocalDate,
     modifier: Modifier = Modifier,
     header: @Composable () -> Unit = {
         CalendarHeader(
@@ -50,7 +50,7 @@ fun Calendar(
                     CalendarDay(
                         modifier = baseModifier,
                         date = date,
-                        selected = selectedDate == date
+                        selected = displayMonth == date
                     )
                 } else {
                     Spacer(modifier = baseModifier)
@@ -66,8 +66,8 @@ fun Calendar(
     ) {
         header()
 
-        val weeks = remember(selectedDate) {
-            getDatesForMonth(selectedDate)
+        val weeks = remember(displayMonth) {
+            getDatesForMonth(displayMonth)
         }
 
         weeks.forEach { dates ->
@@ -155,7 +155,7 @@ fun CalendarPreview() {
 
     Calendar(
         modifier = Modifier.fillMaxWidth(),
-        selectedDate = selectedDate
+        displayMonth = selectedDate
     )
 }
 
