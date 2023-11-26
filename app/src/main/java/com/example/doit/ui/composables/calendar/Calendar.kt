@@ -1,19 +1,24 @@
-package com.example.doit.ui.composables
+package com.example.doit.ui.composables.calendar
 
 import androidx.compose.animation.animateColorAsState
+import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.RowScope
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.pager.HorizontalPager
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
@@ -28,11 +33,13 @@ import java.time.format.TextStyle
 import java.util.Locale
 
 private const val ITEM_SIZE = 32
+private const val WEEKS_PER_MONTH = 6
 
+@OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun Calendar(
-    displayMonth: LocalDate,
     modifier: Modifier = Modifier,
+    state: CalendarState = rememberCalendarState(),
     header: @Composable () -> Unit = {
         CalendarHeader(
             modifier = Modifier.fillMaxWidth(),
@@ -41,7 +48,9 @@ fun Calendar(
     },
     calendarWeek: @Composable ColumnScope.(List<LocalDate?>) -> Unit = { week ->
         CalendarWeek(
-            modifier = Modifier.fillMaxWidth(),
+            modifier = Modifier
+                .height(ITEM_SIZE.dp)
+                .fillMaxWidth(),
             dates = week,
             calendarDay = { date ->
                 val baseModifier = Modifier.size(ITEM_SIZE.dp)
@@ -50,7 +59,7 @@ fun Calendar(
                     CalendarDay(
                         modifier = baseModifier,
                         date = date,
-                        selected = displayMonth == date
+                        selected = state.selectedDate == date
                     )
                 } else {
                     Spacer(modifier = baseModifier)
@@ -60,18 +69,36 @@ fun Calendar(
     },
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(8.dp)
 ) {
+    LaunchedEffect(state.pagerState.settledPage) {
+        state.onSettledPageChanged(state.pagerState.settledPage)
+    }
+
     Column(
         modifier = modifier,
         verticalArrangement = verticalArrangement
     ) {
         header()
 
-        val weeks = remember(displayMonth) {
-            getDatesForMonth(displayMonth)
-        }
+        HorizontalPager(
+            modifier = Modifier.fillMaxWidth(),
+            state = state.pagerState
+        ) { page ->
+            val weeks = state.months[page]
 
-        weeks.forEach { dates ->
-            calendarWeek(dates)
+            Column(
+                modifier = Modifier.fillMaxWidth(),
+                verticalArrangement = verticalArrangement
+            ) {
+                repeat(WEEKS_PER_MONTH) { index ->
+                    if (index <= weeks.lastIndex) {
+                        val week = weeks[index]
+
+                        calendarWeek(week)
+                    } else {
+                        calendarWeek(emptyList())
+                    }
+                }
+            }
         }
     }
 }
@@ -107,7 +134,7 @@ fun CalendarHeader(
 @Composable
 fun CalendarWeek(
     dates: List<LocalDate?>,
-    calendarDay: @Composable (LocalDate?) -> Unit,
+    calendarDay: @Composable RowScope.(LocalDate?) -> Unit,
     modifier: Modifier = Modifier,
     horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceEvenly
 ) {
@@ -151,52 +178,5 @@ fun CalendarDay(
 @Preview
 @Composable
 fun CalendarPreview() {
-    val selectedDate = LocalDate.now()
-
-    Calendar(
-        modifier = Modifier.fillMaxWidth(),
-        displayMonth = selectedDate
-    )
-}
-
-private fun getDatesForMonth(date: LocalDate): List<List<LocalDate?>> {
-    var currentDate = date.withDayOfMonth(1)
-    val lengthOfMonth = date.lengthOfMonth()
-    val endDate = date.withDayOfMonth(lengthOfMonth)
-
-    val month = mutableListOf<List<LocalDate?>>()
-    var week = mutableListOf<LocalDate?>()
-
-    do {
-        week.add(currentDate)
-
-        if (currentDate.dayOfWeek == DayOfWeek.SUNDAY) {
-            if (week.size < 7) {
-                val diff = 7 - week.size
-
-                repeat(diff) {
-                    week.add(0, null)
-                }
-            }
-
-            month.add(week)
-            week = mutableListOf()
-        }
-
-        currentDate = currentDate.plusDays(1)
-    } while (currentDate <= endDate)
-
-    if (week.isNotEmpty()) {
-        if (week.size < 7) {
-            val diff = 7 - week.size
-
-            repeat(diff) {
-                week.add(null)
-            }
-        }
-
-        month.add(week)
-    }
-
-    return month
+    Calendar(modifier = Modifier.fillMaxWidth())
 }
