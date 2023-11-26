@@ -2,6 +2,7 @@ package com.example.doit.ui.composables.screens
 
 import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.Crossfade
+import androidx.compose.animation.animateContentSize
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
@@ -96,7 +97,8 @@ fun CalendarScreen(
             Calendar(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
+                    .fillMaxWidth()
+                    .animateContentSize(),
                 state = calendarState,
                 header = {
                     CalendarHeader(modifier = Modifier.fillMaxWidth())
@@ -104,7 +106,6 @@ fun CalendarScreen(
                 calendarWeek = { week ->
                     CalendarWeek(
                         modifier = Modifier
-                            .height(CALENDAR_ITEM_SIZE.dp)
                             .fillMaxWidth(),
                         dates = week,
                         calendarDay = { date ->
