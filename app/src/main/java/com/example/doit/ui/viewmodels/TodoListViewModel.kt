@@ -12,9 +12,9 @@ import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodayTodoItemsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoListPreferencesUseCase
-import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import com.example.doit.domain.usecases.interfaces.SetHideDoneItemsUseCase
 import com.example.doit.domain.usecases.interfaces.SetTodoItemSortTypeUseCase
+import com.example.doit.domain.usecases.interfaces.UpdateDoneUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.collectLatest
@@ -28,10 +28,10 @@ class TodoListViewModel(
     getTodoItemsFlowUseCase: GetTodoItemsFlowUseCase,
     getTagsFlowUseCase: GetTagsFlowUseCase,
     getTodayTodoItemsFlowUseCase: GetTodayTodoItemsFlowUseCase,
-    private val saveTodoItemUseCase: SaveTodoItemUseCase,
     private val deleteTodoItemsUseCase: DeleteTodoItemsUseCase,
     private val setTodoItemSortTypeUseCase: SetTodoItemSortTypeUseCase,
-    private val setHideDoneItemsUseCase: SetHideDoneItemsUseCase
+    private val setHideDoneItemsUseCase: SetHideDoneItemsUseCase,
+    private val updateDoneUseCase: UpdateDoneUseCase
 ) : ViewModel() {
 
     private val preferences = getTodoListPreferencesUseCase()
@@ -144,9 +144,7 @@ class TodoListViewModel(
 
     fun onDoneChanged(item: TodoItem, done: Boolean) {
         viewModelScope.launch {
-            val newItem = item.copy(done = done)
-
-            saveTodoItemUseCase.save(newItem)
+            updateDoneUseCase(item, done)
         }
     }
 
