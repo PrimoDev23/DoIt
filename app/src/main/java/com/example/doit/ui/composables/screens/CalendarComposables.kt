@@ -223,14 +223,6 @@ fun CalendarDay(
     } else {
         Color.Unspecified
     }
-    /*val backgroundColor by animateColorAsState(
-        targetValue = if (selected) {
-            MaterialTheme.colorScheme.primary.copy(alpha = 0.3f)
-        } else {
-            Color.Unspecified
-        },
-        label = "CalendarDayBackgroundColor"
-    )*/
 
     Box(
         modifier = modifier
