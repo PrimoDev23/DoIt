@@ -96,7 +96,8 @@ class MainActivity : ComponentActivity() {
                                     }
                                 }
                             )
-                        }
+                        },
+                        gesturesEnabled = drawerState.isOpen
                     ) {
                         DrawerStateProvider(drawerState = drawerState) {
                             DestinationsNavHost(
