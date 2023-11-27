@@ -40,6 +40,10 @@ class CalendarState(
         selectedDate = date
     }
 
+    fun updateDisplayedMonth(month: LocalDate) {
+        displayMonth = month.withDayOfMonth(1)
+    }
+
     suspend fun onSettledPageChanged(page: Int) {
         if (page == 1) {
             return
