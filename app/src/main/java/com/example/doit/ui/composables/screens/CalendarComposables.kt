@@ -21,6 +21,8 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -32,6 +34,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
@@ -64,12 +67,25 @@ fun CalendarScreen(
     viewModel: CalendarViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
+    val calendarState = rememberCalendarState()
 
     RootScaffold(
         modifier = Modifier.fillMaxSize(),
         title = stringResource(id = R.string.calendar_title),
         navigationIcon = {
             DrawerMenuButton()
+        },
+        actions = {
+            IconButton(
+                onClick = {
+                    calendarState.updateDisplayedMonth(LocalDate.now())
+                }
+            ) {
+                Icon(
+                    painter = painterResource(id = R.drawable.outline_today_24),
+                    contentDescription = stringResource(id = R.string.calendar_today_button)
+                )
+            }
         }
     ) {
         Column(
@@ -77,8 +93,6 @@ fun CalendarScreen(
                 .padding(it)
                 .fillMaxSize()
         ) {
-            val calendarState = rememberCalendarState()
-
             MonthSelection(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)

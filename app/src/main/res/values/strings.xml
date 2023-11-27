@@ -75,4 +75,5 @@
     <string name="sort_creation_date">Creation date</string>
     <string name="calendar_title">Calendar</string>
     <string name="calendar_list_empty">There are no entries for the selected date</string>
+    <string name="calendar_today_button">Jump to today</string>
 </resources>
