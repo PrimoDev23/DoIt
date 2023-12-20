@@ -76,4 +76,16 @@
     <string name="calendar_title">Calendar</string>
     <string name="calendar_list_empty">There are no entries for the selected date</string>
     <string name="calendar_today_button">Jump to today</string>
+    <string name="todo_detail_title">Detail</string>
+    <string name="todo_detail_priority">Priority</string>
+    <string name="todo_detail_due_date">Due date</string>
+    <string name="todo_detail_notification">Notification</string>
+    <string name="todo_detail_description">Description</string>
+    <string name="todo_detail_tags">Tags</string>
+    <string name="todo_detail_no_description">No description</string>
+    <string name="todo_detail_no_due_date">No due date</string>
+    <string name="todo_detail_no_notification">No notification</string>
+    <string name="todo_detail_no_tags">No tags</string>
+    <string name="todo_detail_subtasks">Subtasks</string>
+    <string name="todo_detail_remove_subtask">Remove subtask</string>
 </resources>

@@ -37,6 +37,14 @@ class TodoItemRepositoryImpl(
         return mapper.map(entity)
     }
 
+    override fun getItemFlowById(id: String): Flow<TodoItem?> {
+        return dao.selectByIdFlow(id).map { entity ->
+            entity?.let {
+                mapper.map(it)
+            }
+        }
+    }
+
     override suspend fun saveTodoItem(item: TodoItem) {
         val mappedItem = mapper.mapBack(item)
 

@@ -29,6 +29,19 @@ class SubtaskRepositoryImpl(
         subtaskDao.insertOnSave(parent, mappedItems)
     }
 
+    override suspend fun saveSubtaskForParent(parent: String, subtask: Subtask) {
+        val mapped = with(subtask) {
+            SubtaskEntity(
+                id = id,
+                parent = parent,
+                title = title,
+                done = done
+            )
+        }
+
+        subtaskDao.insert(mapped)
+    }
+
     override suspend fun deleteByParent(parent: String) {
         subtaskDao.deleteByParent(parent)
     }

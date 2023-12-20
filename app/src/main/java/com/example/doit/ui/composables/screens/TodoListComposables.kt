@@ -74,6 +74,7 @@ import com.example.doit.ui.composables.ToggleableDropDownMenuItem
 import com.example.doit.ui.composables.applyFilter
 import com.example.doit.ui.composables.rememberSnackbarHostState
 import com.example.doit.ui.composables.screens.destinations.AddEntryScreenDestination
+import com.example.doit.ui.composables.screens.destinations.TodoDetailScreenDestination
 import com.example.doit.ui.composables.sort
 import com.example.doit.ui.viewmodels.TodoListViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -278,6 +279,8 @@ fun TodoListScreen(
                                 onClick = {
                                     if (state.selectedItems.isNotEmpty()) {
                                         viewModel.onItemSelected(item)
+                                    } else {
+                                        navigator.navigate(TodoDetailScreenDestination(id = item.id))
                                     }
                                 },
                                 onLongClick = {

@@ -20,6 +20,7 @@ import com.example.doit.domain.usecases.DeleteTodoItemUseCaseImpl
 import com.example.doit.domain.usecases.GetTagsFlowUseCaseImpl
 import com.example.doit.domain.usecases.GetTagsUseCaseImpl
 import com.example.doit.domain.usecases.GetTodayTodoItemsFlowUseCaseImpl
+import com.example.doit.domain.usecases.GetTodoItemFlowUseCaseImpl
 import com.example.doit.domain.usecases.GetTodoItemUseCaseImpl
 import com.example.doit.domain.usecases.GetTodoItemsFlowUseCaseImpl
 import com.example.doit.domain.usecases.GetTodoListPreferencesUseCaseImpl
@@ -28,11 +29,13 @@ import com.example.doit.domain.usecases.SaveTodoItemUseCaseImpl
 import com.example.doit.domain.usecases.SetHideDoneItemsUseCaseImpl
 import com.example.doit.domain.usecases.SetTodoItemSortTypeUseCaseImpl
 import com.example.doit.domain.usecases.UpdateDoneUseCaseImpl
+import com.example.doit.domain.usecases.UpdateSubtaskDoneUseCaseImpl
 import com.example.doit.domain.usecases.interfaces.DeleteTagsUseCase
 import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodayTodoItemsFlowUseCase
+import com.example.doit.domain.usecases.interfaces.GetTodoItemFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoListPreferencesUseCase
@@ -41,9 +44,11 @@ import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import com.example.doit.domain.usecases.interfaces.SetHideDoneItemsUseCase
 import com.example.doit.domain.usecases.interfaces.SetTodoItemSortTypeUseCase
 import com.example.doit.domain.usecases.interfaces.UpdateDoneUseCase
+import com.example.doit.domain.usecases.interfaces.UpdateSubtaskDoneUseCase
 import com.example.doit.ui.viewmodels.AddEntryViewModel
 import com.example.doit.ui.viewmodels.CalendarViewModel
 import com.example.doit.ui.viewmodels.TagListViewModel
+import com.example.doit.ui.viewmodels.TodoDetailViewModel
 import com.example.doit.ui.viewmodels.TodoListViewModel
 import org.koin.android.ext.koin.androidContext
 import org.koin.androidx.viewmodel.dsl.viewModelOf
@@ -57,6 +62,7 @@ val viewModelModule = module {
     viewModelOf(::TagListViewModel)
     viewModelOf(::TodoListViewModel)
     viewModelOf(::CalendarViewModel)
+    viewModelOf(::TodoDetailViewModel)
 }
 
 val databaseModule = module {
@@ -94,6 +100,8 @@ val useCaseModule = module {
     factoryOf(::SetHideDoneItemsUseCaseImpl) bind SetHideDoneItemsUseCase::class
     factoryOf(::SetTodoItemSortTypeUseCaseImpl) bind SetTodoItemSortTypeUseCase::class
     factoryOf(::UpdateDoneUseCaseImpl) bind UpdateDoneUseCase::class
+    factoryOf(::UpdateSubtaskDoneUseCaseImpl) bind UpdateSubtaskDoneUseCase::class
+    factoryOf(::GetTodoItemFlowUseCaseImpl) bind GetTodoItemFlowUseCase::class
 }
 
 val mapperModule = module {

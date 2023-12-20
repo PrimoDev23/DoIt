@@ -6,6 +6,7 @@ interface SubtaskRepository {
 
     suspend fun getSubtasksByParent(parent: String): List<Subtask>
     suspend fun saveSubtasksForParent(parent: String, items: List<Subtask>)
+    suspend fun saveSubtaskForParent(parent: String, subtask: Subtask)
     suspend fun deleteByParent(parent: String)
 
 }

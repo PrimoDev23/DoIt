@@ -13,6 +13,9 @@ interface SubtaskDao {
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insert(items: List<SubtaskEntity>)
 
+    @Insert(onConflict = OnConflictStrategy.REPLACE)
+    suspend fun insert(item: SubtaskEntity)
+
     @Query("DELETE FROM SubtaskEntity WHERE parent = :parent")
     suspend fun deleteByParent(parent: String)
 
