@@ -1,12 +1,12 @@
 package com.example.doit.data.mappers
 
+import com.example.doit.common.AppDatabase
 import com.example.doit.data.models.local.TodoItemEntity
 import com.example.doit.data.models.local.TodoItemWithSubtasksEntity
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.repositories.TagRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
-import java.time.format.DateTimeFormatter
 
 class TodoItemWithSubtasksMapper(
     private val tagRepository: TagRepository,
@@ -17,16 +17,17 @@ class TodoItemWithSubtasksMapper(
             val tagIds = if (tags.isEmpty()) {
                 emptyList()
             } else {
-                tags.split(SEPARATOR).map { it.toLong() }
+                tags.split(AppDatabase.LIST_SEPARATOR).map { it.toLong() }
             }
             val tags = tagRepository.getTagsByIds(tagIds)
             val date = dueDate?.let {
-                LocalDate.parse(it, DATE_FORMATTER)
+                LocalDate.parse(it, AppDatabase.DATE_FORMATTER)
             }
             val notificationDateTime = notificationDateTime?.let {
-                LocalDateTime.parse(it, DATE_TIME_FORMATTER)
+                LocalDateTime.parse(it, AppDatabase.DATE_TIME_FORMATTER)
             }
-            val creationDateTime = LocalDateTime.parse(creationDateTime, DATE_TIME_FORMATTER)
+            val creationDateTime =
+                LocalDateTime.parse(creationDateTime, AppDatabase.DATE_TIME_FORMATTER)
 
             val subtasks = item.subtasks.map {
                 subtaskMapper.map(it)
@@ -56,11 +57,11 @@ class TodoItemWithSubtasksMapper(
                 title = title,
                 description = description,
                 done = done,
-                tags = ids.joinToString(SEPARATOR),
+                tags = ids.joinToString(AppDatabase.LIST_SEPARATOR),
                 priority = priority,
-                dueDate = item.dueDate?.format(TodoItemMapper.DATE_FORMATTER),
-                notificationDateTime = notificationDateTime?.format(TodoItemMapper.DATE_TIME_FORMATTER),
-                creationDateTime = creationDateTime.format(TodoItemMapper.DATE_TIME_FORMATTER)
+                dueDate = item.dueDate?.format(AppDatabase.DATE_FORMATTER),
+                notificationDateTime = notificationDateTime?.format(AppDatabase.DATE_TIME_FORMATTER),
+                creationDateTime = creationDateTime.format(AppDatabase.DATE_TIME_FORMATTER)
             )
 
             val subtasks = item.subtasks.map {
@@ -72,12 +73,5 @@ class TodoItemWithSubtasksMapper(
                 subtasks = subtasks
             )
         }
-    }
-
-    companion object {
-        private const val SEPARATOR = "|"
-
-        val DATE_FORMATTER = DateTimeFormatter.ISO_DATE
-        val DATE_TIME_FORMATTER = DateTimeFormatter.ISO_DATE_TIME
     }
 }

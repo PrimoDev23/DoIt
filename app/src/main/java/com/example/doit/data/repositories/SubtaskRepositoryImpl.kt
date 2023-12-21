@@ -1,5 +1,6 @@
 package com.example.doit.data.repositories
 
+import com.example.doit.common.AppDatabase
 import com.example.doit.data.daos.SubtaskDao
 import com.example.doit.data.mappers.SubtaskMapper
 import com.example.doit.data.models.local.SubtaskEntity
@@ -23,7 +24,7 @@ class SubtaskRepositoryImpl(
                 parent = parent,
                 title = it.title,
                 done = it.done,
-                creationDateTime = SubtaskMapper.DATE_TIME_FORMATTER.format(it.creationDateTime)
+                creationDateTime = AppDatabase.DATE_TIME_FORMATTER.format(it.creationDateTime)
             )
         }
 
@@ -37,7 +38,7 @@ class SubtaskRepositoryImpl(
                 parent = parent,
                 title = title,
                 done = done,
-                creationDateTime = SubtaskMapper.DATE_TIME_FORMATTER.format(creationDateTime)
+                creationDateTime = AppDatabase.DATE_TIME_FORMATTER.format(creationDateTime)
             )
         }
 

@@ -1,5 +1,6 @@
 package com.example.doit.data.repositories
 
+import com.example.doit.common.AppDatabase
 import com.example.doit.data.daos.TodoItemDao
 import com.example.doit.data.mappers.TodoItemMapper
 import com.example.doit.data.mappers.TodoItemWithSubtasksMapper
@@ -18,17 +19,17 @@ class TodoItemRepositoryImpl(
     override fun getItemsFlow(): Flow<List<TodoItem>> {
         return dao.selectFlow().map { items ->
             items.map {
-                mapper.map(it)
+                fullMapper.map(it)
             }
         }
     }
 
     override fun getTodayItemsFlow(): Flow<List<TodoItem>> {
-        val today = LocalDate.now().format(TodoItemMapper.DATE_FORMATTER)
+        val today = LocalDate.now().format(AppDatabase.DATE_FORMATTER)
 
         return dao.selectByDate(today).map { items ->
             items.map {
-                mapper.map(it)
+                fullMapper.map(it)
             }
         }
     }
@@ -36,7 +37,7 @@ class TodoItemRepositoryImpl(
     override suspend fun getItemById(id: String): TodoItem? {
         val entity = dao.selectById(id) ?: return null
 
-        return mapper.map(entity)
+        return fullMapper.map(entity)
     }
 
     override fun getItemFlowById(id: String): Flow<TodoItem?> {
@@ -88,7 +89,7 @@ class TodoItemRepositoryImpl(
         }.distinct()
 
         return entities.map {
-            mapper.map(it)
+            fullMapper.map(it)
         }
     }
 }
