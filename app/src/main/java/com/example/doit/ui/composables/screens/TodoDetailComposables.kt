@@ -433,14 +433,22 @@ fun TodoDetailSubtasks(
     }
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TodoDetailSubtask(
     subtask: Subtask,
     onDoneChanged: (Boolean) -> Unit,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(end = 16.dp)
+    contentPadding: PaddingValues = PaddingValues(end = 16.dp),
+    shape: Shape = RoundedCornerShape(8.dp)
 ) {
-    ElevatedCard(modifier = modifier) {
+    ElevatedCard(
+        modifier = modifier,
+        shape = shape,
+        onClick = {
+            onDoneChanged(!subtask.done)
+        }
+    ) {
         Row(
             modifier = Modifier
                 .padding(contentPadding)
