@@ -6,6 +6,7 @@ import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
 import com.example.doit.data.models.local.SubtaskEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface SubtaskDao {
@@ -21,6 +22,9 @@ interface SubtaskDao {
 
     @Query("SELECT * FROM SubtaskEntity WHERE parent = :parent")
     suspend fun selectByParent(parent: String): List<SubtaskEntity>
+
+    @Query("SELECT * FROM SubtaskEntity WHERE parent = :parent ORDER BY creationDateTime")
+    fun selectByParentFlow(parent: String): Flow<List<SubtaskEntity>>
 
     @Transaction
     suspend fun insertOnSave(parent: String, tasks: List<SubtaskEntity>) {

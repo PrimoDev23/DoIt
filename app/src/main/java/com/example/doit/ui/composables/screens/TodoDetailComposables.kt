@@ -512,12 +512,14 @@ fun TodoDetailFilledPreview() {
                 Subtask(
                     id = "",
                     title = "Test1234",
-                    done = false
+                    done = false,
+                    creationDateTime = LocalDateTime.now()
                 ),
                 Subtask(
                     id = "1",
                     title = "Long subtask title to check if lines are properly formatted",
-                    done = false
+                    done = false,
+                    creationDateTime = LocalDateTime.now()
                 )
             ),
             notificationDateTime = LocalDateTime.now(),

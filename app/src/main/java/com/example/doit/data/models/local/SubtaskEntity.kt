@@ -23,5 +23,6 @@ data class SubtaskEntity(
     val id: String,
     val parent: String,
     val title: String,
-    val done: Boolean
+    val done: Boolean,
+    val creationDateTime: String
 )

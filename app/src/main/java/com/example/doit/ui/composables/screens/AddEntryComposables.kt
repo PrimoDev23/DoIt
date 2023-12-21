@@ -657,7 +657,8 @@ fun SubtaskSection(
                         val subtask = Subtask(
                             id = UUID.randomUUID().toString(),
                             title = it,
-                            done = false
+                            done = false,
+                            creationDateTime = LocalDateTime.now()
                         )
 
                         onSubtaskAdded(subtask)

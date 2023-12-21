@@ -7,6 +7,7 @@ import com.example.doit.data.dataStore
 import com.example.doit.data.mappers.SubtaskMapper
 import com.example.doit.data.mappers.TagMapper
 import com.example.doit.data.mappers.TodoItemMapper
+import com.example.doit.data.mappers.TodoItemWithSubtasksMapper
 import com.example.doit.data.repositories.PreferencesRepositoryImpl
 import com.example.doit.data.repositories.SubtaskRepositoryImpl
 import com.example.doit.data.repositories.TagRepositoryImpl
@@ -108,6 +109,7 @@ val mapperModule = module {
     factoryOf(::SubtaskMapper)
     factoryOf(::TagMapper)
     factoryOf(::TodoItemMapper)
+    factoryOf(::TodoItemWithSubtasksMapper)
 }
 
 val workerModule = module {

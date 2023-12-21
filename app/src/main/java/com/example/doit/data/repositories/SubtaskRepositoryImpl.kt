@@ -22,7 +22,8 @@ class SubtaskRepositoryImpl(
                 id = it.id,
                 parent = parent,
                 title = it.title,
-                done = it.done
+                done = it.done,
+                creationDateTime = SubtaskMapper.DATE_TIME_FORMATTER.format(it.creationDateTime)
             )
         }
 
@@ -35,7 +36,8 @@ class SubtaskRepositoryImpl(
                 id = id,
                 parent = parent,
                 title = title,
-                done = done
+                done = done,
+                creationDateTime = SubtaskMapper.DATE_TIME_FORMATTER.format(creationDateTime)
             )
         }
 
