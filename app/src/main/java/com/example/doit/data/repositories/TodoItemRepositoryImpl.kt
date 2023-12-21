@@ -1,21 +1,17 @@
 package com.example.doit.data.repositories
 
-import com.example.doit.data.daos.SubtaskDao
 import com.example.doit.data.daos.TodoItemDao
 import com.example.doit.data.mappers.TodoItemMapper
 import com.example.doit.data.mappers.TodoItemWithSubtasksMapper
-import com.example.doit.data.models.local.TodoItemWithSubtasksEntity
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.repositories.TodoItemRepository
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.map
 import java.time.LocalDate
 
 class TodoItemRepositoryImpl(
     private val dao: TodoItemDao,
     private val mapper: TodoItemMapper,
-    private val subtaskDao: SubtaskDao,
     private val fullMapper: TodoItemWithSubtasksMapper
 ) : TodoItemRepository {
 
@@ -44,20 +40,15 @@ class TodoItemRepositoryImpl(
     }
 
     override fun getItemFlowById(id: String): Flow<TodoItem?> {
-        val itemFlow = dao.selectByIdFlow(id)
-        val subtasksFlow = subtaskDao.selectByParentFlow(id)
+        return dao.selectByIdFlow(id).map { entity ->
+            entity?.let {
+                val mapped = fullMapper.map(it)
+                val sortedSubtasks = mapped.subtasks.sortedBy { subtask ->
+                    subtask.creationDateTime
+                }
 
-        return combine(itemFlow, subtasksFlow) { item, subtasks ->
-            if (item == null) {
-                return@combine null
+                mapped.copy(subtasks = sortedSubtasks)
             }
-
-            val combined = TodoItemWithSubtasksEntity(
-                item = item,
-                subtasks = subtasks
-            )
-
-            fullMapper.map(combined)
         }
     }
 

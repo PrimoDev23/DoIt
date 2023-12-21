@@ -1,5 +1,6 @@
 package com.example.doit.data.mappers
 
+import com.example.doit.data.models.local.TodoItemEntity
 import com.example.doit.data.models.local.TodoItemWithSubtasksEntity
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.repositories.TagRepository
@@ -42,6 +43,33 @@ class TodoItemWithSubtasksMapper(
                 subtasks = subtasks,
                 notificationDateTime = notificationDateTime,
                 creationDateTime = creationDateTime
+            )
+        }
+    }
+
+    override suspend fun mapBack(item: TodoItem): TodoItemWithSubtasksEntity {
+        return with(item) {
+            val ids = tags.map { it.id }
+
+            val todoItem = TodoItemEntity(
+                id = id,
+                title = title,
+                description = description,
+                done = done,
+                tags = ids.joinToString(SEPARATOR),
+                priority = priority,
+                dueDate = item.dueDate?.format(TodoItemMapper.DATE_FORMATTER),
+                notificationDateTime = notificationDateTime?.format(TodoItemMapper.DATE_TIME_FORMATTER),
+                creationDateTime = creationDateTime.format(TodoItemMapper.DATE_TIME_FORMATTER)
+            )
+
+            val subtasks = item.subtasks.map {
+                subtaskMapper.mapBack(it)
+            }
+
+            TodoItemWithSubtasksEntity(
+                item = todoItem,
+                subtasks = subtasks
             )
         }
     }
