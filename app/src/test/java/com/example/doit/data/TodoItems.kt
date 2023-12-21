@@ -20,4 +20,20 @@ object TodoItems {
         creationDateTime = LocalDateTime.now()
     )
 
+    val todoList = listOf(
+        fullTodoItem,
+        TodoItem(
+            id = "12345",
+            title = "Test1234",
+            description = "Description",
+            done = false,
+            tags = emptyList(),
+            priority = Priority.HIGH,
+            dueDate = LocalDate.of(2020, 12, 12),
+            subtasks = Subtasks.subtasks,
+            notificationDateTime = LocalDateTime.now(),
+            creationDateTime = LocalDateTime.now()
+        )
+    )
+
 }
