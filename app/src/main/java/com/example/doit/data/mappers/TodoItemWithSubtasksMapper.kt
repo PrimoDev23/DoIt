@@ -29,9 +29,13 @@ class TodoItemWithSubtasksMapper(
             val creationDateTime =
                 LocalDateTime.parse(creationDateTime, AppDatabase.DATE_TIME_FORMATTER)
 
-            val subtasks = item.subtasks.map {
-                subtaskMapper.map(it)
-            }
+            val subtasks = item.subtasks
+                .map {
+                    subtaskMapper.map(it)
+                }
+                .sortedBy {
+                    it.creationDateTime
+                }
 
             TodoItem(
                 id = id,

@@ -43,12 +43,7 @@ class TodoItemRepositoryImpl(
     override fun getItemFlowById(id: String): Flow<TodoItem?> {
         return dao.selectByIdFlow(id).map { entity ->
             entity?.let {
-                val mapped = fullMapper.map(it)
-                val sortedSubtasks = mapped.subtasks.sortedBy { subtask ->
-                    subtask.creationDateTime
-                }
-
-                mapped.copy(subtasks = sortedSubtasks)
+                fullMapper.map(it)
             }
         }
     }
