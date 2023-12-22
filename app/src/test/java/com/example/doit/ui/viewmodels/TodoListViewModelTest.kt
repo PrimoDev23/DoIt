@@ -17,6 +17,7 @@ import com.example.doit.domain.usecases.interfaces.SetHideDoneItemsUseCase
 import com.example.doit.domain.usecases.interfaces.SetTodoItemSortTypeUseCase
 import com.example.doit.domain.usecases.interfaces.UpdateDoneUseCase
 import io.mockk.coEvery
+import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -143,12 +144,11 @@ class TodoListViewModelTest : CoroutineTestBase() {
     }
 
     @Test
-    fun `today item count`() = runTest {
+    fun `today item count updates`() = runTest {
         val getTodoListPreferencesUseCase = mockk<GetTodoListPreferencesUseCase>()
         val getTodoItemsFlowUseCase = mockk<GetTodoItemsFlowUseCase>()
         val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
-        val updateDoneUseCase = mockk<UpdateDoneUseCase>()
 
         every { getTodoListPreferencesUseCase() } returns flow {
             val preferences = TodoListPreferences(
@@ -175,26 +175,6 @@ class TodoListViewModelTest : CoroutineTestBase() {
 
         every { getTodayTodoItemsFlowUseCase() } returns todayItemFlow
 
-        coEvery { updateDoneUseCase(any(), any()) } answers {
-            val item = firstArg<TodoItem>()
-            val newState = secondArg<Boolean>()
-
-            todoItemFlow.update {
-                val items = it.toMutableList()
-
-                val index = items.indexOf(item)
-
-                if (index == -1) {
-                    return@update it
-                }
-
-                val newItem = item.copy(done = newState)
-                items[index] = newItem
-
-                items
-            }
-        }
-
         val viewModel = TodoListViewModel(
             getTodoListPreferencesUseCase = getTodoListPreferencesUseCase,
             getTodoItemsFlowUseCase = getTodoItemsFlowUseCase,
@@ -203,7 +183,7 @@ class TodoListViewModelTest : CoroutineTestBase() {
             deleteTodoItemsUseCase = mockk(),
             setTodoItemSortTypeUseCase = mockk(),
             setHideDoneItemsUseCase = mockk(),
-            updateDoneUseCase = updateDoneUseCase
+            updateDoneUseCase = mockk()
         )
 
         viewModel.state.test {
@@ -212,7 +192,11 @@ class TodoListViewModelTest : CoroutineTestBase() {
 
             Assert.assertEquals(1, state.todayUndone)
 
-            viewModel.onDoneChanged(TodoItems.fullTodoItem, true)
+            todoItemFlow.update { items ->
+                items.map {
+                    it.copy(done = true)
+                }
+            }
 
             state = awaitItem()
 
@@ -221,7 +205,7 @@ class TodoListViewModelTest : CoroutineTestBase() {
     }
 
     @Test
-    fun `update done status`() = runTest {
+    fun `onDoneChanged calls usecase`() = runTest {
         val getTodoListPreferencesUseCase = mockk<GetTodoListPreferencesUseCase>()
         val getTodoItemsFlowUseCase = mockk<GetTodoItemsFlowUseCase>()
         val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
@@ -253,25 +237,7 @@ class TodoListViewModelTest : CoroutineTestBase() {
 
         every { getTodayTodoItemsFlowUseCase() } returns todayItemFlow
 
-        coEvery { updateDoneUseCase(any(), any()) } answers {
-            val item = firstArg<TodoItem>()
-            val newState = secondArg<Boolean>()
-
-            todoItemFlow.update {
-                val items = it.toMutableList()
-
-                val index = items.indexOf(item)
-
-                if (index == -1) {
-                    return@update it
-                }
-
-                val newItem = item.copy(done = newState)
-                items[index] = newItem
-
-                items
-            }
-        }
+        coEvery { updateDoneUseCase(any(), any()) } returns Unit
 
         val viewModel = TodoListViewModel(
             getTodoListPreferencesUseCase = getTodoListPreferencesUseCase,
@@ -284,18 +250,15 @@ class TodoListViewModelTest : CoroutineTestBase() {
             updateDoneUseCase = updateDoneUseCase
         )
 
-        viewModel.state.test {
-            awaitItem()
-            var state = awaitItem()
+        viewModel.onDoneChanged(TodoItems.fullTodoItem, true)
+        dispatcher.scheduler.advanceUntilIdle()
 
-            Assert.assertTrue(state.items.none { it.done })
+        coVerify { updateDoneUseCase(TodoItems.fullTodoItem, true) }
 
-            viewModel.onDoneChanged(TodoItems.fullTodoItem, true)
+        viewModel.onDoneChanged(TodoItems.fullTodoItem, false)
+        dispatcher.scheduler.advanceUntilIdle()
 
-            state = awaitItem()
-
-            Assert.assertEquals(1, state.items.count { it.done })
-        }
+        coVerify { updateDoneUseCase(TodoItems.fullTodoItem, false) }
     }
 
     @Test
@@ -331,15 +294,7 @@ class TodoListViewModelTest : CoroutineTestBase() {
 
         every { getTodayTodoItemsFlowUseCase() } returns todayItemFlow
 
-        coEvery { deleteTodoItemsUseCase.delete(any()) } answers {
-            val items = firstArg<List<TodoItem>>()
-
-            todoItemFlow.update {
-                it.filterNot { item ->
-                    items.contains(item)
-                }
-            }
-        }
+        coEvery { deleteTodoItemsUseCase.delete(any()) } returns Unit
 
         val viewModel = TodoListViewModel(
             getTodoListPreferencesUseCase = getTodoListPreferencesUseCase,
@@ -352,24 +307,18 @@ class TodoListViewModelTest : CoroutineTestBase() {
             updateDoneUseCase = mockk()
         )
 
-        viewModel.state.test {
-            awaitItem()
-            var state = awaitItem()
+        viewModel.onDeleteClicked()
+        dispatcher.scheduler.advanceUntilIdle()
 
-            Assert.assertEquals(TodoItems.todoList, state.items)
+        coVerify { deleteTodoItemsUseCase.delete(emptyList()) }
 
-            viewModel.onItemSelected(TodoItems.fullTodoItem)
+        viewModel.onItemSelected(TodoItems.fullTodoItem)
+        dispatcher.scheduler.advanceUntilIdle()
 
-            state = awaitItem()
+        viewModel.onDeleteClicked()
+        dispatcher.scheduler.advanceUntilIdle()
 
-            Assert.assertEquals(1, state.selectedItems.size)
-
-            viewModel.onDeleteClicked()
-
-            state = awaitItem()
-
-            Assert.assertEquals(listOf(TodoItems.todoList[1]), state.items)
-        }
+        coVerify { deleteTodoItemsUseCase.delete(listOf(TodoItems.fullTodoItem)) }
     }
 
     @Test
@@ -555,13 +504,72 @@ class TodoListViewModelTest : CoroutineTestBase() {
     }
 
     @Test
-    fun `update settings`() = runTest {
+    fun `update settings calls usecases`() = runTest {
         val getTodoListPreferencesUseCase = mockk<GetTodoListPreferencesUseCase>()
         val getTodoItemsFlowUseCase = mockk<GetTodoItemsFlowUseCase>()
         val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
         val setTodoItemSortTypeUseCase = mockk<SetTodoItemSortTypeUseCase>()
         val setHideDoneItemsUseCase = mockk<SetHideDoneItemsUseCase>()
+
+        every { getTodoListPreferencesUseCase() } returns flow {
+            emit(
+                TodoListPreferences(
+                    sortType = TodoItemSortType.CREATION_DATE,
+                    hideDoneItems = false
+                )
+            )
+        }
+
+        val todoItemList = TodoItems.todoList
+        val todayItems = todoItemList.filter {
+            it.dueDate == LocalDate.now()
+        }
+
+        every { getTodoItemsFlowUseCase.getItemFlow() } returns flow {
+            emit(todoItemList)
+        }
+
+        every { getTagsFlowUseCase.getFlow() } returns flow {
+            emit(Tags.tagList)
+        }
+
+        every { getTodayTodoItemsFlowUseCase() } returns flow {
+            emit(todayItems)
+        }
+
+        coEvery { setTodoItemSortTypeUseCase(any()) } returns Unit
+
+        coEvery { setHideDoneItemsUseCase(any()) } returns Unit
+
+        val viewModel = TodoListViewModel(
+            getTodoListPreferencesUseCase = getTodoListPreferencesUseCase,
+            getTodoItemsFlowUseCase = getTodoItemsFlowUseCase,
+            getTagsFlowUseCase = getTagsFlowUseCase,
+            getTodayTodoItemsFlowUseCase = getTodayTodoItemsFlowUseCase,
+            deleteTodoItemsUseCase = mockk(),
+            setTodoItemSortTypeUseCase = setTodoItemSortTypeUseCase,
+            setHideDoneItemsUseCase = setHideDoneItemsUseCase,
+            updateDoneUseCase = mockk()
+        )
+
+        viewModel.onSortTypeChanged(TodoItemSortType.ALPHABETICAL)
+        dispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { setTodoItemSortTypeUseCase(TodoItemSortType.ALPHABETICAL) }
+
+        viewModel.onHideDoneItemsChanged(true)
+        dispatcher.scheduler.advanceUntilIdle()
+
+        coVerify { setHideDoneItemsUseCase(true) }
+    }
+
+    @Test
+    fun `update settings rebuilds state`() = runTest {
+        val getTodoListPreferencesUseCase = mockk<GetTodoListPreferencesUseCase>()
+        val getTodoItemsFlowUseCase = mockk<GetTodoItemsFlowUseCase>()
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
+        val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
 
         val preferencesFlow = MutableStateFlow(
             TodoListPreferences(
@@ -589,30 +597,14 @@ class TodoListViewModelTest : CoroutineTestBase() {
             emit(todayItems)
         }
 
-        coEvery { setTodoItemSortTypeUseCase(any()) } answers {
-            val sortType = firstArg<TodoItemSortType>()
-
-            preferencesFlow.update {
-                it.copy(sortType = sortType)
-            }
-        }
-
-        coEvery { setHideDoneItemsUseCase(any()) } answers {
-            val hideDoneItems = firstArg<Boolean>()
-
-            preferencesFlow.update {
-                it.copy(hideDoneItems = hideDoneItems)
-            }
-        }
-
         val viewModel = TodoListViewModel(
             getTodoListPreferencesUseCase = getTodoListPreferencesUseCase,
             getTodoItemsFlowUseCase = getTodoItemsFlowUseCase,
             getTagsFlowUseCase = getTagsFlowUseCase,
             getTodayTodoItemsFlowUseCase = getTodayTodoItemsFlowUseCase,
             deleteTodoItemsUseCase = mockk(),
-            setTodoItemSortTypeUseCase = setTodoItemSortTypeUseCase,
-            setHideDoneItemsUseCase = setHideDoneItemsUseCase,
+            setTodoItemSortTypeUseCase = mockk(),
+            setHideDoneItemsUseCase = mockk(),
             updateDoneUseCase = mockk()
         )
 
@@ -623,16 +615,16 @@ class TodoListViewModelTest : CoroutineTestBase() {
             Assert.assertEquals(TodoItemSortType.CREATION_DATE, state.sortType)
             Assert.assertFalse(state.hideDoneItems)
 
-            viewModel.onSortTypeChanged(TodoItemSortType.ALPHABETICAL)
+            preferencesFlow.update {
+                it.copy(
+                    sortType = TodoItemSortType.ALPHABETICAL,
+                    hideDoneItems = true
+                )
+            }
 
             state = awaitItem()
 
             Assert.assertEquals(TodoItemSortType.ALPHABETICAL, state.sortType)
-
-            viewModel.onHideDoneItemsChanged(true)
-
-            state = awaitItem()
-
             Assert.assertTrue(state.hideDoneItems)
         }
     }
