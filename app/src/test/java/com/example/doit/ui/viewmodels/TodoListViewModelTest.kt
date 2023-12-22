@@ -1,6 +1,7 @@
 package com.example.doit.ui.viewmodels
 
 import app.cash.turbine.test
+import com.example.doit.CoroutineTestBase
 import com.example.doit.data.Tags
 import com.example.doit.data.TodoItems
 import com.example.doit.data.models.local.TodoListPreferences
@@ -18,38 +19,16 @@ import com.example.doit.domain.usecases.interfaces.UpdateDoneUseCase
 import io.mockk.coEvery
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.unmockkAll
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.update
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
 import org.junit.Assert
-import org.junit.Before
 import org.junit.Test
 import java.time.LocalDate
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class TodoListViewModelTest {
-
-    private val dispatcher = StandardTestDispatcher()
-
-    @Before
-    fun before() {
-        Dispatchers.setMain(dispatcher)
-    }
-
-    @After
-    fun after() {
-        Dispatchers.resetMain()
-        unmockkAll()
-    }
+class TodoListViewModelTest : CoroutineTestBase() {
 
     @Test
     fun `init ViewModel`() = runTest {

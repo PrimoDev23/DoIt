@@ -2,6 +2,7 @@ package com.example.doit.ui.viewmodels
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
+import com.example.doit.CoroutineTestBase
 import com.example.doit.data.Subtasks
 import com.example.doit.data.TodoItems
 import com.example.doit.domain.usecases.interfaces.GetTodoItemFlowUseCase
@@ -10,34 +11,12 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
-import io.mockk.unmockkAll
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.flow.flow
-import kotlinx.coroutines.test.StandardTestDispatcher
-import kotlinx.coroutines.test.resetMain
 import kotlinx.coroutines.test.runTest
-import kotlinx.coroutines.test.setMain
-import org.junit.After
 import org.junit.Assert
-import org.junit.Before
 import org.junit.Test
 
-@OptIn(ExperimentalCoroutinesApi::class)
-class TodoDetailViewModelTest {
-
-    private val dispatcher = StandardTestDispatcher()
-
-    @Before
-    fun before() {
-        Dispatchers.setMain(dispatcher)
-    }
-
-    @After
-    fun after() {
-        Dispatchers.resetMain()
-        unmockkAll()
-    }
+class TodoDetailViewModelTest : CoroutineTestBase() {
 
     private fun buildSavedStateHandle() = SavedStateHandle().apply {
         this["id"] = TodoItems.fullTodoItem.id
@@ -58,6 +37,7 @@ class TodoDetailViewModelTest {
         )
 
         viewModel.state.test {
+            awaitItem()
             val state = awaitItem()
 
             Assert.assertEquals(TodoItems.fullTodoItem, state.item)
