@@ -315,11 +315,7 @@ fun List<TodoItem>.applyFilter(
             return@filter false
         }
 
-        if (priority != null && it.priority != priority) {
-            return@filter false
-        }
-
-        return@filter true
+        return@filter !(priority != null && it.priority != priority)
     }
 }
 
@@ -333,11 +329,11 @@ fun List<TodoItem>.sort(type: TodoItemSortType): List<TodoItem> {
             it.priority
         }
 
-        TodoItemSortType.DUE_DATE -> this.sortedBy {
+        TodoItemSortType.DUE_DATE -> this.sortedByDescending {
             it.dueDate
         }
 
-        TodoItemSortType.CREATION_DATE -> this.sortedBy {
+        TodoItemSortType.CREATION_DATE -> this.sortedByDescending {
             it.creationDateTime
         }
     }
