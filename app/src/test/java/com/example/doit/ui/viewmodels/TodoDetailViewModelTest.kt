@@ -19,7 +19,7 @@ import org.junit.Test
 class TodoDetailViewModelTest : CoroutineTestBase() {
 
     private fun buildSavedStateHandle() = SavedStateHandle().apply {
-        this["id"] = TodoItems.fullTodoItem.id
+        this["id"] = TodoItems.todoItemOne.id
     }
 
     @Test
@@ -27,7 +27,7 @@ class TodoDetailViewModelTest : CoroutineTestBase() {
         val getTodoItemFlowUseCase = mockk<GetTodoItemFlowUseCase>()
 
         every { getTodoItemFlowUseCase(any()) } returns flow {
-            emit(TodoItems.fullTodoItem)
+            emit(TodoItems.todoItemOne)
         }
 
         val viewModel = TodoDetailViewModel(
@@ -40,7 +40,7 @@ class TodoDetailViewModelTest : CoroutineTestBase() {
             awaitItem()
             val state = awaitItem()
 
-            Assert.assertEquals(TodoItems.fullTodoItem, state.item)
+            Assert.assertEquals(TodoItems.todoItemOne, state.item)
         }
     }
 
@@ -50,7 +50,7 @@ class TodoDetailViewModelTest : CoroutineTestBase() {
         val updateSubtaskDoneUseCase = mockk<UpdateSubtaskDoneUseCase>()
 
         every { getTodoItemFlowUseCase(any()) } returns flow {
-            emit(TodoItems.fullTodoItem)
+            emit(TodoItems.todoItemOne)
         }
 
         coEvery { updateSubtaskDoneUseCase(any(), any(), any()) } returns Unit
@@ -64,7 +64,7 @@ class TodoDetailViewModelTest : CoroutineTestBase() {
         viewModel.onSubtaskDoneChanged(Subtasks.subtasks[0], true)
         dispatcher.scheduler.advanceUntilIdle()
 
-        coVerify { updateSubtaskDoneUseCase(TodoItems.fullTodoItem.id, Subtasks.subtasks[0], true) }
+        coVerify { updateSubtaskDoneUseCase(TodoItems.todoItemOne.id, Subtasks.subtasks[0], true) }
     }
 
 }

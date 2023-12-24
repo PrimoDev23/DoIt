@@ -21,7 +21,7 @@ class CalendarViewModelTest : CoroutineTestBase() {
         val getTodoItemsFlowUseCase = mockk<GetTodoItemsFlowUseCase>()
 
         every { getTodoItemsFlowUseCase.getItemFlow() } returns flow {
-            emit(TodoItems.todoList)
+            emit(TodoItems.todoListCreationDate)
         }
 
         val viewModel = CalendarViewModel(
@@ -33,7 +33,7 @@ class CalendarViewModelTest : CoroutineTestBase() {
             awaitItem()
             val state = awaitItem()
 
-            Assert.assertEquals(TodoItems.todoList, state.items)
+            Assert.assertEquals(TodoItems.todoListCreationDate, state.items)
         }
     }
 
@@ -53,7 +53,7 @@ class CalendarViewModelTest : CoroutineTestBase() {
             updateDoneUseCase = updateDoneUseCase
         )
 
-        viewModel.onDoneChanged(TodoItems.fullTodoItem, true)
+        viewModel.onDoneChanged(TodoItems.todoItemOne, true)
         dispatcher.scheduler.advanceUntilIdle()
 
         coVerify { updateDoneUseCase(any(), true) }

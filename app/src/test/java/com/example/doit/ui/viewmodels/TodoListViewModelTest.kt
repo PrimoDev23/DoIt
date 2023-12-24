@@ -250,15 +250,15 @@ class TodoListViewModelTest : CoroutineTestBase() {
             updateDoneUseCase = updateDoneUseCase
         )
 
-        viewModel.onDoneChanged(TodoItems.fullTodoItem, true)
+        viewModel.onDoneChanged(TodoItems.todoItemOne, true)
         dispatcher.scheduler.advanceUntilIdle()
 
-        coVerify { updateDoneUseCase(TodoItems.fullTodoItem, true) }
+        coVerify { updateDoneUseCase(TodoItems.todoItemOne, true) }
 
-        viewModel.onDoneChanged(TodoItems.fullTodoItem, false)
+        viewModel.onDoneChanged(TodoItems.todoItemOne, false)
         dispatcher.scheduler.advanceUntilIdle()
 
-        coVerify { updateDoneUseCase(TodoItems.fullTodoItem, false) }
+        coVerify { updateDoneUseCase(TodoItems.todoItemOne, false) }
     }
 
     @Test
@@ -312,13 +312,13 @@ class TodoListViewModelTest : CoroutineTestBase() {
 
         coVerify { deleteTodoItemsUseCase.delete(emptyList()) }
 
-        viewModel.onItemSelected(TodoItems.fullTodoItem)
+        viewModel.onItemSelected(TodoItems.todoItemOne)
         dispatcher.scheduler.advanceUntilIdle()
 
         viewModel.onDeleteClicked()
         dispatcher.scheduler.advanceUntilIdle()
 
-        coVerify { deleteTodoItemsUseCase.delete(listOf(TodoItems.fullTodoItem)) }
+        coVerify { deleteTodoItemsUseCase.delete(listOf(TodoItems.todoItemOne)) }
     }
 
     @Test
@@ -371,17 +371,17 @@ class TodoListViewModelTest : CoroutineTestBase() {
 
             Assert.assertEquals(emptyList<TodoItem>(), state.selectedItems)
 
-            viewModel.onItemSelected(TodoItems.fullTodoItem)
+            viewModel.onItemSelected(TodoItems.todoItemOne)
 
             state = awaitItem()
 
-            Assert.assertTrue(state.selectedItems.contains(TodoItems.fullTodoItem))
+            Assert.assertTrue(state.selectedItems.contains(TodoItems.todoItemOne))
 
             viewModel.onClearSelectionClicked()
 
             state = awaitItem()
 
-            Assert.assertFalse(state.selectedItems.contains(TodoItems.fullTodoItem))
+            Assert.assertFalse(state.selectedItems.contains(TodoItems.todoItemOne))
         }
     }
 
