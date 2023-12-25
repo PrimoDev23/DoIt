@@ -24,46 +24,46 @@ object TodoItems {
         id = "2",
         title = "A",
         description = "Description",
-        done = false,
+        done = true,
         tags = emptyList(),
         priority = Priority.NONE,
-        dueDate = LocalDate.of(2020, 12, 12),
+        dueDate = LocalDate.of(2020, 12, 10),
         subtasks = Subtasks.subtasks,
         notificationDateTime = LocalDateTime.now(),
         creationDateTime = LocalDateTime.of(2020, 12, 8, 0, 0)
     )
 
-    private val todoItemThree = TodoItem(
+    val todoItemThree = TodoItem(
         id = "3",
         title = "D",
         description = "Description",
-        done = false,
-        tags = emptyList(),
+        done = true,
+        tags = listOf(Tags.tagOne),
         priority = Priority.LOW,
-        dueDate = LocalDate.of(2020, 12, 10),
+        dueDate = LocalDate.of(2020, 12, 8),
         subtasks = Subtasks.subtasks,
         notificationDateTime = LocalDateTime.now(),
         creationDateTime = LocalDateTime.now()
     )
 
-    private val todoItemFour = TodoItem(
+    val todoItemFour = TodoItem(
         id = "4",
         title = "C",
         description = "Description",
         done = false,
         tags = emptyList(),
         priority = Priority.HIGH,
-        dueDate = LocalDate.of(2020, 12, 8),
+        dueDate = LocalDate.of(2020, 12, 12),
         subtasks = Subtasks.subtasks,
         notificationDateTime = LocalDateTime.now(),
         creationDateTime = LocalDateTime.of(2020, 12, 10, 0, 0)
     )
 
     val todoList = listOf(
-        todoItemFour,
-        todoItemTwo,
         todoItemOne,
-        todoItemThree
+        todoItemTwo,
+        todoItemThree,
+        todoItemFour
     )
 
     val todoListCreationDate = listOf(
@@ -89,9 +89,9 @@ object TodoItems {
 
     val todoListDueDate = listOf(
         todoItemOne,
+        todoItemFour,
         todoItemTwo,
-        todoItemThree,
-        todoItemFour
+        todoItemThree
     )
 
 }
