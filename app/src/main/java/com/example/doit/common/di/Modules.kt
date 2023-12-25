@@ -46,6 +46,8 @@ import com.example.doit.domain.usecases.interfaces.SetHideDoneItemsUseCase
 import com.example.doit.domain.usecases.interfaces.SetTodoItemSortTypeUseCase
 import com.example.doit.domain.usecases.interfaces.UpdateDoneUseCase
 import com.example.doit.domain.usecases.interfaces.UpdateSubtaskDoneUseCase
+import com.example.doit.domain.utils.WorkManagerScheduler
+import com.example.doit.domain.utils.interfaces.WorkScheduler
 import com.example.doit.ui.viewmodels.AddEntryViewModel
 import com.example.doit.ui.viewmodels.CalendarViewModel
 import com.example.doit.ui.viewmodels.TagListViewModel
@@ -114,4 +116,8 @@ val mapperModule = module {
 
 val workerModule = module {
     workerOf(::NotificationWorker)
+}
+
+val utilsModule = module {
+    factoryOf(::WorkManagerScheduler) bind WorkScheduler::class
 }

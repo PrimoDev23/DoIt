@@ -7,6 +7,7 @@ import com.example.doit.common.di.databaseModule
 import com.example.doit.common.di.mapperModule
 import com.example.doit.common.di.repoModule
 import com.example.doit.common.di.useCaseModule
+import com.example.doit.common.di.utilsModule
 import com.example.doit.common.di.viewModelModule
 import com.example.doit.common.di.workerModule
 import org.koin.android.ext.koin.androidContext
@@ -31,7 +32,8 @@ class DoItApplication : Application(), KoinComponent {
                 repoModule,
                 useCaseModule,
                 mapperModule,
-                workerModule
+                workerModule,
+                utilsModule
             )
         }
 
