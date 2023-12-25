@@ -69,11 +69,8 @@ class AddEntryViewModel(
     init {
         viewModelScope.launch {
             launch {
-                initData()
-            }
-
-            launch {
                 loadTags()
+                initData()
             }
         }
     }
