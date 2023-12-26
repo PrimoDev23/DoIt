@@ -16,7 +16,7 @@ object TodoItems {
         priority = Priority.MEDIUM,
         dueDate = LocalDate.now(),
         subtasks = Subtasks.subtasks,
-        notificationDateTime = LocalDateTime.now(),
+        notificationDateTime = LocalDateTime.now().plusDays(1),
         creationDateTime = LocalDateTime.of(2020, 12, 12, 0, 0)
     )
 
@@ -55,7 +55,7 @@ object TodoItems {
         priority = Priority.HIGH,
         dueDate = LocalDate.of(2020, 12, 12),
         subtasks = Subtasks.subtasks,
-        notificationDateTime = LocalDateTime.now(),
+        notificationDateTime = null,
         creationDateTime = LocalDateTime.of(2020, 12, 10, 0, 0)
     )
 
