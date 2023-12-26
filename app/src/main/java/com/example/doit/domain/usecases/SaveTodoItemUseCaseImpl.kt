@@ -18,6 +18,8 @@ class SaveTodoItemUseCaseImpl(
         todoItemRepository.saveTodoItem(item)
         subtaskRepository.saveSubtasksForParent(item.id, item.subtasks)
 
+        workScheduler.cancelById(item.id)
+
         if (item.notificationDateTime != null) {
             val now = LocalDateTime.now()
 
@@ -29,8 +31,6 @@ class SaveTodoItemUseCaseImpl(
                     mapOf(NotificationWorker.ITEM_ID_KEY to item.id)
                 )
             }
-        } else {
-            workScheduler.cancelById(item.id)
         }
     }
 
