@@ -1,4 +1,4 @@
-package com.example.doit.common.database
+package com.example.doit.common.constants
 
 import java.time.format.DateTimeFormatter
 
