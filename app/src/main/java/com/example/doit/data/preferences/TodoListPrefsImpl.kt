@@ -3,7 +3,6 @@ package com.example.doit.data.preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.example.doit.data.AppPreferences
 import com.example.doit.data.models.local.TodoListPreferences
 import com.example.doit.domain.models.TodoItemSortType
 import com.example.doit.domain.preferences.TodoListPrefs

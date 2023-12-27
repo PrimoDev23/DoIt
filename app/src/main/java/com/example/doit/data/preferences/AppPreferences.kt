@@ -1,4 +1,4 @@
-package com.example.doit.data
+package com.example.doit.data.preferences
 
 import android.content.Context
 import androidx.datastore.core.DataStore
