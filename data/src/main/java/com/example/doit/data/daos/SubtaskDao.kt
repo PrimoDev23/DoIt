@@ -5,7 +5,7 @@ import androidx.room.Insert
 import androidx.room.OnConflictStrategy
 import androidx.room.Query
 import androidx.room.Transaction
-import com.example.doit.data.models.local.SubtaskEntity
+import com.example.doit.data.models.SubtaskEntity
 
 @Dao
 interface SubtaskDao {

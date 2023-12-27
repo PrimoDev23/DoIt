@@ -1,4 +1,4 @@
-package com.example.doit.data.models.local
+package com.example.doit.data.models
 
 import androidx.room.Embedded
 import androidx.room.Relation

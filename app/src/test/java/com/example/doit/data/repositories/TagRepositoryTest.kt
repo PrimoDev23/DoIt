@@ -3,7 +3,7 @@ package com.example.doit.data.repositories
 import com.example.doit.TestBase
 import com.example.doit.data.Tags
 import com.example.doit.data.daos.TagDao
-import com.example.doit.data.models.local.toEntity
+import com.example.doit.data.toEntity
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk

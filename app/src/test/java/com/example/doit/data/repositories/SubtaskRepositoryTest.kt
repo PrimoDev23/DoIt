@@ -1,10 +1,10 @@
 package com.example.doit.data.repositories
 
 import com.example.doit.TestBase
+import com.example.doit.data.SubtaskEntity
 import com.example.doit.data.Subtasks
 import com.example.doit.data.daos.SubtaskDao
-import com.example.doit.data.models.local.SubtaskEntity
-import com.example.doit.data.models.local.toEntity
+import com.example.doit.data.toEntity
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -66,7 +66,7 @@ class SubtaskRepositoryTest : TestBase() {
 
         val parent = "12345"
 
-        coEvery { dao.insert(any<SubtaskEntity>()) } returns Unit
+        coEvery { dao.insert(any<com.example.doit.data.SubtaskEntity>()) } returns Unit
 
         val repo = SubtaskRepositoryImpl(
             subtaskDao = dao

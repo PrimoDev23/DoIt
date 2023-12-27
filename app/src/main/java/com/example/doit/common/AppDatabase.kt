@@ -5,9 +5,9 @@ import androidx.room.RoomDatabase
 import com.example.doit.data.daos.SubtaskDao
 import com.example.doit.data.daos.TagDao
 import com.example.doit.data.daos.TodoItemDao
-import com.example.doit.data.models.local.SubtaskEntity
-import com.example.doit.data.models.local.TagEntity
-import com.example.doit.data.models.local.TodoItemEntity
+import com.example.doit.data.models.SubtaskEntity
+import com.example.doit.data.models.TagEntity
+import com.example.doit.data.models.TodoItemEntity
 
 @Database(
     entities = [

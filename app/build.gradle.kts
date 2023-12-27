@@ -56,6 +56,7 @@ dependencies {
 
     implementation(project(":common"))
     implementation(project(":domain"))
+    implementation(project(":data"))
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
@@ -78,9 +79,9 @@ dependencies {
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
-    implementation(libs.accompanist.permissions)
-
     implementation(libs.datastore)
+
+    implementation(libs.accompanist.permissions)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

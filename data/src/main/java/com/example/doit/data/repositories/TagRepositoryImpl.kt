@@ -1,7 +1,7 @@
 package com.example.doit.data.repositories
 
 import com.example.doit.data.daos.TagDao
-import com.example.doit.data.models.local.toEntity
+import com.example.doit.data.models.toEntity
 import com.example.doit.domain.models.Tag
 import com.example.doit.domain.repositories.TagRepository
 import kotlinx.coroutines.flow.Flow

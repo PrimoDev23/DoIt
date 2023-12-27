@@ -2,7 +2,7 @@ package com.example.doit.data.daos
 
 import androidx.room.Dao
 import androidx.room.Query
-import com.example.doit.data.models.local.TagEntity
+import com.example.doit.data.models.TagEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

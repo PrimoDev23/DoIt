@@ -3,8 +3,8 @@ package com.example.doit.data.daos
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Transaction
-import com.example.doit.data.models.local.TodoItemEntity
-import com.example.doit.data.models.local.TodoItemWithSubtasksEntity
+import com.example.doit.data.models.TodoItemEntity
+import com.example.doit.data.models.TodoItemWithSubtasksEntity
 import kotlinx.coroutines.flow.Flow
 
 @Dao

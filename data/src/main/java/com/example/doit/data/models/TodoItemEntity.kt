@@ -1,4 +1,4 @@
-package com.example.doit.data.models.local
+package com.example.doit.data.models
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
