@@ -4,7 +4,6 @@ import androidx.room.Room
 import com.example.doit.common.AppDatabase
 import com.example.doit.common.worker.NotificationWorker
 import com.example.doit.data.dataStore
-import com.example.doit.data.mappers.TagMapper
 import com.example.doit.data.mappers.TodoItemMapper
 import com.example.doit.data.mappers.TodoItemWithSubtasksMapper
 import com.example.doit.data.preferences.TodoListPrefsImpl
@@ -107,7 +106,6 @@ val useCaseModule = module {
 }
 
 val mapperModule = module {
-    factoryOf(::TagMapper)
     factoryOf(::TodoItemMapper)
     factoryOf(::TodoItemWithSubtasksMapper)
 }
