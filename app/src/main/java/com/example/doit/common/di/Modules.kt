@@ -1,7 +1,7 @@
 package com.example.doit.common.di
 
 import androidx.room.Room
-import com.example.doit.common.AppDatabase
+import com.example.doit.data.AppDatabase
 import com.example.doit.data.preferences.TodoListPrefsImpl
 import com.example.doit.data.preferences.dataStore
 import com.example.doit.data.repositories.SubtaskRepositoryImpl

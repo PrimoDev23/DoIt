@@ -1,4 +1,4 @@
-package com.example.doit.ui.navigation.arguments
+package com.example.doit.ui.arguments
 
 data class AddEntryNavArgs(
     val id: String,

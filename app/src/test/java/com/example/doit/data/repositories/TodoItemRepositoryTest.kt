@@ -1,7 +1,7 @@
 package com.example.doit.data.repositories
 
 import com.example.doit.TestBase
-import com.example.doit.common.AppDatabase
+import com.example.doit.data.AppDatabase
 import com.example.doit.data.Tags
 import com.example.doit.data.TodoItemWithSubtasksEntity
 import com.example.doit.data.TodoItems

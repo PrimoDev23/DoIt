@@ -7,8 +7,8 @@ import com.example.doit.domain.models.Subtask
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.usecases.interfaces.GetTodoItemFlowUseCase
 import com.example.doit.domain.usecases.interfaces.UpdateSubtaskDoneUseCase
+import com.example.doit.ui.arguments.TodoDetailNavArgs
 import com.example.doit.ui.composables.screens.navArgs
-import com.example.doit.ui.navigation.arguments.TodoDetailNavArgs
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn

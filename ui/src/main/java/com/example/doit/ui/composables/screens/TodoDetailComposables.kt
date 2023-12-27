@@ -49,8 +49,8 @@ import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.Subtask
 import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
+import com.example.doit.ui.arguments.TodoDetailNavArgs
 import com.example.doit.ui.composables.DoItCheckbox
-import com.example.doit.ui.navigation.arguments.TodoDetailNavArgs
 import com.example.doit.ui.viewmodels.TodoDetailViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph

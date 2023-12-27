@@ -1,4 +1,4 @@
-package com.example.doit.common
+package com.example.doit.data
 
 import androidx.room.Database
 import androidx.room.RoomDatabase

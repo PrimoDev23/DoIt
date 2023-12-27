@@ -16,8 +16,8 @@ import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
+import com.example.doit.ui.arguments.AddEntryNavArgs
 import com.example.doit.ui.composables.screens.navArgs
-import com.example.doit.ui.navigation.arguments.AddEntryNavArgs
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow

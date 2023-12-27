@@ -63,6 +63,7 @@ import com.example.doit.common.R
 import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.Subtask
 import com.example.doit.domain.models.Tag
+import com.example.doit.ui.arguments.AddEntryNavArgs
 import com.example.doit.ui.composables.DateTextField
 import com.example.doit.ui.composables.DateTimeDialog
 import com.example.doit.ui.composables.DoItCheckbox
@@ -72,7 +73,6 @@ import com.example.doit.ui.composables.PriorityItem
 import com.example.doit.ui.composables.TagListEntry
 import com.example.doit.ui.composables.VerticalGrid
 import com.example.doit.ui.composables.rememberFocusRequester
-import com.example.doit.ui.navigation.arguments.AddEntryNavArgs
 import com.example.doit.ui.viewmodels.AddEntryEvent
 import com.example.doit.ui.viewmodels.AddEntryViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi

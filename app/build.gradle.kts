@@ -55,33 +55,27 @@ android {
 dependencies {
 
     implementation(project(":common"))
-    implementation(project(":domain"))
     implementation(project(":data"))
+    implementation(project(":domain"))
+    implementation(project(":ui"))
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
     implementation(libs.activity.compose)
     implementation(platform(libs.compose.bom))
-    implementation(libs.ui)
-    implementation(libs.ui.graphics)
-    implementation(libs.ui.tooling.preview)
     implementation(libs.material3)
-    implementation(libs.compose.lifecycle)
 
     implementation(libs.koin.compose)
     implementation(libs.koin.workmanager)
 
     implementation(libs.compose.destinations)
     implementation(libs.compose.destinations.animations)
-    ksp(libs.compose.destinations.ksp)
 
     implementation(libs.room)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
 
     implementation(libs.datastore)
-
-    implementation(libs.accompanist.permissions)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)
