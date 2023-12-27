@@ -53,7 +53,6 @@ android {
 }
 
 dependencies {
-
     implementation(project(":common"))
     implementation(project(":data"))
     implementation(project(":domain"))
@@ -70,12 +69,6 @@ dependencies {
 
     implementation(libs.compose.destinations)
     implementation(libs.compose.destinations.animations)
-
-    implementation(libs.room)
-    implementation(libs.room.ktx)
-    ksp(libs.room.compiler)
-
-    implementation(libs.datastore)
 
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.test.ext.junit)

@@ -44,4 +44,7 @@ dependencies {
     implementation(libs.ui.graphics)
 
     implementation(libs.work)
+
+    implementation(libs.koin)
+    implementation(libs.koin.workmanager)
 }

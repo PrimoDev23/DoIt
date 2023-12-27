@@ -53,4 +53,5 @@ dependencies {
     implementation(platform(libs.compose.bom))
     implementation(libs.ui.graphics)
 
+    implementation(libs.koin)
 }

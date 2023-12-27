@@ -1,16 +1,5 @@
-package com.example.doit.common.di
+package com.example.doit.domain
 
-import androidx.room.Room
-import com.example.doit.data.AppDatabase
-import com.example.doit.data.preferences.TodoListPrefsImpl
-import com.example.doit.data.preferences.dataStore
-import com.example.doit.data.repositories.SubtaskRepositoryImpl
-import com.example.doit.data.repositories.TagRepositoryImpl
-import com.example.doit.data.repositories.TodoItemRepositoryImpl
-import com.example.doit.domain.preferences.TodoListPrefs
-import com.example.doit.domain.repositories.SubtaskRepository
-import com.example.doit.domain.repositories.TagRepository
-import com.example.doit.domain.repositories.TodoItemRepository
 import com.example.doit.domain.usecases.DeleteTagsUseCaseImpl
 import com.example.doit.domain.usecases.DeleteTodoItemUseCaseImpl
 import com.example.doit.domain.usecases.GetTagsFlowUseCaseImpl
@@ -44,46 +33,10 @@ import com.example.doit.domain.usecases.interfaces.UpdateSubtaskDoneUseCase
 import com.example.doit.domain.utils.WorkManagerScheduler
 import com.example.doit.domain.utils.interfaces.WorkScheduler
 import com.example.doit.domain.worker.NotificationWorker
-import com.example.doit.ui.viewmodels.AddEntryViewModel
-import com.example.doit.ui.viewmodels.CalendarViewModel
-import com.example.doit.ui.viewmodels.TagListViewModel
-import com.example.doit.ui.viewmodels.TodoDetailViewModel
-import com.example.doit.ui.viewmodels.TodoListViewModel
-import org.koin.android.ext.koin.androidContext
-import org.koin.androidx.viewmodel.dsl.viewModelOf
 import org.koin.androidx.workmanager.dsl.workerOf
 import org.koin.core.module.dsl.factoryOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
-
-val viewModelModule = module {
-    viewModelOf(::AddEntryViewModel)
-    viewModelOf(::TagListViewModel)
-    viewModelOf(::TodoListViewModel)
-    viewModelOf(::CalendarViewModel)
-    viewModelOf(::TodoDetailViewModel)
-}
-
-val databaseModule = module {
-    single {
-        Room.databaseBuilder(
-            androidContext(),
-            AppDatabase::class.java,
-            "doit-database"
-        ).build()
-    }
-    factory { get<AppDatabase>().todoItemDao() }
-    factory { get<AppDatabase>().tagDao() }
-    factory { get<AppDatabase>().subtaskDao() }
-    factory { androidContext().dataStore }
-}
-
-val repoModule = module {
-    factoryOf(::TodoListPrefsImpl) bind TodoListPrefs::class
-    factoryOf(::SubtaskRepositoryImpl) bind SubtaskRepository::class
-    factoryOf(::TagRepositoryImpl) bind TagRepository::class
-    factoryOf(::TodoItemRepositoryImpl) bind TodoItemRepository::class
-}
 
 val useCaseModule = module {
     factoryOf(::DeleteTagsUseCaseImpl) bind DeleteTagsUseCase::class
