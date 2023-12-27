@@ -1,11 +1,11 @@
 package com.example.doit.domain.usecases
 
-import com.example.doit.common.constants.WorkerConstants
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.repositories.SubtaskRepository
 import com.example.doit.domain.repositories.TodoItemRepository
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import com.example.doit.domain.utils.interfaces.WorkScheduler
+import com.example.doit.domain.worker.NotificationWorker
 import java.time.LocalDateTime
 
 class SaveTodoItemUseCaseImpl(
@@ -28,7 +28,7 @@ class SaveTodoItemUseCaseImpl(
                 workScheduler.enqueueNotification(
                     item.id,
                     item.notificationDateTime,
-                    mapOf(WorkerConstants.ITEM_ID_KEY to item.id)
+                    mapOf(NotificationWorker.ITEM_ID_KEY to item.id)
                 )
             }
         }

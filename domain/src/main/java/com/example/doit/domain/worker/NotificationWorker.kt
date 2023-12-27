@@ -11,7 +11,6 @@ import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.doit.common.R
 import com.example.doit.common.constants.NotificationConstants
-import com.example.doit.common.constants.WorkerConstants
 import com.example.doit.domain.usecases.interfaces.GetTodoItemUseCase
 
 class NotificationWorker(
@@ -21,7 +20,7 @@ class NotificationWorker(
 ) : CoroutineWorker(context, params) {
 
     override suspend fun doWork(): Result {
-        val id = inputData.getString(WorkerConstants.ITEM_ID_KEY) ?: return Result.failure()
+        val id = inputData.getString(ITEM_ID_KEY) ?: return Result.failure()
 
         val item = getTodoItemUseCase(id) ?: return Result.failure()
 
@@ -54,5 +53,9 @@ class NotificationWorker(
         }
 
         return Result.retry()
+    }
+
+    companion object {
+        const val ITEM_ID_KEY = "ITEM_ID"
     }
 }
