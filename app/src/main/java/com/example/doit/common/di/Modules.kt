@@ -8,11 +8,11 @@ import com.example.doit.data.mappers.SubtaskMapper
 import com.example.doit.data.mappers.TagMapper
 import com.example.doit.data.mappers.TodoItemMapper
 import com.example.doit.data.mappers.TodoItemWithSubtasksMapper
-import com.example.doit.data.repositories.PreferencesRepositoryImpl
+import com.example.doit.data.preferences.TodoListPrefsImpl
 import com.example.doit.data.repositories.SubtaskRepositoryImpl
 import com.example.doit.data.repositories.TagRepositoryImpl
 import com.example.doit.data.repositories.TodoItemRepositoryImpl
-import com.example.doit.domain.repositories.PreferencesRepository
+import com.example.doit.domain.preferences.TodoListPrefs
 import com.example.doit.domain.repositories.SubtaskRepository
 import com.example.doit.domain.repositories.TagRepository
 import com.example.doit.domain.repositories.TodoItemRepository
@@ -83,7 +83,7 @@ val databaseModule = module {
 }
 
 val repoModule = module {
-    factoryOf(::PreferencesRepositoryImpl) bind PreferencesRepository::class
+    factoryOf(::TodoListPrefsImpl) bind TodoListPrefs::class
     factoryOf(::SubtaskRepositoryImpl) bind SubtaskRepository::class
     factoryOf(::TagRepositoryImpl) bind TagRepository::class
     factoryOf(::TodoItemRepositoryImpl) bind TodoItemRepository::class

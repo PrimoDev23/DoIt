@@ -2,7 +2,7 @@ package com.example.doit.domain.usecases
 
 import com.example.doit.TestBase
 import com.example.doit.domain.models.TodoItemSortType
-import com.example.doit.domain.repositories.PreferencesRepository
+import com.example.doit.domain.preferences.TodoListPrefs
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -13,9 +13,9 @@ class SetTodoItemSortTypeUseCaseTest : TestBase() {
 
     @Test
     operator fun invoke() = runTest {
-        val repo = mockk<PreferencesRepository>()
+        val repo = mockk<TodoListPrefs>()
 
-        coEvery { repo.setTodoItemSortType(any()) } returns Unit
+        coEvery { repo.setSortType(any()) } returns Unit
 
         val useCase = SetTodoItemSortTypeUseCaseImpl(
             repo = repo
@@ -23,6 +23,6 @@ class SetTodoItemSortTypeUseCaseTest : TestBase() {
 
         useCase.invoke(TodoItemSortType.ALPHABETICAL)
 
-        coVerify { repo.setTodoItemSortType(TodoItemSortType.ALPHABETICAL) }
+        coVerify { repo.setSortType(TodoItemSortType.ALPHABETICAL) }
     }
 }

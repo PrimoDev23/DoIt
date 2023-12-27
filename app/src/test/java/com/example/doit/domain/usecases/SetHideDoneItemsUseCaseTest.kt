@@ -1,7 +1,7 @@
 package com.example.doit.domain.usecases
 
 import com.example.doit.TestBase
-import com.example.doit.domain.repositories.PreferencesRepository
+import com.example.doit.domain.preferences.TodoListPrefs
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
@@ -12,7 +12,7 @@ class SetHideDoneItemsUseCaseTest : TestBase() {
 
     @Test
     operator fun invoke() = runTest {
-        val repo = mockk<PreferencesRepository>()
+        val repo = mockk<TodoListPrefs>()
 
         coEvery { repo.setHideDoneItems(any()) } returns Unit
 

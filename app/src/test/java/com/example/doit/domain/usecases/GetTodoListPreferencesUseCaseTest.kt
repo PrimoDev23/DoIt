@@ -3,7 +3,7 @@ package com.example.doit.domain.usecases
 import com.example.doit.TestBase
 import com.example.doit.data.models.local.TodoListPreferences
 import com.example.doit.domain.models.TodoItemSortType
-import com.example.doit.domain.repositories.PreferencesRepository
+import com.example.doit.domain.preferences.TodoListPrefs
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.verify
@@ -15,7 +15,7 @@ class GetTodoListPreferencesUseCaseTest : TestBase() {
 
     @Test
     operator fun invoke() {
-        val repo = mockk<PreferencesRepository>()
+        val repo = mockk<TodoListPrefs>()
 
         val flow = flow {
             emit(
@@ -26,7 +26,7 @@ class GetTodoListPreferencesUseCaseTest : TestBase() {
             )
         }
 
-        every { repo.getTodoListPreferencesFlow() } returns flow
+        every { repo.getFlow() } returns flow
 
         val useCase = GetTodoListPreferencesUseCaseImpl(
             repo = repo
@@ -34,7 +34,7 @@ class GetTodoListPreferencesUseCaseTest : TestBase() {
 
         val result = useCase.invoke()
 
-        verify { repo.getTodoListPreferencesFlow() }
+        verify { repo.getFlow() }
 
         assertEquals(flow, result)
     }
