@@ -2,9 +2,10 @@ package com.example.doit.data.repositories
 
 import com.example.doit.common.AppDatabase
 import com.example.doit.data.daos.TodoItemDao
-import com.example.doit.data.mappers.TodoItemWithSubtasksMapper
+import com.example.doit.data.models.local.getTagsForItem
 import com.example.doit.data.models.local.toEntity
 import com.example.doit.domain.models.TodoItem
+import com.example.doit.domain.repositories.TagRepository
 import com.example.doit.domain.repositories.TodoItemRepository
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.map
@@ -12,13 +13,14 @@ import java.time.LocalDate
 
 class TodoItemRepositoryImpl(
     private val dao: TodoItemDao,
-    private val fullMapper: TodoItemWithSubtasksMapper
+    private val tagRepository: TagRepository
 ) : TodoItemRepository {
 
     override fun getItemsFlow(): Flow<List<TodoItem>> {
         return dao.selectFlow().map { items ->
             items.map {
-                fullMapper.map(it)
+                val tags = tagRepository.getTagsForItem(it)
+                it.toDomainModel(tags)
             }
         }
     }
@@ -28,7 +30,8 @@ class TodoItemRepositoryImpl(
 
         return dao.selectByDate(today).map { items ->
             items.map {
-                fullMapper.map(it)
+                val tags = tagRepository.getTagsForItem(it)
+                it.toDomainModel(tags)
             }
         }
     }
@@ -36,13 +39,15 @@ class TodoItemRepositoryImpl(
     override suspend fun getItemById(id: String): TodoItem? {
         val entity = dao.selectById(id) ?: return null
 
-        return fullMapper.map(entity)
+        val tags = tagRepository.getTagsForItem(entity)
+        return entity.toDomainModel(tags)
     }
 
     override fun getItemFlowById(id: String): Flow<TodoItem?> {
         return dao.selectByIdFlow(id).map { entity ->
             entity?.let {
-                fullMapper.map(it)
+                val tags = tagRepository.getTagsForItem(it)
+                it.toDomainModel(tags)
             }
         }
     }
@@ -83,7 +88,8 @@ class TodoItemRepositoryImpl(
         }.distinct()
 
         return entities.map {
-            fullMapper.map(it)
+            val tags = tagRepository.getTagsForItem(it)
+            it.toDomainModel(tags)
         }
     }
 }

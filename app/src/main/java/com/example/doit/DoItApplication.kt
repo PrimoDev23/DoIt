@@ -4,7 +4,6 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import com.example.doit.common.di.databaseModule
-import com.example.doit.common.di.mapperModule
 import com.example.doit.common.di.repoModule
 import com.example.doit.common.di.useCaseModule
 import com.example.doit.common.di.utilsModule
@@ -31,7 +30,6 @@ class DoItApplication : Application(), KoinComponent {
                 databaseModule,
                 repoModule,
                 useCaseModule,
-                mapperModule,
                 workerModule,
                 utilsModule
             )

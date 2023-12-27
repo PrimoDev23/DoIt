@@ -4,7 +4,6 @@ import androidx.room.Room
 import com.example.doit.common.AppDatabase
 import com.example.doit.common.worker.NotificationWorker
 import com.example.doit.data.dataStore
-import com.example.doit.data.mappers.TodoItemWithSubtasksMapper
 import com.example.doit.data.preferences.TodoListPrefsImpl
 import com.example.doit.data.repositories.SubtaskRepositoryImpl
 import com.example.doit.data.repositories.TagRepositoryImpl
@@ -102,10 +101,6 @@ val useCaseModule = module {
     factoryOf(::UpdateDoneUseCaseImpl) bind UpdateDoneUseCase::class
     factoryOf(::UpdateSubtaskDoneUseCaseImpl) bind UpdateSubtaskDoneUseCase::class
     factoryOf(::GetTodoItemFlowUseCaseImpl) bind GetTodoItemFlowUseCase::class
-}
-
-val mapperModule = module {
-    factoryOf(::TodoItemWithSubtasksMapper)
 }
 
 val workerModule = module {
