@@ -53,10 +53,10 @@ data class TodoItemWithSubtasksEntity(
 
 // This is more related to this specific entity, so it should belong here
 suspend fun TagRepository.getTagsForItem(item: TodoItemWithSubtasksEntity): List<Tag> {
-    val tagIds = if (item.item.tags.isEmpty()) {
+    return if (item.item.tags.isEmpty()) {
         emptyList()
     } else {
-        item.item.tags.split(AppDatabase.LIST_SEPARATOR).map { it.toLong() }
+        val tagIds = item.item.tags.split(AppDatabase.LIST_SEPARATOR).map { it.toLong() }
+        this.getTagsByIds(tagIds)
     }
-    return this.getTagsByIds(tagIds)
 }
