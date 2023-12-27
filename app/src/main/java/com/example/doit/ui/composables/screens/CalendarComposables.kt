@@ -41,7 +41,7 @@ import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.doit.R
+import com.example.doit.common.R
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.ui.composables.DrawerMenuButton
 import com.example.doit.ui.composables.RootScaffold

@@ -28,7 +28,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
-import com.example.doit.R
+import com.example.doit.common.R
 import com.example.doit.ui.composables.DrawerMenuButton
 import com.example.doit.ui.composables.RootScaffold
 import com.ramcosta.composedestinations.annotation.Destination

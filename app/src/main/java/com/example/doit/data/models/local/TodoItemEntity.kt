@@ -2,7 +2,7 @@ package com.example.doit.data.models.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.doit.common.AppDatabase
+import com.example.doit.common.database.DatabaseConstants
 import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.TodoItem
 
@@ -28,10 +28,10 @@ fun TodoItem.toEntity(): TodoItemEntity {
         title = title,
         description = description,
         done = done,
-        tags = ids.joinToString(AppDatabase.LIST_SEPARATOR),
+        tags = ids.joinToString(DatabaseConstants.LIST_SEPARATOR),
         priority = priority,
-        dueDate = dueDate?.format(AppDatabase.DATE_FORMATTER),
-        notificationDateTime = notificationDateTime?.format(AppDatabase.DATE_TIME_FORMATTER),
-        creationDateTime = creationDateTime.format(AppDatabase.DATE_TIME_FORMATTER)
+        dueDate = dueDate?.format(DatabaseConstants.DATE_FORMATTER),
+        notificationDateTime = notificationDateTime?.format(DatabaseConstants.DATE_TIME_FORMATTER),
+        creationDateTime = creationDateTime.format(DatabaseConstants.DATE_TIME_FORMATTER)
     )
 }

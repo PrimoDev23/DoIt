@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.example.doit.common.AppDatabase
+import com.example.doit.common.database.DatabaseConstants
 import com.example.doit.domain.models.Subtask
 import java.time.LocalDateTime
 
@@ -35,7 +35,7 @@ data class SubtaskEntity(
         done = done,
         creationDateTime = LocalDateTime.parse(
             creationDateTime,
-            AppDatabase.DATE_TIME_FORMATTER
+            DatabaseConstants.DATE_TIME_FORMATTER
         )
     )
 }
@@ -45,5 +45,5 @@ fun Subtask.toEntity(parent: String) = SubtaskEntity(
     parent = parent,
     title = title,
     done = done,
-    creationDateTime = AppDatabase.DATE_TIME_FORMATTER.format(creationDateTime)
+    creationDateTime = DatabaseConstants.DATE_TIME_FORMATTER.format(creationDateTime)
 )

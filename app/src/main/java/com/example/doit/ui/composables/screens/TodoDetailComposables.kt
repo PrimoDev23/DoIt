@@ -44,7 +44,7 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.doit.R
+import com.example.doit.common.R
 import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.Subtask
 import com.example.doit.domain.models.Tag

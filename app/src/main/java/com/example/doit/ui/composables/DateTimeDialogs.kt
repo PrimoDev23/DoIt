@@ -28,7 +28,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
-import com.example.doit.R
+import com.example.doit.common.R
 import kotlinx.coroutines.launch
 import java.time.Instant
 import java.time.LocalDateTime

@@ -1,7 +1,7 @@
 package com.example.doit.domain.models
 
 import androidx.annotation.StringRes
-import com.example.doit.R
+import com.example.doit.common.R
 
 enum class TodoItemSortType(@StringRes val title: Int) {
     CREATION_DATE(R.string.sort_creation_date),

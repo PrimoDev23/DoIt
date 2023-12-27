@@ -3,6 +3,7 @@ package com.example.doit
 import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
+import com.example.doit.common.R
 import com.example.doit.common.di.databaseModule
 import com.example.doit.common.di.repoModule
 import com.example.doit.common.di.useCaseModule

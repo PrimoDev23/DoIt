@@ -17,7 +17,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import com.example.doit.R
+import com.example.doit.common.R
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable

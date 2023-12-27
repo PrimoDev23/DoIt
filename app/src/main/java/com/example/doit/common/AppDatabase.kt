@@ -8,7 +8,6 @@ import com.example.doit.data.daos.TodoItemDao
 import com.example.doit.data.models.local.SubtaskEntity
 import com.example.doit.data.models.local.TagEntity
 import com.example.doit.data.models.local.TodoItemEntity
-import java.time.format.DateTimeFormatter
 
 @Database(
     entities = [
@@ -22,11 +21,4 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun todoItemDao(): TodoItemDao
     abstract fun tagDao(): TagDao
     abstract fun subtaskDao(): SubtaskDao
-
-    companion object {
-        const val LIST_SEPARATOR = "|"
-
-        val DATE_FORMATTER = DateTimeFormatter.ISO_DATE
-        val DATE_TIME_FORMATTER = DateTimeFormatter.ISO_DATE_TIME
-    }
 }

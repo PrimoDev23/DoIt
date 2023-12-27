@@ -2,7 +2,7 @@ package com.example.doit.data.models.local
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.example.doit.common.AppDatabase
+import com.example.doit.common.database.DatabaseConstants
 import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.repositories.TagRepository
@@ -20,13 +20,13 @@ data class TodoItemWithSubtasksEntity(
 ) {
     fun toDomainModel(tags: List<Tag>): TodoItem = with(item) {
         val date = dueDate?.let {
-            LocalDate.parse(it, AppDatabase.DATE_FORMATTER)
+            LocalDate.parse(it, DatabaseConstants.DATE_FORMATTER)
         }
         val notificationDateTime = notificationDateTime?.let {
-            LocalDateTime.parse(it, AppDatabase.DATE_TIME_FORMATTER)
+            LocalDateTime.parse(it, DatabaseConstants.DATE_TIME_FORMATTER)
         }
         val creationDateTime =
-            LocalDateTime.parse(creationDateTime, AppDatabase.DATE_TIME_FORMATTER)
+            LocalDateTime.parse(creationDateTime, DatabaseConstants.DATE_TIME_FORMATTER)
 
         val subtasks = subtasks
             .map {
@@ -56,7 +56,7 @@ suspend fun TagRepository.getTagsForItem(item: TodoItemWithSubtasksEntity): List
     return if (item.item.tags.isEmpty()) {
         emptyList()
     } else {
-        val tagIds = item.item.tags.split(AppDatabase.LIST_SEPARATOR).map { it.toLong() }
+        val tagIds = item.item.tags.split(DatabaseConstants.LIST_SEPARATOR).map { it.toLong() }
         this.getTagsByIds(tagIds)
     }
 }

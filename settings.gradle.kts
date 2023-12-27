@@ -15,4 +15,4 @@ dependencyResolutionManagement {
 
 rootProject.name = "DoIt"
 include(":app")
- 
+include(":common")

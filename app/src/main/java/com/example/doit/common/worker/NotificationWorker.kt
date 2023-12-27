@@ -10,10 +10,10 @@ import androidx.core.app.NotificationManagerCompat
 import androidx.work.CoroutineWorker
 import androidx.work.WorkerParameters
 import com.example.doit.DoItApplication
-import com.example.doit.R
+import com.example.doit.common.R
 import com.example.doit.domain.usecases.interfaces.GetTodoItemUseCase
 
-class NotificationWorker constructor(
+class NotificationWorker(
     private val context: Context,
     params: WorkerParameters,
     val getTodoItemUseCase: GetTodoItemUseCase

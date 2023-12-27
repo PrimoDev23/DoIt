@@ -2,7 +2,7 @@ package com.example.doit.domain.models
 
 import androidx.annotation.StringRes
 import androidx.compose.ui.graphics.Color
-import com.example.doit.R
+import com.example.doit.common.R
 
 enum class Priority(
     val color: Color,

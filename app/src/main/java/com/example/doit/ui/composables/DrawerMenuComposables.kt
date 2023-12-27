@@ -35,7 +35,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.navigation.NavController
 import androidx.navigation.NavOptionsBuilder
-import com.example.doit.R
+import com.example.doit.common.R
 import com.example.doit.ui.composables.locals.LocalDrawerState
 import com.example.doit.ui.composables.screens.NavGraphs
 import com.example.doit.ui.composables.screens.appCurrentDestinationAsState

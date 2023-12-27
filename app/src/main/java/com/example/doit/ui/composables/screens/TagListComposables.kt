@@ -55,7 +55,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import com.example.doit.R
+import com.example.doit.common.R
 import com.example.doit.ui.composables.ClearSelectionButton
 import com.example.doit.ui.composables.DeleteToolbarItem
 import com.example.doit.ui.composables.DoItTextField
