@@ -2,11 +2,10 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.org.jetbrains.kotlin.android)
-    alias(libs.plugins.ksp)
 }
 
 android {
-    namespace = "com.example.doit.ui"
+    namespace = "com.example.doit.testing"
     compileSdk = 34
 
     defaultConfig {
@@ -32,39 +31,23 @@ android {
     kotlinOptions {
         jvmTarget = "11"
     }
-    buildFeatures {
-        compose = true
-    }
-    composeOptions {
-        kotlinCompilerExtensionVersion = "1.5.3"
+    packaging {
+        resources {
+            excludes += "/META-INF/{AL2.0,LGPL2.1}"
+        }
     }
 }
 
 dependencies {
-    implementation(project(":common"))
     implementation(project(":domain"))
-    testImplementation(project(":testing"))
 
     implementation(libs.core.ktx)
 
-    testImplementation(libs.junit)
-    androidTestImplementation(libs.androidx.test.ext.junit)
-    androidTestImplementation(libs.espresso.core)
-    testImplementation(libs.turbine)
-
-    implementation(libs.lifecycle.runtime.ktx)
     implementation(platform(libs.compose.bom))
-    implementation(libs.ui)
     implementation(libs.ui.graphics)
-    implementation(libs.ui.tooling.preview)
-    implementation(libs.material3)
-    implementation(libs.compose.lifecycle)
 
-    implementation(libs.koin.compose)
+    api(libs.junit)
 
-    implementation(libs.compose.destinations)
-    implementation(libs.compose.destinations.animations)
-    ksp(libs.compose.destinations.ksp)
-
-    implementation(libs.accompanist.permissions)
+    api(libs.mockk)
+    api(libs.coroutines.test)
 }
