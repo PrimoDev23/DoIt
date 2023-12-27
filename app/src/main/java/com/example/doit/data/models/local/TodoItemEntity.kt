@@ -2,7 +2,9 @@ package com.example.doit.data.models.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
+import com.example.doit.common.AppDatabase
 import com.example.doit.domain.models.Priority
+import com.example.doit.domain.models.TodoItem
 
 @Entity
 data class TodoItemEntity(
@@ -17,3 +19,19 @@ data class TodoItemEntity(
     val notificationDateTime: String?,
     val creationDateTime: String
 )
+
+fun TodoItem.toEntity(): TodoItemEntity {
+    val ids = tags.map { it.id }
+
+    return TodoItemEntity(
+        id = id,
+        title = title,
+        description = description,
+        done = done,
+        tags = ids.joinToString(AppDatabase.LIST_SEPARATOR),
+        priority = priority,
+        dueDate = dueDate?.format(AppDatabase.DATE_FORMATTER),
+        notificationDateTime = notificationDateTime?.format(AppDatabase.DATE_TIME_FORMATTER),
+        creationDateTime = creationDateTime.format(AppDatabase.DATE_TIME_FORMATTER)
+    )
+}
