@@ -3,14 +3,14 @@ package com.example.doit.data.mappers
 import com.example.doit.common.AppDatabase
 import com.example.doit.data.models.local.TodoItemEntity
 import com.example.doit.data.models.local.TodoItemWithSubtasksEntity
+import com.example.doit.data.models.local.toEntity
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.repositories.TagRepository
 import java.time.LocalDate
 import java.time.LocalDateTime
 
 class TodoItemWithSubtasksMapper(
-    private val tagRepository: TagRepository,
-    private val subtaskMapper: SubtaskMapper
+    private val tagRepository: TagRepository
 ) : BaseMapper<TodoItemWithSubtasksEntity, TodoItem>() {
     override suspend fun map(item: TodoItemWithSubtasksEntity): TodoItem {
         return with(item.item) {
@@ -31,7 +31,7 @@ class TodoItemWithSubtasksMapper(
 
             val subtasks = item.subtasks
                 .map {
-                    subtaskMapper.map(it)
+                    it.toDomainModel()
                 }
                 .sortedBy {
                     it.creationDateTime
@@ -69,7 +69,7 @@ class TodoItemWithSubtasksMapper(
             )
 
             val subtasks = item.subtasks.map {
-                subtaskMapper.mapBack(it)
+                it.toEntity(id)
             }
 
             TodoItemWithSubtasksEntity(
