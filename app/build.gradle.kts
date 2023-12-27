@@ -55,6 +55,7 @@ android {
 dependencies {
 
     implementation(project(":common"))
+    implementation(project(":domain"))
 
     implementation(libs.core.ktx)
     implementation(libs.lifecycle.runtime.ktx)
@@ -76,8 +77,6 @@ dependencies {
     implementation(libs.room)
     implementation(libs.room.ktx)
     ksp(libs.room.compiler)
-
-    implementation(libs.work)
 
     implementation(libs.accompanist.permissions)
 

@@ -4,6 +4,7 @@ import android.app.Application
 import android.app.NotificationChannel
 import android.app.NotificationManager
 import com.example.doit.common.R
+import com.example.doit.common.constants.NotificationConstants
 import com.example.doit.common.di.databaseModule
 import com.example.doit.common.di.repoModule
 import com.example.doit.common.di.useCaseModule
@@ -44,15 +45,12 @@ class DoItApplication : Application(), KoinComponent {
         val name = getString(R.string.notification_item_channel_name)
         val descriptionText = getString(R.string.notification_item_channel_description)
         val importance = NotificationManager.IMPORTANCE_DEFAULT
-        val channel = NotificationChannel(ITEM_CHANNEL_NAME, name, importance).apply {
-            description = descriptionText
-        }
+        val channel =
+            NotificationChannel(NotificationConstants.ITEM_CHANNEL_NAME, name, importance).apply {
+                description = descriptionText
+            }
 
         this.createNotificationChannel(channel)
-    }
-
-    companion object {
-        const val ITEM_CHANNEL_NAME = "TodoItemNotifications"
     }
 
 }

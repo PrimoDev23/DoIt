@@ -1,6 +1,6 @@
 package com.example.doit.data.repositories
 
-import com.example.doit.common.database.DatabaseConstants
+import com.example.doit.common.constants.DatabaseConstants
 import com.example.doit.data.daos.TodoItemDao
 import com.example.doit.data.models.local.getTagsForItem
 import com.example.doit.data.models.local.toEntity

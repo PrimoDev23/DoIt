@@ -3,7 +3,6 @@ package com.example.doit.data.preferences
 import androidx.datastore.preferences.core.booleanPreferencesKey
 import androidx.datastore.preferences.core.edit
 import androidx.datastore.preferences.core.stringPreferencesKey
-import com.example.doit.data.models.local.TodoListPreferences
 import com.example.doit.domain.models.TodoItemSortType
 import com.example.doit.domain.preferences.TodoListPrefs
 import kotlinx.coroutines.flow.Flow
@@ -13,14 +12,14 @@ class TodoListPrefsImpl(
     private val preferences: AppPreferences
 ) : TodoListPrefs {
 
-    override fun getFlow(): Flow<TodoListPreferences> {
+    override fun getFlow(): Flow<com.example.doit.domain.models.TodoListPreferences> {
         return preferences.data.map { prefs ->
             val sortType = prefs[TODO_ITEM_SORT_TYPE]?.let {
                 TodoItemSortType.valueOf(it)
             } ?: TodoItemSortType.CREATION_DATE
             val hideDoneItems = prefs[HIDE_DONE_ITEMS] ?: false
 
-            TodoListPreferences(
+            com.example.doit.domain.models.TodoListPreferences(
                 sortType = sortType,
                 hideDoneItems = hideDoneItems
             )

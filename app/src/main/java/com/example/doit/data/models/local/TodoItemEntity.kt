@@ -2,7 +2,7 @@ package com.example.doit.data.models.local
 
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.example.doit.common.database.DatabaseConstants
+import com.example.doit.common.constants.DatabaseConstants
 import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.TodoItem
 

@@ -1,11 +1,11 @@
 package com.example.doit.domain.usecases
 
 import com.example.doit.TestBase
-import com.example.doit.common.worker.NotificationWorker
 import com.example.doit.data.TodoItems
 import com.example.doit.domain.repositories.SubtaskRepository
 import com.example.doit.domain.repositories.TodoItemRepository
 import com.example.doit.domain.utils.interfaces.WorkScheduler
+import com.example.doit.domain.worker.NotificationWorker
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every

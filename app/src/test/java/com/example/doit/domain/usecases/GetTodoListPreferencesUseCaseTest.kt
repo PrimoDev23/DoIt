@@ -1,7 +1,6 @@
 package com.example.doit.domain.usecases
 
 import com.example.doit.TestBase
-import com.example.doit.data.models.local.TodoListPreferences
 import com.example.doit.domain.models.TodoItemSortType
 import com.example.doit.domain.preferences.TodoListPrefs
 import io.mockk.every
@@ -19,7 +18,7 @@ class GetTodoListPreferencesUseCaseTest : TestBase() {
 
         val flow = flow {
             emit(
-                TodoListPreferences(
+                com.example.doit.domain.models.TodoListPreferences(
                     sortType = TodoItemSortType.CREATION_DATE,
                     hideDoneItems = false
                 )

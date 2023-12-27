@@ -1,6 +1,6 @@
 package com.example.doit.domain.usecases.interfaces
 
-import com.example.doit.data.models.local.TodoListPreferences
+import com.example.doit.domain.models.TodoListPreferences
 import kotlinx.coroutines.flow.Flow
 
 interface GetTodoListPreferencesUseCase {

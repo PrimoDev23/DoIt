@@ -2,7 +2,7 @@ package com.example.doit.data.models.local
 
 import androidx.room.Embedded
 import androidx.room.Relation
-import com.example.doit.common.database.DatabaseConstants
+import com.example.doit.common.constants.DatabaseConstants
 import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.repositories.TagRepository

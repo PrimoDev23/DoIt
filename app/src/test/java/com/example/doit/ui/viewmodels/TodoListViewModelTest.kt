@@ -4,7 +4,6 @@ import app.cash.turbine.test
 import com.example.doit.CoroutineTestBase
 import com.example.doit.data.Tags
 import com.example.doit.data.TodoItems
-import com.example.doit.data.models.local.TodoListPreferences
 import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.models.TodoItemSortType
@@ -39,7 +38,7 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
 
         every { getTodoListPreferencesUseCase() } returns flow {
-            val preferences = TodoListPreferences(
+            val preferences = com.example.doit.domain.models.TodoListPreferences(
                 sortType = TodoItemSortType.CREATION_DATE,
                 hideDoneItems = false
             )
@@ -92,7 +91,7 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
 
         every { getTodoListPreferencesUseCase() } returns flow {
-            val preferences = TodoListPreferences(
+            val preferences = com.example.doit.domain.models.TodoListPreferences(
                 sortType = TodoItemSortType.CREATION_DATE,
                 hideDoneItems = false
             )
@@ -151,7 +150,7 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
 
         every { getTodoListPreferencesUseCase() } returns flow {
-            val preferences = TodoListPreferences(
+            val preferences = com.example.doit.domain.models.TodoListPreferences(
                 sortType = TodoItemSortType.CREATION_DATE,
                 hideDoneItems = false
             )
@@ -213,7 +212,7 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val updateDoneUseCase = mockk<UpdateDoneUseCase>()
 
         every { getTodoListPreferencesUseCase() } returns flow {
-            val preferences = TodoListPreferences(
+            val preferences = com.example.doit.domain.models.TodoListPreferences(
                 sortType = TodoItemSortType.CREATION_DATE,
                 hideDoneItems = false
             )
@@ -270,7 +269,7 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val deleteTodoItemsUseCase = mockk<DeleteTodoItemsUseCase>()
 
         every { getTodoListPreferencesUseCase() } returns flow {
-            val preferences = TodoListPreferences(
+            val preferences = com.example.doit.domain.models.TodoListPreferences(
                 sortType = TodoItemSortType.CREATION_DATE,
                 hideDoneItems = false
             )
@@ -329,7 +328,7 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
 
         every { getTodoListPreferencesUseCase() } returns flow {
-            val preferences = TodoListPreferences(
+            val preferences = com.example.doit.domain.models.TodoListPreferences(
                 sortType = TodoItemSortType.CREATION_DATE,
                 hideDoneItems = false
             )
@@ -393,7 +392,7 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
 
         every { getTodoListPreferencesUseCase() } returns flow {
-            val preferences = TodoListPreferences(
+            val preferences = com.example.doit.domain.models.TodoListPreferences(
                 sortType = TodoItemSortType.CREATION_DATE,
                 hideDoneItems = false
             )
@@ -453,7 +452,7 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
 
         every { getTodoListPreferencesUseCase() } returns flow {
-            val preferences = TodoListPreferences(
+            val preferences = com.example.doit.domain.models.TodoListPreferences(
                 sortType = TodoItemSortType.CREATION_DATE,
                 hideDoneItems = false
             )
@@ -514,7 +513,7 @@ class TodoListViewModelTest : CoroutineTestBase() {
 
         every { getTodoListPreferencesUseCase() } returns flow {
             emit(
-                TodoListPreferences(
+                com.example.doit.domain.models.TodoListPreferences(
                     sortType = TodoItemSortType.CREATION_DATE,
                     hideDoneItems = false
                 )
@@ -572,7 +571,7 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
 
         val preferencesFlow = MutableStateFlow(
-            TodoListPreferences(
+            com.example.doit.domain.models.TodoListPreferences(
                 sortType = TodoItemSortType.CREATION_DATE,
                 hideDoneItems = false
             )

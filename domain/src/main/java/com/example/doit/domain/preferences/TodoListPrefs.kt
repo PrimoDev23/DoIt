@@ -1,7 +1,7 @@
 package com.example.doit.domain.preferences
 
-import com.example.doit.data.models.local.TodoListPreferences
 import com.example.doit.domain.models.TodoItemSortType
+import com.example.doit.domain.models.TodoListPreferences
 import kotlinx.coroutines.flow.Flow
 
 interface TodoListPrefs {

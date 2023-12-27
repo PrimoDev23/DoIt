@@ -200,11 +200,8 @@ fun TodoDetailContent(
             modifier = Modifier.fillMaxWidth(),
             icon = painterResource(id = R.drawable.outline_access_time_24),
             contentDescription = stringResource(id = R.string.todo_detail_due_date),
-            text = if (item.dueDate != null) {
-                item.dueDate.format(dateFormatter)
-            } else {
-                stringResource(id = R.string.todo_detail_no_due_date)
-            },
+            text = item.dueDate?.format(dateFormatter)
+                ?: stringResource(id = R.string.todo_detail_no_due_date),
             style = if (item.dueDate != null) {
                 MaterialTheme.typography.bodyLarge
             } else {
@@ -221,11 +218,8 @@ fun TodoDetailContent(
             modifier = Modifier.fillMaxWidth(),
             icon = painterResource(id = R.drawable.outline_notifications_24),
             contentDescription = stringResource(id = R.string.todo_detail_notification),
-            text = if (item.notificationDateTime != null) {
-                item.notificationDateTime.format(dateTimeFormatter)
-            } else {
-                stringResource(id = R.string.todo_detail_no_notification)
-            },
+            text = item.notificationDateTime?.format(dateTimeFormatter)
+                ?: stringResource(id = R.string.todo_detail_no_notification),
             style = if (item.notificationDateTime != null) {
                 MaterialTheme.typography.bodyLarge
             } else {

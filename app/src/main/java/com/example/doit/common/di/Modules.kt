@@ -2,7 +2,6 @@ package com.example.doit.common.di
 
 import androidx.room.Room
 import com.example.doit.common.AppDatabase
-import com.example.doit.common.worker.NotificationWorker
 import com.example.doit.data.preferences.TodoListPrefsImpl
 import com.example.doit.data.preferences.dataStore
 import com.example.doit.data.repositories.SubtaskRepositoryImpl
@@ -44,6 +43,7 @@ import com.example.doit.domain.usecases.interfaces.UpdateDoneUseCase
 import com.example.doit.domain.usecases.interfaces.UpdateSubtaskDoneUseCase
 import com.example.doit.domain.utils.WorkManagerScheduler
 import com.example.doit.domain.utils.interfaces.WorkScheduler
+import com.example.doit.domain.worker.NotificationWorker
 import com.example.doit.ui.viewmodels.AddEntryViewModel
 import com.example.doit.ui.viewmodels.CalendarViewModel
 import com.example.doit.ui.viewmodels.TagListViewModel

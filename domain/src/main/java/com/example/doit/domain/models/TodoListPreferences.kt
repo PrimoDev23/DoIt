@@ -1,6 +1,4 @@
-package com.example.doit.data.models.local
-
-import com.example.doit.domain.models.TodoItemSortType
+package com.example.doit.domain.models
 
 data class TodoListPreferences(
     val sortType: TodoItemSortType,

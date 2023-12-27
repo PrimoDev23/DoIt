@@ -4,7 +4,7 @@ import androidx.room.Entity
 import androidx.room.ForeignKey
 import androidx.room.Index
 import androidx.room.PrimaryKey
-import com.example.doit.common.database.DatabaseConstants
+import com.example.doit.common.constants.DatabaseConstants
 import com.example.doit.domain.models.Subtask
 import java.time.LocalDateTime
 

@@ -4,8 +4,8 @@ import android.content.Context
 import androidx.work.Data
 import androidx.work.OneTimeWorkRequestBuilder
 import androidx.work.WorkManager
-import com.example.doit.common.worker.NotificationWorker
 import com.example.doit.domain.utils.interfaces.WorkScheduler
+import com.example.doit.domain.worker.NotificationWorker
 import java.time.Duration
 import java.time.LocalDateTime
 

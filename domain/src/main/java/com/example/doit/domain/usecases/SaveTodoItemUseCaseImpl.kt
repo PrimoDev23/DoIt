@@ -1,6 +1,6 @@
 package com.example.doit.domain.usecases
 
-import com.example.doit.common.worker.NotificationWorker
+import com.example.doit.common.constants.WorkerConstants
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.repositories.SubtaskRepository
 import com.example.doit.domain.repositories.TodoItemRepository
@@ -28,7 +28,7 @@ class SaveTodoItemUseCaseImpl(
                 workScheduler.enqueueNotification(
                     item.id,
                     item.notificationDateTime,
-                    mapOf(NotificationWorker.ITEM_ID_KEY to item.id)
+                    mapOf(WorkerConstants.ITEM_ID_KEY to item.id)
                 )
             }
         }
