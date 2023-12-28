@@ -208,7 +208,7 @@ fun MonthSelection(
 @Composable
 fun CalendarHeader(modifier: Modifier = Modifier) {
     val days = remember {
-        DayOfWeek.values().map {
+        DayOfWeek.entries.map {
             it.getDisplayName(TextStyle.SHORT, Locale.getDefault())
         }
     }
