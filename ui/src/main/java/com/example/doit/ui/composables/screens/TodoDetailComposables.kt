@@ -20,6 +20,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -53,6 +54,7 @@ import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.ui.arguments.TodoDetailNavArgs
 import com.example.doit.ui.composables.DoItCheckbox
+import com.example.doit.ui.composables.screens.destinations.AddEntryScreenDestination
 import com.example.doit.ui.viewmodels.TodoDetailEvent
 import com.example.doit.ui.viewmodels.TodoDetailViewModel
 import com.ramcosta.composedestinations.annotation.Destination
@@ -99,6 +101,27 @@ fun TodoDetailScreen(
                 deleteVisible = !isLoading,
                 onDeleteClicked = viewModel::onDeleteClicked
             )
+        },
+        floatingActionButton = {
+            if (!isLoading) {
+                FloatingActionButton(
+                    onClick = {
+                        state.item?.let {
+                            navigator.navigate(
+                                AddEntryScreenDestination(
+                                    id = it.id,
+                                    edit = true
+                                )
+                            )
+                        }
+                    }
+                ) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.outline_edit_24),
+                        contentDescription = stringResource(id = R.string.general_edit)
+                    )
+                }
+            }
         }
     ) {
         AnimatedContent(
@@ -114,9 +137,12 @@ fun TodoDetailScreen(
                 state.item?.let { item ->
                     TodoDetailContent(
                         modifier = Modifier
-                            .padding(vertical = 8.dp)
                             .fillMaxWidth()
-                            .verticalScroll(rememberScrollState()),
+                            .verticalScroll(rememberScrollState())
+                            .padding(
+                                top = 8.dp,
+                                bottom = 88.dp
+                            ),
                         item = item,
                         onSubtaskDoneChanged = viewModel::onSubtaskDoneChanged
                     )
