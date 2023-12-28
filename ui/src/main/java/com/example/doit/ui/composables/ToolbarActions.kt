@@ -69,3 +69,22 @@ fun EditToolbarItem(
         }
     }
 }
+
+@Composable
+fun FilterToolbarItem(
+    isVisible: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    ToolbarItem(
+        modifier = modifier,
+        isVisible = isVisible
+    ) {
+        IconButton(onClick = onClick) {
+            Icon(
+                painter = painterResource(id = R.drawable.outline_filter_alt_24),
+                contentDescription = stringResource(id = R.string.general_filter)
+            )
+        }
+    }
+}

@@ -17,7 +17,6 @@ import com.example.doit.domain.usecases.interfaces.SetTodoItemSortTypeUseCase
 import com.example.doit.domain.usecases.interfaces.UpdateDoneUseCase
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
-import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
@@ -65,8 +64,8 @@ class TodoListViewModel(
             sortType = preferences.sortType,
             hideDoneItems = preferences.hideDoneItems,
             tags = tags,
-            selectedTag = state.selectedTag,
-            selectedPriority = state.selectedPriority
+            selectedTags = state.selectedTags,
+            selectedPriorities = state.selectedPriorities
         )
     }
         .stateIn(
@@ -81,28 +80,10 @@ class TodoListViewModel(
                 sortType = TodoItemSortType.ALPHABETICAL,
                 hideDoneItems = false,
                 tags = emptyList(),
-                selectedTag = null,
-                selectedPriority = null
+                selectedTags = emptyList(),
+                selectedPriorities = emptyList()
             )
         )
-
-    init {
-        viewModelScope.launch {
-            updateSelectedTag()
-        }
-    }
-
-    private suspend fun updateSelectedTag() {
-        tags.collectLatest {
-            val selectedTag = _state.value.selectedTag
-
-            if (selectedTag != null && !it.contains(selectedTag)) {
-                _state.update { state ->
-                    state.copy(selectedTag = null)
-                }
-            }
-        }
-    }
 
     fun onClearSelectionClicked() {
         _state.update {
@@ -116,15 +97,31 @@ class TodoListViewModel(
         }
     }
 
-    fun onTagFilterClicked(tag: Tag?) {
-        _state.update {
-            it.copy(selectedTag = tag)
+    fun onTagClicked(tag: Tag) {
+        _state.update { state ->
+            val tags = state.selectedTags
+
+            val newTags = if (tags.contains(tag)) {
+                tags - tag
+            } else {
+                tags + tag
+            }
+
+            state.copy(selectedTags = newTags)
         }
     }
 
-    fun onPrioritySelected(priority: Priority?) {
-        _state.update {
-            it.copy(selectedPriority = priority)
+    fun onPriorityClicked(priority: Priority) {
+        _state.update { state ->
+            val priorities = state.selectedPriorities
+
+            val newPriorities = if (priorities.contains(priority)) {
+                priorities - priority
+            } else {
+                priorities + priority
+            }
+
+            state.copy(selectedPriorities = newPriorities)
         }
     }
 
@@ -166,6 +163,15 @@ class TodoListViewModel(
         }
     }
 
+    fun onResetFilterClicked() {
+        _state.update {
+            it.copy(
+                selectedTags = emptyList(),
+                selectedPriorities = emptyList()
+            )
+        }
+    }
+
     fun onHideDoneItemsChanged(hideDoneItems: Boolean) {
         viewModelScope.launch {
             setHideDoneItemsUseCase(hideDoneItems)
@@ -182,8 +188,8 @@ class TodoListViewModel(
 data class TodoListViewModelState(
     val todayFilterActive: Boolean = false,
     val selectedItems: List<TodoItem> = emptyList(),
-    val selectedTag: Tag? = null,
-    val selectedPriority: Priority? = null
+    val selectedTags: List<Tag> = emptyList(),
+    val selectedPriorities: List<Priority> = emptyList()
 )
 
 @Immutable
@@ -196,6 +202,6 @@ data class TodoListState(
     val sortType: TodoItemSortType,
     val hideDoneItems: Boolean,
     val tags: List<Tag>,
-    val selectedTag: Tag?,
-    val selectedPriority: Priority?
+    val selectedTags: List<Tag>,
+    val selectedPriorities: List<Priority>
 )

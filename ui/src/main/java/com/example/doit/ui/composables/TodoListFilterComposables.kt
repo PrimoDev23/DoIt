@@ -1,19 +1,20 @@
 package com.example.doit.ui.composables
 
 import androidx.compose.animation.animateColorAsState
-import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.width
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -21,7 +22,10 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.SheetState
+import androidx.compose.material3.Switch
 import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.material3.minimumInteractiveComponentSize
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -30,11 +34,12 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.graphics.Shape
+import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import com.example.doit.common.R
 import com.example.doit.domain.models.Priority
@@ -42,268 +47,493 @@ import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.models.TodoItemSortType
 
-private const val ALL_TAGS_KEY = "allTags"
-
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TodoListFilterBottomSheet(
+fun TodoItemsFilterBottomSheet(
     onDismiss: () -> Unit,
-    title: String,
+    onResetClicked: () -> Unit,
+    selectedSortType: TodoItemSortType,
+    onSortTypeClicked: (TodoItemSortType) -> Unit,
+    hideDoneItems: Boolean,
+    onHideDoneItemsChanged: (Boolean) -> Unit,
+    tags: List<Tag>,
+    selectedTags: List<Tag>,
+    onTagClicked: (Tag) -> Unit,
+    selectedPriorities: List<Priority>,
+    onPriorityClicked: (Priority) -> Unit,
     modifier: Modifier = Modifier,
-    state: SheetState = rememberModalBottomSheetState(),
-    content: @Composable ColumnScope.() -> Unit
+    sheetState: SheetState = rememberModalBottomSheetState()
 ) {
     ModalBottomSheet(
         modifier = modifier,
         onDismissRequest = onDismiss,
-        sheetState = state
+        sheetState = sheetState
     ) {
         Column(
             modifier = Modifier
-                .padding(
-                    start = 16.dp,
-                    end = 16.dp,
-                    bottom = 48.dp
-                )
                 .fillMaxWidth()
+                .padding(bottom = 24.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
         ) {
-            Text(
-                text = title,
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+            TodoItemsFilterHeader(
+                modifier = Modifier
+                    .padding(horizontal = 16.dp)
+                    .fillMaxWidth(),
+                onResetClicked = {
+                    onResetClicked()
+                    onDismiss()
+                }
             )
 
-            Spacer(modifier = Modifier.height(24.dp))
+            TodoItemsFilterSort(
+                modifier = Modifier.fillMaxWidth(),
+                selectedSortType = selectedSortType,
+                onSortTypeClicked = onSortTypeClicked
+            )
 
-            content()
+            Divider(modifier = Modifier.padding(horizontal = 16.dp))
+
+            TodoItemsFilterSwitch(
+                modifier = Modifier.fillMaxWidth(),
+                text = stringResource(id = R.string.todo_list_hide_done_items),
+                checked = hideDoneItems,
+                onCheckedChanged = onHideDoneItemsChanged
+            )
+
+            Divider(modifier = Modifier.padding(horizontal = 16.dp))
+
+            if (tags.isNotEmpty()) {
+                TodoItemsFilterTags(
+                    modifier = Modifier.fillMaxWidth(),
+                    tags = tags,
+                    selectedTags = selectedTags,
+                    onTagClicked = onTagClicked
+                )
+
+                Divider(modifier = Modifier.padding(horizontal = 16.dp))
+            }
+
+            TodoItemsFilterPriorities(
+                modifier = Modifier.fillMaxWidth(),
+                selectedPriorities = selectedPriorities,
+                onPriorityClicked = onPriorityClicked
+            )
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
+@Preview
 @Composable
-fun TodoListTagFilterBottomSheet(
-    onDismiss: () -> Unit,
-    selectedTag: Tag?,
+fun TodoItemsFilterBottomSheetPreview() {
+    val tags = listOf(
+        Tag(
+            id = 0,
+            title = "Tag1",
+            color = Color.Green
+        )
+    )
+
+    Column(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 8.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        TodoItemsFilterHeader(
+            modifier = Modifier.fillMaxWidth(),
+            onResetClicked = {}
+        )
+
+        Divider()
+
+        TodoItemsFilterSort(
+            modifier = Modifier.fillMaxWidth(),
+            selectedSortType = TodoItemSortType.ALPHABETICAL,
+            onSortTypeClicked = {}
+        )
+
+        TodoItemsFilterSwitch(
+            modifier = Modifier.fillMaxWidth(),
+            text = stringResource(id = R.string.todo_list_hide_done_items),
+            checked = true,
+            onCheckedChanged = {}
+        )
+
+        if (tags.isNotEmpty()) {
+            TodoItemsFilterTags(
+                modifier = Modifier.fillMaxWidth(),
+                tags = tags,
+                selectedTags = tags,
+                onTagClicked = {}
+            )
+        }
+
+        TodoItemsFilterPriorities(
+            modifier = Modifier.fillMaxWidth(),
+            selectedPriorities = emptyList(),
+            onPriorityClicked = {}
+        )
+    }
+}
+
+@Composable
+fun TodoItemsFilterSwitch(
+    text: String,
+    checked: Boolean,
+    onCheckedChanged: (Boolean) -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp)
+) {
+    Row(
+        modifier = modifier.padding(contentPadding),
+        horizontalArrangement = Arrangement.spacedBy(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            modifier = Modifier.weight(1f),
+            text = text,
+            style = MaterialTheme.typography.bodyMedium
+        )
+
+        Switch(
+            checked = checked,
+            onCheckedChange = onCheckedChanged
+        )
+    }
+}
+
+@Composable
+fun TodoItemsFilterTags(
     tags: List<Tag>,
-    onTagClicked: (Tag?) -> Unit,
+    selectedTags: List<Tag>,
+    onTagClicked: (Tag) -> Unit,
     modifier: Modifier = Modifier,
-    state: SheetState = rememberModalBottomSheetState(),
-    shape: Shape = RoundedCornerShape(8.dp)
+    contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp)
 ) {
-    TodoListFilterBottomSheet(
+    TodoItemsFilterSection(
         modifier = modifier,
-        onDismiss = onDismiss,
         title = stringResource(id = R.string.todo_list_tags_filter_title),
-        state = state
+        contentPadding = contentPadding
     ) {
-        LazyColumn(
-            modifier = Modifier
-                .border(
-                    width = 1.dp,
-                    color = MaterialTheme.colorScheme.onSurface,
-                    shape = shape
-                )
-                .fillMaxWidth()
+        val layoutDirection = LocalLayoutDirection.current
+        val startPadding = contentPadding.calculateStartPadding(layoutDirection)
+        val endPadding = contentPadding.calculateEndPadding(layoutDirection)
+
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(
+                start = startPadding,
+                end = endPadding
+            ),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            item(key = ALL_TAGS_KEY) {
-                val backgroundColor by animateColorAsState(
-                    targetValue = if (selectedTag == null) {
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                    } else {
-                        Color.Unspecified
-                    },
-                    label = "AllTagsBackgroundAnimation"
-                )
-
-                val clickShape = remember(tags) {
-                    if (tags.isNotEmpty()) {
-                        RoundedCornerShape(topStart = 8.dp, topEnd = 8.dp)
-                    } else {
-                        shape
-                    }
-                }
-
-                Row(
-                    modifier = Modifier
-                        .height(56.dp)
-                        .fillMaxWidth()
-                        .clip(clickShape)
-                        .background(
-                            color = backgroundColor,
-                            shape = clickShape
-                        )
-                        .clickable {
-                            onTagClicked(null)
-                            onDismiss()
-                        }
-                        .padding(
-                            horizontal = 16.dp,
-                            vertical = 8.dp
-                        ),
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.outline_label_24),
-                        contentDescription = null
-                    )
-
-                    Spacer(modifier = Modifier.width(16.dp))
-
-                    Text(
-                        modifier = Modifier.fillMaxWidth(),
-                        text = stringResource(id = R.string.todo_list_all_tags)
-                    )
-                }
-
-                if (tags.isNotEmpty()) {
-                    Divider(
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
-            }
-
-            itemsIndexed(
+            items(
                 items = tags,
-                key = { _, item ->
-                    item.id
+                key = {
+                    it.id
                 }
-            ) { index, item ->
-                val clickShape = remember(tags) {
-                    if (index == tags.lastIndex) {
-                        RoundedCornerShape(bottomStart = 8.dp, bottomEnd = 8.dp)
-                    } else {
-                        RectangleShape
-                    }
+            ) { tag ->
+                val selected = remember(selectedTags, tag) {
+                    selectedTags.contains(tag)
                 }
 
-                TagListEntry(
-                    modifier = Modifier
-                        .height(56.dp)
-                        .fillMaxWidth()
-                        .clip(clickShape)
-                        .clickable {
-                            onTagClicked(item)
-                            onDismiss()
-                        },
-                    title = item.title,
-                    color = item.color,
-                    highlighted = selectedTag == item
+                TodoItemsFilterTag(
+                    tag = tag,
+                    onClick = {
+                        onTagClicked(tag)
+                    },
+                    selected = selected
                 )
-
-                if (index < tags.lastIndex) {
-                    Divider(
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
             }
         }
     }
 }
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun TodoListPriorityFilterBottomSheet(
-    selectedPriority: Priority?,
-    onDismiss: () -> Unit,
-    onPrioritySelected: (Priority?) -> Unit,
+fun TodoItemsFilterTag(
+    tag: Tag,
+    selected: Boolean,
+    onClick: () -> Unit,
     modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(
+        horizontal = 16.dp,
+        vertical = 8.dp
+    ),
     shape: Shape = RoundedCornerShape(8.dp)
 ) {
-    TodoListFilterBottomSheet(
-        modifier = modifier,
-        onDismiss = onDismiss,
-        title = stringResource(id = R.string.todo_list_priority_filter_title)
-    ) {
-        Column(
-            modifier = Modifier.border(
+    val borderColor by animateColorAsState(
+        targetValue = if (selected) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        },
+        label = "TodoItemsFilterTagBorderColor"
+    )
+
+    Row(
+        modifier = modifier
+            .minimumInteractiveComponentSize()
+            .border(
                 width = 1.dp,
-                color = MaterialTheme.colorScheme.onSurface,
+                color = borderColor,
                 shape = shape
             )
+            .clip(shape)
+            .clickable(onClick = onClick)
+            .padding(contentPadding),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.baseline_label_24),
+            contentDescription = null,
+            tint = tag.color
+        )
+
+        Text(text = tag.title)
+    }
+}
+
+@Composable
+fun TodoItemsFilterPriorities(
+    selectedPriorities: List<Priority>,
+    onPriorityClicked: (Priority) -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp)
+) {
+    TodoItemsFilterSection(
+        modifier = modifier,
+        title = stringResource(id = R.string.todo_list_priority_filter_title),
+        contentPadding = contentPadding
+    ) {
+        val layoutDirection = LocalLayoutDirection.current
+        val startPadding = contentPadding.calculateStartPadding(layoutDirection)
+        val endPadding = contentPadding.calculateEndPadding(layoutDirection)
+        val priorities = Priority.entries
+
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(
+                start = startPadding,
+                end = endPadding
+            ),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
         ) {
-            val allPrioBackgroundColor by animateColorAsState(
-                targetValue = if (selectedPriority == null) {
-                    MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                } else {
-                    Color.Unspecified
-                },
-                label = "AllPrioBackgroundAnimation"
-            )
-            val firstShape = RoundedCornerShape(
-                topStart = 8.dp,
-                topEnd = 8.dp
-            )
-
-            PriorityFilterItem(
-                modifier = Modifier
-                    .height(56.dp)
-                    .fillMaxWidth()
-                    .background(
-                        color = allPrioBackgroundColor,
-                        shape = firstShape
-                    )
-                    .clip(firstShape)
-                    .clickable {
-                        onPrioritySelected(null)
-                        onDismiss()
-                    },
-                title = stringResource(id = R.string.todo_list_all_priorities),
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            Divider(
-                color = MaterialTheme.colorScheme.onSurface
-            )
-
-            Priority.entries.forEachIndexed { index, priority ->
-                val backgroundColor by animateColorAsState(
-                    targetValue = if (selectedPriority == priority) {
-                        MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
-                    } else {
-                        Color.Unspecified
-                    },
-                    label = "PriorityBackgroundAnimation"
-                )
-                val prioShape = if (index < Priority.entries.lastIndex) {
-                    RectangleShape
-                } else {
-                    RoundedCornerShape(
-                        bottomStart = 8.dp,
-                        bottomEnd = 8.dp
-                    )
+            items(
+                items = priorities,
+                key = {
+                    it
+                }
+            ) { prio ->
+                val selected = remember(selectedPriorities, prio) {
+                    selectedPriorities.contains(prio)
                 }
 
-                PriorityFilterItem(
-                    modifier = Modifier
-                        .height(56.dp)
-                        .fillMaxWidth()
-                        .background(
-                            color = backgroundColor,
-                            shape = prioShape
-                        )
-                        .clip(prioShape)
-                        .clickable {
-                            onPrioritySelected(priority)
-                            onDismiss()
-                        },
-                    title = stringResource(id = priority.title),
-                    color = priority.color
+                TodoItemsFilterPriority(
+                    prio = prio,
+                    selected = selected,
+                    onClick = {
+                        onPriorityClicked(prio)
+                    }
                 )
-
-                if (index < Priority.entries.lastIndex) {
-                    Divider(
-                        color = MaterialTheme.colorScheme.onSurface
-                    )
-                }
             }
+        }
+    }
+}
+
+@Composable
+fun TodoItemsFilterPriority(
+    prio: Priority,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(
+        horizontal = 16.dp,
+        vertical = 8.dp
+    ),
+    shape: Shape = RoundedCornerShape(8.dp)
+) {
+    val borderColor by animateColorAsState(
+        targetValue = if (selected) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        },
+        label = "TodoItemsFilterPriorityBorderColor"
+    )
+
+    Row(
+        modifier = modifier
+            .minimumInteractiveComponentSize()
+            .border(
+                width = 1.dp,
+                color = borderColor,
+                shape = shape
+            )
+            .clip(shape)
+            .clickable(onClick = onClick)
+            .padding(contentPadding),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            painter = painterResource(id = R.drawable.outline_flag_24),
+            contentDescription = null,
+            tint = prio.color
+        )
+
+        Text(text = stringResource(id = prio.title))
+    }
+}
+
+@Composable
+fun TodoItemsFilterSort(
+    selectedSortType: TodoItemSortType,
+    onSortTypeClicked: (TodoItemSortType) -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp)
+) {
+    TodoItemsFilterSection(
+        modifier = modifier,
+        title = stringResource(id = R.string.todo_list_filter_sort),
+        contentPadding = contentPadding
+    ) {
+        val layoutDirection = LocalLayoutDirection.current
+        val startPadding = contentPadding.calculateStartPadding(layoutDirection)
+        val endPadding = contentPadding.calculateEndPadding(layoutDirection)
+
+        val sortTypes = TodoItemSortType.entries
+
+        LazyRow(
+            modifier = Modifier.fillMaxWidth(),
+            contentPadding = PaddingValues(
+                start = startPadding,
+                end = endPadding
+            ),
+            horizontalArrangement = Arrangement.spacedBy(8.dp)
+        ) {
+            items(
+                items = sortTypes,
+                key = {
+                    it
+                }
+            ) { sort ->
+                TodoItemsFilterSortType(
+                    sort = sort,
+                    selected = selectedSortType == sort,
+                    onClick = {
+                        onSortTypeClicked(sort)
+                    }
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun TodoItemsFilterSortType(
+    sort: TodoItemSortType,
+    selected: Boolean,
+    onClick: () -> Unit,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(
+        horizontal = 16.dp,
+        vertical = 8.dp
+    ),
+    shape: Shape = RoundedCornerShape(8.dp)
+) {
+    val borderColor by animateColorAsState(
+        targetValue = if (selected) {
+            MaterialTheme.colorScheme.primary
+        } else {
+            MaterialTheme.colorScheme.onSurface
+        },
+        label = "TodoItemsFilterSortTypeBorderColor"
+    )
+
+    Row(
+        modifier = modifier
+            .minimumInteractiveComponentSize()
+            .border(
+                width = 1.dp,
+                color = borderColor,
+                shape = shape
+            )
+            .clip(shape)
+            .clickable(onClick = onClick)
+            .padding(contentPadding),
+        horizontalArrangement = Arrangement.spacedBy(8.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(text = stringResource(id = sort.title))
+    }
+}
+
+@Composable
+fun TodoItemsFilterSection(
+    title: String,
+    modifier: Modifier = Modifier,
+    contentPadding: PaddingValues = PaddingValues(
+        horizontal = 16.dp,
+        vertical = 8.dp
+    ),
+    content: @Composable ColumnScope.() -> Unit
+) {
+    val topPadding = contentPadding.calculateTopPadding()
+    val bottomPadding = contentPadding.calculateBottomPadding()
+
+    Column(
+        modifier = modifier.padding(
+            top = topPadding,
+            bottom = bottomPadding
+        ),
+        verticalArrangement = Arrangement.spacedBy(4.dp)
+    ) {
+        val layoutDirection = LocalLayoutDirection.current
+        val startPadding = contentPadding.calculateStartPadding(layoutDirection)
+        val endPadding = contentPadding.calculateEndPadding(layoutDirection)
+
+        Text(
+            modifier = Modifier.padding(
+                start = startPadding,
+                end = endPadding
+            ),
+            text = title,
+            style = MaterialTheme.typography.bodyMedium,
+            fontWeight = FontWeight.Bold
+        )
+
+        content()
+    }
+}
+
+@Composable
+fun TodoItemsFilterHeader(
+    onResetClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Box(
+        modifier = modifier,
+        contentAlignment = Alignment.Center
+    ) {
+        Text(
+            text = stringResource(id = R.string.todo_list_filter_title),
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+
+        TextButton(
+            modifier = Modifier.align(Alignment.CenterEnd),
+            onClick = onResetClicked
+        ) {
+            Text(text = stringResource(id = R.string.todo_list_filter_reset))
         }
     }
 }
 
 fun List<TodoItem>.applyFilter(
-    tag: Tag?,
-    priority: Priority?,
+    tags: List<Tag>,
+    priorities: List<Priority>,
     hideDoneItems: Boolean
 ): List<TodoItem> {
     return this.filter {
@@ -311,11 +541,11 @@ fun List<TodoItem>.applyFilter(
             return@filter false
         }
 
-        if (tag != null && !it.tags.contains(tag)) {
+        if (tags.isNotEmpty() && !it.tags.any(tags::contains)) {
             return@filter false
         }
 
-        return@filter !(priority != null && it.priority != priority)
+        return@filter priorities.isEmpty() || priorities.contains(it.priority)
     }
 }
 

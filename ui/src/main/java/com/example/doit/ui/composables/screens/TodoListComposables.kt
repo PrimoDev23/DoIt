@@ -7,7 +7,6 @@ import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.ExperimentalFoundationApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.combinedClickable
-import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -23,20 +22,15 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
-import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.ripple.rememberRipple
 import androidx.compose.material3.CardDefaults
-import androidx.compose.material3.Divider
-import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
-import androidx.compose.material3.FilterChip
 import androidx.compose.material3.FloatingActionButton
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedCard
-import androidx.compose.material3.SuggestionChip
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
@@ -50,7 +44,6 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -59,18 +52,15 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.doit.common.R
 import com.example.doit.domain.models.Priority
-import com.example.doit.domain.models.Tag
-import com.example.doit.domain.models.TodoItemSortType
 import com.example.doit.ui.composables.ClearSelectionButton
 import com.example.doit.ui.composables.DeleteToolbarItem
 import com.example.doit.ui.composables.DoItCheckbox
 import com.example.doit.ui.composables.DrawerMenuButton
 import com.example.doit.ui.composables.EditToolbarItem
+import com.example.doit.ui.composables.FilterToolbarItem
 import com.example.doit.ui.composables.RootScaffold
 import com.example.doit.ui.composables.StrikethroughText
-import com.example.doit.ui.composables.TodoListPriorityFilterBottomSheet
-import com.example.doit.ui.composables.TodoListTagFilterBottomSheet
-import com.example.doit.ui.composables.ToggleableDropDownMenuItem
+import com.example.doit.ui.composables.TodoItemsFilterBottomSheet
 import com.example.doit.ui.composables.applyFilter
 import com.example.doit.ui.composables.rememberSnackbarHostState
 import com.example.doit.ui.composables.screens.destinations.AddEntryScreenDestination
@@ -92,8 +82,6 @@ fun TodoListScreen(
     navigator: DestinationsNavigator,
     viewModel: TodoListViewModel = getViewModel()
 ) {
-    val context = LocalContext.current
-
     val state by viewModel.state.collectAsStateWithLifecycle()
 
     val hasItemsSelected by remember {
@@ -101,14 +89,14 @@ fun TodoListScreen(
             state.selectedItems.isNotEmpty()
         }
     }
-    var showTagFilterBottomSheet by remember {
-        mutableStateOf(false)
-    }
-    var showPrioFilterBottomSheet by remember {
-        mutableStateOf(false)
-    }
 
+    val scope = rememberCoroutineScope()
     val snackbarHostState = rememberSnackbarHostState()
+
+    var filterSheetVisible by remember {
+        mutableStateOf(false)
+    }
+    val filterSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     RootScaffold(
         modifier = Modifier.fillMaxSize(),
@@ -134,7 +122,10 @@ fun TodoListScreen(
                     )
                     viewModel.onEditClicked()
                 },
-                onDeleteClicked = viewModel::onDeleteClicked
+                onDeleteClicked = viewModel::onDeleteClicked,
+                onFilterClicked = {
+                    filterSheetVisible = true
+                }
             )
         },
         floatingActionButton = {
@@ -166,7 +157,8 @@ fun TodoListScreen(
         Column(
             modifier = Modifier
                 .padding(it)
-                .fillMaxSize()
+                .fillMaxSize(),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             TodayInfoCard(
                 modifier = Modifier
@@ -178,52 +170,11 @@ fun TodoListScreen(
                 onClick = viewModel::onTodayInfoCardClicked
             )
 
-            Spacer(modifier = Modifier.height(16.dp))
-
-            val tagFilterSelected by remember {
-                derivedStateOf {
-                    state.selectedTag != null
-                }
-            }
-            val priorityFilterSelected by remember {
-                derivedStateOf {
-                    state.selectedPriority != null
-                }
-            }
-            val scope = rememberCoroutineScope()
-
-            TodoListSettingsRow(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(horizontal = 16.dp)
-                    .horizontalScroll(state = rememberScrollState()),
-                sortType = state.sortType,
-                onSortTypeChanged = viewModel::onSortTypeChanged,
-                hideDoneItems = state.hideDoneItems,
-                onHideDoneItemsChanged = viewModel::onHideDoneItemsChanged,
-                tagFilterSelected = tagFilterSelected,
-                onTagFilterClicked = {
-                    if (state.tags.isNotEmpty()) {
-                        showTagFilterBottomSheet = true
-                    } else {
-                        scope.launch {
-                            snackbarHostState.showSnackbar(message = context.getString(R.string.todo_list_no_tags))
-                        }
-                    }
-                },
-                selectedTag = state.selectedTag,
-                priorityFilterSelected = priorityFilterSelected,
-                onPriorityFilterClicked = {
-                    showPrioFilterBottomSheet = true
-                },
-                selectedPriority = state.selectedPriority
-            )
-
             val filteredItems by remember {
                 derivedStateOf {
                     state.items.applyFilter(
-                        state.selectedTag,
-                        state.selectedPriority,
+                        state.selectedTags,
+                        state.selectedPriorities,
                         state.hideDoneItems
                     )
                 }
@@ -249,7 +200,11 @@ fun TodoListScreen(
                 if (innerHasItems) {
                     LazyColumn(
                         modifier = Modifier.fillMaxSize(),
-                        contentPadding = PaddingValues(16.dp),
+                        contentPadding = PaddingValues(
+                            start = 16.dp,
+                            end = 16.dp,
+                            bottom = 88.dp
+                        ),
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(
@@ -296,27 +251,26 @@ fun TodoListScreen(
         }
     }
 
-    val bottomSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
-
-    if (showTagFilterBottomSheet) {
-        TodoListTagFilterBottomSheet(
+    if (filterSheetVisible) {
+        TodoItemsFilterBottomSheet(
+            sheetState = filterSheetState,
             onDismiss = {
-                showTagFilterBottomSheet = false
+                scope.launch {
+                    filterSheetState.hide()
+                }.invokeOnCompletion {
+                    filterSheetVisible = false
+                }
             },
-            state = bottomSheetState,
-            selectedTag = state.selectedTag,
+            onResetClicked = viewModel::onResetFilterClicked,
+            selectedSortType = state.sortType,
+            onSortTypeClicked = viewModel::onSortTypeChanged,
+            hideDoneItems = state.hideDoneItems,
+            onHideDoneItemsChanged = viewModel::onHideDoneItemsChanged,
             tags = state.tags,
-            onTagClicked = viewModel::onTagFilterClicked
-        )
-    }
-
-    if (showPrioFilterBottomSheet) {
-        TodoListPriorityFilterBottomSheet(
-            selectedPriority = state.selectedPriority,
-            onPrioritySelected = viewModel::onPrioritySelected,
-            onDismiss = {
-                showPrioFilterBottomSheet = false
-            }
+            selectedTags = state.selectedTags,
+            onTagClicked = viewModel::onTagClicked,
+            selectedPriorities = state.selectedPriorities,
+            onPriorityClicked = viewModel::onPriorityClicked
         )
     }
 }
@@ -327,6 +281,7 @@ fun TodoListToolbarActions(
     hasOneItemSelected: Boolean,
     onEditClicked: () -> Unit,
     onDeleteClicked: () -> Unit,
+    onFilterClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
@@ -339,131 +294,10 @@ fun TodoListToolbarActions(
             isVisible = hasItemsSelected,
             onClick = onDeleteClicked
         )
-    }
-}
 
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun TodoListSettingsRow(
-    sortType: TodoItemSortType,
-    onSortTypeChanged: (TodoItemSortType) -> Unit,
-    hideDoneItems: Boolean,
-    onHideDoneItemsChanged: (Boolean) -> Unit,
-    tagFilterSelected: Boolean,
-    onTagFilterClicked: () -> Unit,
-    selectedTag: Tag?,
-    priorityFilterSelected: Boolean,
-    onPriorityFilterClicked: () -> Unit,
-    selectedPriority: Priority?,
-    modifier: Modifier = Modifier
-) {
-    var sortMenuExpanded by remember {
-        mutableStateOf(false)
-    }
-
-    Row(
-        modifier = modifier,
-        horizontalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        Row {
-            SuggestionChip(
-                onClick = {
-                    sortMenuExpanded = !sortMenuExpanded
-                },
-                label = {
-                    Icon(
-                        painter = painterResource(id = R.drawable.outline_sort_24),
-                        contentDescription = null
-                    )
-                }
-            )
-
-            TodoListSortDropDownMenu(
-                expanded = sortMenuExpanded,
-                onDismiss = {
-                    sortMenuExpanded = false
-                },
-                sortType = sortType,
-                onSortTypeChanged = onSortTypeChanged,
-                hideDoneItems = hideDoneItems,
-                onHideDoneItemsChanged = onHideDoneItemsChanged
-            )
-        }
-
-        FilterChip(
-            selected = tagFilterSelected,
-            onClick = onTagFilterClicked,
-            label = {
-                Text(
-                    text = selectedTag?.title
-                        ?: stringResource(id = R.string.todo_list_all_tags)
-                )
-            },
-            trailingIcon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.outline_arrow_drop_down_24),
-                    contentDescription = null
-                )
-            }
-        )
-
-        FilterChip(
-            selected = priorityFilterSelected,
-            onClick = onPriorityFilterClicked,
-            label = {
-                Text(
-                    text = stringResource(
-                        id = selectedPriority?.title ?: R.string.todo_list_all_priorities
-                    )
-                )
-            },
-            trailingIcon = {
-                Icon(
-                    painter = painterResource(id = R.drawable.outline_arrow_drop_down_24),
-                    contentDescription = null
-                )
-            }
-        )
-    }
-}
-
-@Composable
-fun TodoListSortDropDownMenu(
-    expanded: Boolean,
-    onDismiss: () -> Unit,
-    sortType: TodoItemSortType,
-    onSortTypeChanged: (TodoItemSortType) -> Unit,
-    hideDoneItems: Boolean,
-    onHideDoneItemsChanged: (Boolean) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    DropdownMenu(
-        modifier = modifier,
-        expanded = expanded,
-        onDismissRequest = onDismiss
-    ) {
-        TodoItemSortType.entries.forEach { type ->
-            ToggleableDropDownMenuItem(
-                checked = sortType == type,
-                onCheckedChange = {
-                    if (it) {
-                        onSortTypeChanged(type)
-                        onDismiss()
-                    }
-                },
-                text = stringResource(id = type.title)
-            )
-        }
-
-        Divider()
-
-        ToggleableDropDownMenuItem(
-            checked = hideDoneItems,
-            onCheckedChange = {
-                onHideDoneItemsChanged(it)
-                onDismiss()
-            },
-            text = stringResource(id = R.string.todo_list_hide_done_items)
+        FilterToolbarItem(
+            isVisible = !hasItemsSelected,
+            onClick = onFilterClicked
         )
     }
 }
