@@ -1,6 +1,7 @@
 package com.example.doit.ui.composables.screens
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.border
 import androidx.compose.foundation.layout.Arrangement
@@ -26,6 +27,7 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.key
@@ -51,6 +53,7 @@ import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.ui.arguments.TodoDetailNavArgs
 import com.example.doit.ui.composables.DoItCheckbox
+import com.example.doit.ui.viewmodels.TodoDetailEvent
 import com.example.doit.ui.viewmodels.TodoDetailViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -71,6 +74,20 @@ fun TodoDetailScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
+    val isLoading by remember {
+        derivedStateOf {
+            state.item == null
+        }
+    }
+
+    LaunchedEffect(true) {
+        viewModel.events.collect {
+            when (it) {
+                TodoDetailEvent.PopBackStack -> navigator.popBackStack()
+            }
+        }
+    }
+
     Scaffold(
         modifier = Modifier.fillMaxSize(),
         topBar = {
@@ -78,16 +95,12 @@ fun TodoDetailScreen(
                 modifier = Modifier.fillMaxWidth(),
                 onBackClicked = {
                     navigator.popBackStack()
-                }
+                },
+                deleteVisible = !isLoading,
+                onDeleteClicked = viewModel::onDeleteClicked
             )
         }
     ) {
-        val isLoading by remember {
-            derivedStateOf {
-                state.item == null
-            }
-        }
-
         AnimatedContent(
             modifier = Modifier
                 .padding(it)
@@ -117,6 +130,8 @@ fun TodoDetailScreen(
 @Composable
 fun TodoDetailTopBar(
     onBackClicked: () -> Unit,
+    deleteVisible: Boolean,
+    onDeleteClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
     TopAppBar(
@@ -131,7 +146,14 @@ fun TodoDetailTopBar(
             }
         },
         actions = {
-
+            AnimatedVisibility(visible = deleteVisible) {
+                IconButton(onClick = onDeleteClicked) {
+                    Icon(
+                        painter = painterResource(id = R.drawable.outline_delete_24),
+                        contentDescription = stringResource(id = R.string.general_delete)
+                    )
+                }
+            }
         }
     )
 }
