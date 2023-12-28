@@ -109,7 +109,7 @@ fun CalendarHeader(
     horizontalArrangement: Arrangement.Horizontal = Arrangement.SpaceEvenly
 ) {
     val days = remember {
-        DayOfWeek.values().map {
+        DayOfWeek.entries.map {
             it.getDisplayName(TextStyle.SHORT, Locale.getDefault())
         }
     }

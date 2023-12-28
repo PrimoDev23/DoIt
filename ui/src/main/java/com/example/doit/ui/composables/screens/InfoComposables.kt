@@ -26,7 +26,6 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
-import androidx.compose.ui.text.ExperimentalTextApi
 import androidx.compose.ui.unit.dp
 import com.example.doit.common.R
 import com.example.doit.ui.composables.DrawerMenuButton
@@ -37,7 +36,6 @@ import com.ramcosta.composedestinations.annotation.RootNavGraph
 
 private const val GITHUB_URL = "https://github.com/PrimoDev23/DoIt"
 
-@OptIn(ExperimentalTextApi::class)
 @RootNavGraph
 @Destination
 @Composable
