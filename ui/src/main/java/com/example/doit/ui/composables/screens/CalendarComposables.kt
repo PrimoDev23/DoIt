@@ -48,9 +48,11 @@ import com.example.doit.ui.composables.RootScaffold
 import com.example.doit.ui.composables.calendar.Calendar
 import com.example.doit.ui.composables.calendar.CalendarWeek
 import com.example.doit.ui.composables.calendar.rememberCalendarState
+import com.example.doit.ui.composables.screens.destinations.TodoDetailScreenDestination
 import com.example.doit.ui.viewmodels.CalendarViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
+import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import org.koin.androidx.compose.koinViewModel
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -64,6 +66,7 @@ private const val DAY_SPACING = 8
 @Destination
 @Composable
 fun CalendarScreen(
+    navigator: DestinationsNavigator,
     viewModel: CalendarViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
@@ -165,6 +168,9 @@ fun CalendarScreen(
                 itemsForDate = itemsForDate,
                 onDoneChanged = { item, done ->
                     viewModel.onDoneChanged(item, done)
+                },
+                onItemClicked = { item ->
+                    navigator.navigate(TodoDetailScreenDestination(id = item.id))
                 }
             )
         }
@@ -266,6 +272,7 @@ fun CalendarDay(
 fun CalendarBottomSection(
     itemsForDate: List<TodoItem>,
     onDoneChanged: (TodoItem, Boolean) -> Unit,
+    onItemClicked: (TodoItem) -> Unit,
     modifier: Modifier = Modifier
 ) {
     AnimatedContent(
@@ -305,7 +312,9 @@ fun CalendarBottomSection(
                         },
                         title = item.title,
                         description = item.description,
-                        onClick = {},
+                        onClick = {
+                            onItemClicked(item)
+                        },
                         onLongClick = {}
                     )
                 }
