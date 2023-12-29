@@ -4,7 +4,7 @@ import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.TodoItemSortType
 import com.example.doit.testing.Tags
 import com.example.doit.testing.TodoItems
-import org.junit.Assert
+import org.junit.Assert.assertEquals
 import org.junit.Test
 
 class TodoListFilterComposablesTest {
@@ -13,43 +13,67 @@ class TodoListFilterComposablesTest {
     fun `test sorting`() {
         val creationDate = TodoItems.todoList.sort(TodoItemSortType.CREATION_DATE)
 
-        Assert.assertEquals(TodoItems.todoListCreationDate, creationDate)
+        assertEquals(TodoItems.todoListCreationDate, creationDate)
 
         val alphabetical = TodoItems.todoList.sort(TodoItemSortType.ALPHABETICAL)
 
-        Assert.assertEquals(TodoItems.todoListAlphabetical, alphabetical)
+        assertEquals(TodoItems.todoListAlphabetical, alphabetical)
 
         val dueDate = TodoItems.todoList.sort(TodoItemSortType.DUE_DATE)
 
-        Assert.assertEquals(TodoItems.todoListDueDate, dueDate)
+        assertEquals(TodoItems.todoListDueDate, dueDate)
 
         val priority = TodoItems.todoList.sort(TodoItemSortType.PRIORITY)
 
-        Assert.assertEquals(TodoItems.todoListPriority, priority)
+        assertEquals(TodoItems.todoListPriority, priority)
     }
 
     @Test
     fun `test filtering`() {
-        val tagFilter = TodoItems.todoList.applyFilter(Tags.tagOne, null, false)
+        val noFilter = TodoItems.todoList.applyFilter(emptyList(), emptyList(), false)
 
-        val resultTagFilter = listOf(
+        assertEquals(TodoItems.todoList, noFilter)
+
+        val tagTwoFilter = TodoItems.todoList.applyFilter(listOf(Tags.tagTwo), emptyList(), false)
+
+        val resultTagTwoFilter = listOf(TodoItems.todoItemOne)
+        assertEquals(resultTagTwoFilter, tagTwoFilter)
+
+        val allTagsFilter = TodoItems.todoList.applyFilter(Tags.tagList, emptyList(), false)
+
+        val resultAllTagsFilter = listOf(
             TodoItems.todoItemOne,
             TodoItems.todoItemThree
         )
-        Assert.assertEquals(resultTagFilter, tagFilter)
 
-        val priorityFilter = TodoItems.todoList.applyFilter(null, Priority.MEDIUM, false)
+        assertEquals(resultAllTagsFilter, allTagsFilter)
 
-        val resultPriorityFilter = listOf(TodoItems.todoItemOne)
-        Assert.assertEquals(resultPriorityFilter, priorityFilter)
+        val priorityMediumFilter =
+            TodoItems.todoList.applyFilter(emptyList(), listOf(Priority.MEDIUM), false)
 
-        val doneFilter = TodoItems.todoList.applyFilter(null, null, true)
+        val resultPriorityMediumFilter = listOf(TodoItems.todoItemOne)
+        assertEquals(resultPriorityMediumFilter, priorityMediumFilter)
+
+        val priorityMediumHighFilter =
+            TodoItems.todoList.applyFilter(
+                emptyList(),
+                listOf(Priority.MEDIUM, Priority.HIGH),
+                false
+            )
+
+        val resultPriorityMediumHighFilter = listOf(
+            TodoItems.todoItemOne,
+            TodoItems.todoItemFour
+        )
+        assertEquals(resultPriorityMediumHighFilter, priorityMediumHighFilter)
+
+        val doneFilter = TodoItems.todoList.applyFilter(emptyList(), emptyList(), true)
 
         val resultDoneFilter = listOf(
             TodoItems.todoItemOne,
             TodoItems.todoItemFour
         )
-        Assert.assertEquals(resultDoneFilter, doneFilter)
+        assertEquals(resultDoneFilter, doneFilter)
     }
 
 }

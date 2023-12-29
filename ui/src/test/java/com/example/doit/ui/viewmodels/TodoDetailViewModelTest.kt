@@ -2,6 +2,7 @@ package com.example.doit.ui.viewmodels
 
 import androidx.lifecycle.SavedStateHandle
 import app.cash.turbine.test
+import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemFlowUseCase
 import com.example.doit.domain.usecases.interfaces.UpdateSubtaskDoneUseCase
 import com.example.doit.testing.CoroutineTestBase
@@ -33,7 +34,8 @@ class TodoDetailViewModelTest : CoroutineTestBase() {
         val viewModel = TodoDetailViewModel(
             savedStateHandle = buildSavedStateHandle(),
             getTodoItemFlowUseCase = getTodoItemFlowUseCase,
-            updateSubtaskDoneUseCase = mockk()
+            updateSubtaskDoneUseCase = mockk(),
+            deleteTodoItemsUseCase = mockk()
         )
 
         viewModel.state.test {
@@ -58,13 +60,48 @@ class TodoDetailViewModelTest : CoroutineTestBase() {
         val viewModel = TodoDetailViewModel(
             savedStateHandle = buildSavedStateHandle(),
             getTodoItemFlowUseCase = getTodoItemFlowUseCase,
-            updateSubtaskDoneUseCase = updateSubtaskDoneUseCase
+            updateSubtaskDoneUseCase = updateSubtaskDoneUseCase,
+            deleteTodoItemsUseCase = mockk()
         )
 
         viewModel.onSubtaskDoneChanged(Subtasks.subtasks[0], true)
         dispatcher.scheduler.advanceUntilIdle()
 
         coVerify { updateSubtaskDoneUseCase(TodoItems.todoItemOne.id, Subtasks.subtasks[0], true) }
+    }
+
+    @Test
+    fun onDeleteClicked() = runTest {
+        val getTodoItemFlowUseCase = mockk<GetTodoItemFlowUseCase>()
+        val deleteTodoItemsUseCase = mockk<DeleteTodoItemsUseCase>()
+
+        val item = TodoItems.todoItemOne
+
+        every { getTodoItemFlowUseCase(any()) } returns flow {
+            emit(item)
+        }
+
+        coEvery { deleteTodoItemsUseCase.delete(any()) } returns Unit
+
+        val viewModel = TodoDetailViewModel(
+            savedStateHandle = buildSavedStateHandle(),
+            getTodoItemFlowUseCase = getTodoItemFlowUseCase,
+            updateSubtaskDoneUseCase = mockk(),
+            deleteTodoItemsUseCase = deleteTodoItemsUseCase
+        )
+
+        viewModel.events.test {
+            expectNoEvents()
+
+            viewModel.onDeleteClicked()
+            dispatcher.scheduler.advanceUntilIdle()
+
+            coVerify { deleteTodoItemsUseCase.delete(listOf(item)) }
+
+            val event = awaitItem()
+
+            Assert.assertTrue(event is TodoDetailEvent.PopBackStack)
+        }
     }
 
 }

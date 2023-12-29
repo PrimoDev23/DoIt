@@ -2,6 +2,7 @@ package com.example.doit.ui.viewmodels
 
 import app.cash.turbine.test
 import com.example.doit.domain.models.Priority
+import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.models.TodoItemSortType
 import com.example.doit.domain.models.TodoListPreferences
@@ -386,7 +387,7 @@ class TodoListViewModelTest : CoroutineTestBase() {
     }
 
     @Test
-    fun `select tag`() = runTest {
+    fun onTagClicked() = runTest {
         val getTodoListPreferencesUseCase = mockk<GetTodoListPreferencesUseCase>()
         val getTodoItemsFlowUseCase = mockk<GetTodoItemsFlowUseCase>()
         val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
@@ -433,20 +434,20 @@ class TodoListViewModelTest : CoroutineTestBase() {
             awaitItem()
             var state = awaitItem()
 
-            Assert.assertEquals(TodoItems.todoList, state.items)
+            Assert.assertEquals(emptyList<Tag>(), state.selectedTags)
 
-            val tag = Tags.tagList[0]
+            val tag = Tags.tagOne
 
-            viewModel.onTagFilterClicked(tag)
+            viewModel.onTagClicked(Tags.tagOne)
 
             state = awaitItem()
 
-            Assert.assertEquals(tag, state.selectedTag)
+            Assert.assertEquals(listOf(tag), state.selectedTags)
         }
     }
 
     @Test
-    fun `select priority`() = runTest {
+    fun onPriorityClicked() = runTest {
         val getTodoListPreferencesUseCase = mockk<GetTodoListPreferencesUseCase>()
         val getTodoItemsFlowUseCase = mockk<GetTodoItemsFlowUseCase>()
         val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
@@ -493,13 +494,15 @@ class TodoListViewModelTest : CoroutineTestBase() {
             awaitItem()
             var state = awaitItem()
 
-            Assert.assertEquals(TodoItems.todoList, state.items)
+            Assert.assertEquals(emptyList<Priority>(), state.selectedPriorities)
 
-            viewModel.onPrioritySelected(Priority.HIGH)
+            val priority = Priority.HIGH
+
+            viewModel.onPriorityClicked(priority)
 
             state = awaitItem()
 
-            Assert.assertEquals(Priority.HIGH, state.selectedPriority)
+            Assert.assertEquals(listOf(priority), state.selectedPriorities)
         }
     }
 

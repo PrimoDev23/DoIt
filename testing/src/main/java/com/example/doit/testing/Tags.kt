@@ -11,7 +11,7 @@ object Tags {
         color = Color.Red
     )
 
-    private val tagTwo = Tag(
+    val tagTwo = Tag(
         id = 1L,
         title = "Tag2",
         color = Color.Green
