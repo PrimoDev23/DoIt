@@ -33,13 +33,11 @@ class TodoDetailViewModel(
     private val todoItemFlow = getTodoItemFlowUseCase(navArgs.id)
     val state = todoItemFlow
         .map {
-            TodoDetailState(
-                item = it
-            )
+            TodoDetailState(item = it)
         }
         .stateIn(
             scope = viewModelScope,
-            started = SharingStarted.Lazily,
+            started = SharingStarted.Eagerly,
             initialValue = TodoDetailState()
         )
 
