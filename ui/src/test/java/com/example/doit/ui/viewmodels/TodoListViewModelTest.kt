@@ -387,7 +387,7 @@ class TodoListViewModelTest : CoroutineTestBase() {
     }
 
     @Test
-    fun onTagClicked() = runTest {
+    fun `select and reset tag filter`() = runTest {
         val getTodoListPreferencesUseCase = mockk<GetTodoListPreferencesUseCase>()
         val getTodoItemsFlowUseCase = mockk<GetTodoItemsFlowUseCase>()
         val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
@@ -443,11 +443,17 @@ class TodoListViewModelTest : CoroutineTestBase() {
             state = awaitItem()
 
             Assert.assertEquals(listOf(tag), state.selectedTags)
+
+            viewModel.onResetTagsClicked()
+
+            state = awaitItem()
+
+            Assert.assertEquals(emptyList<Tag>(), state.selectedTags)
         }
     }
 
     @Test
-    fun onPriorityClicked() = runTest {
+    fun `select and reset priority filter`() = runTest {
         val getTodoListPreferencesUseCase = mockk<GetTodoListPreferencesUseCase>()
         val getTodoItemsFlowUseCase = mockk<GetTodoItemsFlowUseCase>()
         val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
@@ -503,6 +509,12 @@ class TodoListViewModelTest : CoroutineTestBase() {
             state = awaitItem()
 
             Assert.assertEquals(listOf(priority), state.selectedPriorities)
+
+            viewModel.onResetPrioritiesClicked()
+
+            state = awaitItem()
+
+            Assert.assertEquals(emptyList<Priority>(), state.selectedPriorities)
         }
     }
 
