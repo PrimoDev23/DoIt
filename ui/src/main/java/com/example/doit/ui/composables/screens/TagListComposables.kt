@@ -90,10 +90,9 @@ fun TagListScreen(
         modifier = Modifier.fillMaxSize(),
         title = stringResource(id = R.string.tag_overview_title),
         actions = {
-            DeleteToolbarItem(
-                isVisible = hasTagsSelected,
-                onClick = viewModel::onDeleteClicked
-            )
+            if (hasTagsSelected) {
+                DeleteToolbarItem(onClick = viewModel::onDeleteClicked)
+            }
         },
         floatingActionButton = {
             TagListFloatingActionButton(

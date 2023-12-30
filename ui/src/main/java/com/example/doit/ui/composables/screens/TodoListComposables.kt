@@ -286,20 +286,17 @@ fun TodoListToolbarActions(
     modifier: Modifier = Modifier
 ) {
     Row(modifier = modifier) {
-        EditToolbarItem(
-            isVisible = hasOneItemSelected,
-            onClick = onEditClicked
-        )
+        if (!hasItemsSelected) {
+            FilterToolbarItem(onClick = onFilterClicked)
+        }
 
-        DeleteToolbarItem(
-            isVisible = hasItemsSelected,
-            onClick = onDeleteClicked
-        )
+        if (hasOneItemSelected) {
+            EditToolbarItem(onClick = onEditClicked)
+        }
 
-        FilterToolbarItem(
-            isVisible = !hasItemsSelected,
-            onClick = onFilterClicked
-        )
+        if (hasItemsSelected) {
+            DeleteToolbarItem(onClick = onDeleteClicked)
+        }
     }
 }
 
