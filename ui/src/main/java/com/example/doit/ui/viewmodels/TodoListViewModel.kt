@@ -111,6 +111,12 @@ class TodoListViewModel(
         }
     }
 
+    fun onResetTagsClicked() {
+        _state.update {
+            it.copy(selectedTags = emptyList())
+        }
+    }
+
     fun onPriorityClicked(priority: Priority) {
         _state.update { state ->
             val priorities = state.selectedPriorities
@@ -122,6 +128,12 @@ class TodoListViewModel(
             }
 
             state.copy(selectedPriorities = newPriorities)
+        }
+    }
+
+    fun onResetPrioritiesClicked() {
+        _state.update {
+            it.copy(selectedPriorities = emptyList())
         }
     }
 
@@ -160,15 +172,6 @@ class TodoListViewModel(
     fun onEditClicked() {
         _state.update {
             it.copy(selectedItems = emptyList())
-        }
-    }
-
-    fun onResetFilterClicked() {
-        _state.update {
-            it.copy(
-                selectedTags = emptyList(),
-                selectedPriorities = emptyList()
-            )
         }
     }
 

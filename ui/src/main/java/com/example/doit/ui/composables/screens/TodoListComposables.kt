@@ -261,7 +261,6 @@ fun TodoListScreen(
                     filterSheetVisible = false
                 }
             },
-            onResetClicked = viewModel::onResetFilterClicked,
             selectedSortType = state.sortType,
             onSortTypeClicked = viewModel::onSortTypeChanged,
             hideDoneItems = state.hideDoneItems,
@@ -269,8 +268,10 @@ fun TodoListScreen(
             tags = state.tags,
             selectedTags = state.selectedTags,
             onTagClicked = viewModel::onTagClicked,
+            onResetTagsClicked = viewModel::onResetTagsClicked,
             selectedPriorities = state.selectedPriorities,
-            onPriorityClicked = viewModel::onPriorityClicked
+            onPriorityClicked = viewModel::onPriorityClicked,
+            onResetPrioritiesClicked = viewModel::onResetPrioritiesClicked
         )
     }
 }

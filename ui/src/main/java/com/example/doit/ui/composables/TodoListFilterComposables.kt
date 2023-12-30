@@ -4,14 +4,15 @@ import androidx.compose.animation.animateColorAsState
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.calculateEndPadding
 import androidx.compose.foundation.layout.calculateStartPadding
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
@@ -33,13 +34,13 @@ import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.platform.LocalLayoutDirection
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import com.example.doit.common.R
 import com.example.doit.domain.models.Priority
@@ -51,7 +52,6 @@ import com.example.doit.domain.models.TodoItemSortType
 @Composable
 fun TodoItemsFilterBottomSheet(
     onDismiss: () -> Unit,
-    onResetClicked: () -> Unit,
     selectedSortType: TodoItemSortType,
     onSortTypeClicked: (TodoItemSortType) -> Unit,
     hideDoneItems: Boolean,
@@ -59,8 +59,10 @@ fun TodoItemsFilterBottomSheet(
     tags: List<Tag>,
     selectedTags: List<Tag>,
     onTagClicked: (Tag) -> Unit,
+    onResetTagsClicked: () -> Unit,
     selectedPriorities: List<Priority>,
     onPriorityClicked: (Priority) -> Unit,
+    onResetPrioritiesClicked: () -> Unit,
     modifier: Modifier = Modifier,
     sheetState: SheetState = rememberModalBottomSheetState()
 ) {
@@ -72,18 +74,15 @@ fun TodoItemsFilterBottomSheet(
         Column(
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(bottom = 24.dp),
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+                .padding(bottom = 24.dp)
         ) {
             TodoItemsFilterHeader(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
-                    .fillMaxWidth(),
-                onResetClicked = {
-                    onResetClicked()
-                    onDismiss()
-                }
+                    .fillMaxWidth()
             )
+
+            Spacer(modifier = Modifier.height(12.dp))
 
             TodoItemsFilterSort(
                 modifier = Modifier.fillMaxWidth(),
@@ -91,7 +90,12 @@ fun TodoItemsFilterBottomSheet(
                 onSortTypeClicked = onSortTypeClicked
             )
 
-            Divider(modifier = Modifier.padding(horizontal = 16.dp))
+            Divider(
+                modifier = Modifier.padding(
+                    horizontal = 16.dp,
+                    vertical = 12.dp
+                )
+            )
 
             TodoItemsFilterSwitch(
                 modifier = Modifier.fillMaxWidth(),
@@ -100,79 +104,39 @@ fun TodoItemsFilterBottomSheet(
                 onCheckedChanged = onHideDoneItemsChanged
             )
 
-            Divider(modifier = Modifier.padding(horizontal = 16.dp))
+            Divider(
+                modifier = Modifier.padding(
+                    start = 16.dp,
+                    top = 12.dp,
+                    end = 16.dp
+                )
+            )
 
             if (tags.isNotEmpty()) {
                 TodoItemsFilterTags(
                     modifier = Modifier.fillMaxWidth(),
                     tags = tags,
                     selectedTags = selectedTags,
-                    onTagClicked = onTagClicked
+                    onTagClicked = onTagClicked,
+                    onResetClicked = onResetTagsClicked
                 )
 
-                Divider(modifier = Modifier.padding(horizontal = 16.dp))
+                Divider(
+                    modifier = Modifier.padding(
+                        start = 16.dp,
+                        top = 12.dp,
+                        end = 16.dp
+                    )
+                )
             }
 
             TodoItemsFilterPriorities(
                 modifier = Modifier.fillMaxWidth(),
                 selectedPriorities = selectedPriorities,
-                onPriorityClicked = onPriorityClicked
+                onPriorityClicked = onPriorityClicked,
+                onResetClicked = onResetPrioritiesClicked
             )
         }
-    }
-}
-
-@Preview
-@Composable
-fun TodoItemsFilterBottomSheetPreview() {
-    val tags = listOf(
-        Tag(
-            id = 0,
-            title = "Tag1",
-            color = Color.Green
-        )
-    )
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(bottom = 8.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        TodoItemsFilterHeader(
-            modifier = Modifier.fillMaxWidth(),
-            onResetClicked = {}
-        )
-
-        Divider()
-
-        TodoItemsFilterSort(
-            modifier = Modifier.fillMaxWidth(),
-            selectedSortType = TodoItemSortType.ALPHABETICAL,
-            onSortTypeClicked = {}
-        )
-
-        TodoItemsFilterSwitch(
-            modifier = Modifier.fillMaxWidth(),
-            text = stringResource(id = R.string.todo_list_hide_done_items),
-            checked = true,
-            onCheckedChanged = {}
-        )
-
-        if (tags.isNotEmpty()) {
-            TodoItemsFilterTags(
-                modifier = Modifier.fillMaxWidth(),
-                tags = tags,
-                selectedTags = tags,
-                onTagClicked = {}
-            )
-        }
-
-        TodoItemsFilterPriorities(
-            modifier = Modifier.fillMaxWidth(),
-            selectedPriorities = emptyList(),
-            onPriorityClicked = {}
-        )
     }
 }
 
@@ -207,13 +171,15 @@ fun TodoItemsFilterTags(
     tags: List<Tag>,
     selectedTags: List<Tag>,
     onTagClicked: (Tag) -> Unit,
+    onResetClicked: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp)
 ) {
     TodoItemsFilterSection(
         modifier = modifier,
         title = stringResource(id = R.string.todo_list_tags_filter_title),
-        contentPadding = contentPadding
+        contentPadding = contentPadding,
+        onResetClicked = onResetClicked
     ) {
         val layoutDirection = LocalLayoutDirection.current
         val startPadding = contentPadding.calculateStartPadding(layoutDirection)
@@ -298,13 +264,15 @@ fun TodoItemsFilterTag(
 fun TodoItemsFilterPriorities(
     selectedPriorities: List<Priority>,
     onPriorityClicked: (Priority) -> Unit,
+    onResetClicked: () -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(horizontal = 16.dp)
 ) {
     TodoItemsFilterSection(
         modifier = modifier,
         title = stringResource(id = R.string.todo_list_priority_filter_title),
-        contentPadding = contentPadding
+        contentPadding = contentPadding,
+        onResetClicked = onResetClicked
     ) {
         val layoutDirection = LocalLayoutDirection.current
         val startPadding = contentPadding.calculateStartPadding(layoutDirection)
@@ -477,6 +445,7 @@ fun TodoItemsFilterSection(
         horizontal = 16.dp,
         vertical = 8.dp
     ),
+    onResetClicked: (() -> Unit)? = null,
     content: @Composable ColumnScope.() -> Unit
 ) {
     val topPadding = contentPadding.calculateTopPadding()
@@ -493,15 +462,26 @@ fun TodoItemsFilterSection(
         val startPadding = contentPadding.calculateStartPadding(layoutDirection)
         val endPadding = contentPadding.calculateEndPadding(layoutDirection)
 
-        Text(
+        Row(
             modifier = Modifier.padding(
                 start = startPadding,
                 end = endPadding
             ),
-            text = title,
-            style = MaterialTheme.typography.bodyMedium,
-            fontWeight = FontWeight.Bold
-        )
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            Text(
+                modifier = Modifier.weight(1f),
+                text = title,
+                style = MaterialTheme.typography.bodyMedium,
+                fontWeight = FontWeight.Bold
+            )
+
+            if (onResetClicked != null) {
+                TextButton(onClick = onResetClicked) {
+                    Text(text = stringResource(id = R.string.todo_list_filter_reset))
+                }
+            }
+        }
 
         content()
     }
@@ -509,26 +489,17 @@ fun TodoItemsFilterSection(
 
 @Composable
 fun TodoItemsFilterHeader(
-    onResetClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
-    Box(
+    Text(
         modifier = modifier,
-        contentAlignment = Alignment.Center
-    ) {
-        Text(
-            text = stringResource(id = R.string.todo_list_filter_title),
-            style = MaterialTheme.typography.titleMedium,
-            fontWeight = FontWeight.Bold
-        )
-
-        TextButton(
-            modifier = Modifier.align(Alignment.CenterEnd),
-            onClick = onResetClicked
-        ) {
-            Text(text = stringResource(id = R.string.todo_list_filter_reset))
-        }
-    }
+        text = stringResource(id = R.string.todo_list_filter_title),
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold,
+        maxLines = 1,
+        overflow = TextOverflow.Ellipsis,
+        textAlign = TextAlign.Center
+    )
 }
 
 fun List<TodoItem>.applyFilter(
