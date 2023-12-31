@@ -2,6 +2,7 @@
 plugins {
     alias(libs.plugins.androidLibrary)
     alias(libs.plugins.org.jetbrains.kotlin.android)
+    alias(libs.plugins.compose.report)
 }
 
 android {
@@ -31,6 +32,12 @@ android {
     kotlinOptions {
         jvmTarget = "17"
     }
+    buildFeatures {
+        compose = true
+    }
+    composeOptions {
+        kotlinCompilerExtensionVersion = libs.versions.compose.compiler.get()
+    }
 }
 
 dependencies {
@@ -43,6 +50,7 @@ dependencies {
 
     implementation(platform(libs.compose.bom))
     implementation(libs.ui.graphics)
+    implementation(libs.compose.runtime)
 
     implementation(libs.work)
 

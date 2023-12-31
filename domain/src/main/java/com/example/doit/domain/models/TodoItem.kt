@@ -1,8 +1,10 @@
 package com.example.doit.domain.models
 
+import androidx.compose.runtime.Immutable
 import java.time.LocalDate
 import java.time.LocalDateTime
 
+@Immutable
 data class TodoItem(
     val id: String,
     val title: String,
