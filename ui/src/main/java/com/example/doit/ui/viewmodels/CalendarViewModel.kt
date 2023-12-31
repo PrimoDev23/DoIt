@@ -1,5 +1,6 @@
 package com.example.doit.ui.viewmodels
 
+import androidx.compose.runtime.Immutable
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.doit.domain.models.TodoItem
@@ -38,6 +39,7 @@ class CalendarViewModel(
     }
 }
 
+@Immutable
 data class CalendarState(
     val items: List<TodoItem>
 )
