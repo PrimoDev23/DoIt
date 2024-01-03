@@ -557,8 +557,6 @@ fun PrioritySelection(
     Column(modifier = modifier) {
         InputTitle(text = stringResource(id = R.string.add_entry_priority_title))
 
-        Spacer(modifier = Modifier.height(8.dp))
-
         val entries = remember {
             Priority.entries.toPersistentList()
         }
@@ -603,8 +601,6 @@ fun SubtaskSection(
 
     Column(modifier = modifier) {
         InputTitle(text = stringResource(id = R.string.add_entry_subtask_title))
-
-        Spacer(modifier = Modifier.height(8.dp))
 
         Column(
             modifier = Modifier.fillMaxWidth(),
