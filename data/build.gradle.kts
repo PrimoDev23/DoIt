@@ -56,4 +56,6 @@ dependencies {
     implementation(libs.ui.graphics)
 
     implementation(libs.koin)
+
+    implementation(libs.kotlinx.collections.immutable)
 }

@@ -50,4 +50,6 @@ dependencies {
 
     api(libs.mockk)
     api(libs.coroutines.test)
+
+    implementation(libs.kotlinx.collections.immutable)
 }

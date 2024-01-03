@@ -56,4 +56,6 @@ dependencies {
 
     implementation(libs.koin)
     implementation(libs.koin.workmanager)
+
+    implementation(libs.kotlinx.collections.immutable)
 }

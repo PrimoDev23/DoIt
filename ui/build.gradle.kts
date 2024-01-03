@@ -69,4 +69,6 @@ dependencies {
     ksp(libs.compose.destinations.ksp)
 
     implementation(libs.accompanist.permissions)
+
+    implementation(libs.kotlinx.collections.immutable)
 }
