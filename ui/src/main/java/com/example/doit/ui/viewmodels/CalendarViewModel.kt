@@ -6,6 +6,9 @@ import androidx.lifecycle.viewModelScope
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.usecases.interfaces.GetTodoItemsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.UpdateDoneUseCase
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
@@ -20,15 +23,13 @@ class CalendarViewModel(
 
     val state = items
         .map {
-            CalendarState(
-                items = it
-            )
+            CalendarState(items = it.toPersistentList())
         }
         .stateIn(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = CalendarState(
-                items = emptyList()
+                items = persistentListOf()
             )
         )
 
@@ -41,5 +42,5 @@ class CalendarViewModel(
 
 @Immutable
 data class CalendarState(
-    val items: List<TodoItem>
+    val items: PersistentList<TodoItem>
 )

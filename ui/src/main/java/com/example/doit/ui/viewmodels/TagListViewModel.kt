@@ -8,6 +8,11 @@ import com.example.doit.domain.models.Tag
 import com.example.doit.domain.usecases.interfaces.DeleteTagsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTagUseCase
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.minus
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.plus
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -26,7 +31,7 @@ class TagListViewModel(
     private val _state = MutableStateFlow(TagListViewModelState())
     val state = combine(_state, tagFlow) { state, tags ->
         TagListState(
-            items = tags,
+            items = tags.toPersistentList(),
             selectedTags = state.selectedTags
         )
     }
@@ -34,8 +39,8 @@ class TagListViewModel(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = TagListState(
-                items = emptyList(),
-                selectedTags = emptyList()
+                items = persistentListOf(),
+                selectedTags = persistentListOf()
             )
         )
 
@@ -53,12 +58,11 @@ class TagListViewModel(
 
     fun onTagSelected(tag: Tag) {
         _state.update {
-            val newList = it.selectedTags.toMutableList()
-
-            if (newList.contains(tag)) {
-                newList.remove(tag)
+            val oldList = it.selectedTags
+            val newList = if (oldList.contains(tag)) {
+                oldList - tag
             } else {
-                newList.add(tag)
+                oldList + tag
             }
 
             it.copy(selectedTags = newList)
@@ -67,7 +71,7 @@ class TagListViewModel(
 
     fun onClearSelectionClicked() {
         _state.update {
-            it.copy(selectedTags = emptyList())
+            it.copy(selectedTags = persistentListOf())
         }
     }
 
@@ -76,7 +80,7 @@ class TagListViewModel(
             deleteTagsUseCase(state.value.selectedTags)
 
             _state.update {
-                it.copy(selectedTags = emptyList())
+                it.copy(selectedTags = persistentListOf())
             }
         }
     }
@@ -84,11 +88,11 @@ class TagListViewModel(
 }
 
 data class TagListViewModelState(
-    val selectedTags: List<Tag> = emptyList()
+    val selectedTags: PersistentList<Tag> = persistentListOf()
 )
 
 @Immutable
 data class TagListState(
-    val items: List<Tag>,
-    val selectedTags: List<Tag>
+    val items: PersistentList<Tag>,
+    val selectedTags: PersistentList<Tag>
 )

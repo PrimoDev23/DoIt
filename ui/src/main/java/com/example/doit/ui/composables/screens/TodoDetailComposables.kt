@@ -60,6 +60,8 @@ import com.example.doit.ui.viewmodels.TodoDetailViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import org.koin.androidx.compose.getViewModel
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -335,7 +337,7 @@ fun TodoDetailTextRow(
 fun TodoDetailTags(
     icon: Painter,
     contentDescription: String?,
-    tags: List<Tag>,
+    tags: PersistentList<Tag>,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(
         horizontal = 16.dp
@@ -435,7 +437,7 @@ fun TodoDetailTag(
 
 @Composable
 fun TodoDetailSubtasks(
-    subtasks: List<Subtask>,
+    subtasks: PersistentList<Subtask>,
     onSubtaskDoneChanged: (Subtask, Boolean) -> Unit,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(
@@ -524,10 +526,10 @@ fun TodoDetailEmptyPreview() {
             title = "Test1234",
             description = "",
             done = false,
-            tags = emptyList(),
+            tags = persistentListOf(),
             priority = Priority.HIGH,
             dueDate = null,
-            subtasks = emptyList(),
+            subtasks = persistentListOf(),
             notificationDateTime = null,
             creationDateTime = LocalDateTime.now()
         ),
@@ -549,7 +551,7 @@ fun TodoDetailFilledPreview() {
             title = "Test1234",
             description = "This is a description\nOver multiple lines",
             done = false,
-            tags = listOf(
+            tags = persistentListOf(
                 Tag(
                     id = 0,
                     title = "Tag1",
@@ -558,7 +560,7 @@ fun TodoDetailFilledPreview() {
             ),
             priority = Priority.HIGH,
             dueDate = LocalDate.now(),
-            subtasks = listOf(
+            subtasks = persistentListOf(
                 Subtask(
                     id = "",
                     title = "Test1234",

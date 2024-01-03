@@ -21,6 +21,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
@@ -196,7 +197,7 @@ class TodoListViewModelTest : CoroutineTestBase() {
             todoItemFlow.update { items ->
                 items.map {
                     it.copy(done = true)
-                }
+                }.toPersistentList()
             }
 
             state = awaitItem()

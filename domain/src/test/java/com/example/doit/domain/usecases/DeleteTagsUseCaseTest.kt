@@ -8,6 +8,7 @@ import com.example.doit.testing.TodoItems
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.collections.immutable.minus
 import kotlinx.coroutines.test.runTest
 import org.junit.Test
 

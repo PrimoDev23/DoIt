@@ -4,6 +4,7 @@ import com.example.doit.domain.models.Tag
 import com.example.doit.domain.repositories.TagRepository
 import com.example.doit.domain.repositories.TodoItemRepository
 import com.example.doit.domain.usecases.interfaces.DeleteTagsUseCase
+import kotlinx.collections.immutable.toPersistentList
 
 class DeleteTagsUseCaseImpl(
     private val tagRepository: TagRepository,
@@ -18,7 +19,7 @@ class DeleteTagsUseCaseImpl(
                 !tags.contains(tag)
             }
 
-            it.copy(tags = newTags)
+            it.copy(tags = newTags.toPersistentList())
         }
 
         todoItemRepository.saveTodoItems(updatedTodoItems)

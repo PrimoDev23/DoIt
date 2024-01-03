@@ -1,6 +1,7 @@
 package com.example.doit.testing
 
 import com.example.doit.domain.models.Subtask
+import kotlinx.collections.immutable.persistentListOf
 import java.time.LocalDateTime
 
 object Subtasks {
@@ -19,7 +20,7 @@ object Subtasks {
         creationDateTime = LocalDateTime.now()
     )
 
-    val subtasks = listOf(
+    val subtasks = persistentListOf(
         subtaskOne,
         subtaskTwo
     )

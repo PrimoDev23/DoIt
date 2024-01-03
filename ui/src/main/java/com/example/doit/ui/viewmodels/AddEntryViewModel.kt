@@ -18,6 +18,10 @@ import com.example.doit.domain.usecases.interfaces.GetTodoItemUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import com.example.doit.ui.arguments.AddEntryNavArgs
 import com.example.doit.ui.composables.screens.navArgs
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.plus
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -52,9 +56,9 @@ class AddEntryViewModel(
             description = "",
             dueDate = null,
             notificationDateTime = null,
-            tags = emptyList(),
+            tags = persistentListOf(),
             priority = Priority.NONE,
-            subtasks = emptyList()
+            subtasks = persistentListOf()
         )
     )
     val state = _state.asStateFlow()
@@ -100,11 +104,11 @@ class AddEntryViewModel(
                 state.copy(
                     title = item.title,
                     description = item.description,
-                    tags = newTags,
+                    tags = newTags.toPersistentList(),
                     priority = item.priority,
                     dueDate = item.dueDate,
                     notificationDateTime = item.notificationDateTime,
-                    subtasks = item.subtasks
+                    subtasks = item.subtasks.toPersistentList()
                 )
             }
         }
@@ -206,7 +210,7 @@ class AddEntryViewModel(
             val newItem = subtask.copy(title = title)
             subtasks[index] = newItem
 
-            state.copy(subtasks = subtasks)
+            state.copy(subtasks = subtasks.toPersistentList())
         }
     }
 
@@ -222,9 +226,7 @@ class AddEntryViewModel(
             val newItem = subtask.copy(done = done)
             subtasks[index] = newItem
 
-            state.copy(
-                subtasks = subtasks
-            )
+            state.copy(subtasks = subtasks.toPersistentList())
         }
     }
 
@@ -234,7 +236,7 @@ class AddEntryViewModel(
                 it != subtask
             }
 
-            state.copy(subtasks = subtasks)
+            state.copy(subtasks = subtasks.toPersistentList())
         }
     }
 
@@ -251,7 +253,7 @@ class AddEntryViewModel(
             val newTag = tag.copy(selected = !tag.selected)
             tags[index] = newTag
 
-            it.copy(tags = tags)
+            it.copy(tags = tags.toPersistentList())
         }
     }
 
@@ -273,7 +275,7 @@ class AddEntryViewModel(
 
     private fun updateTags(tags: List<Tag>) {
         _state.update {
-            it.copy(tags = tags)
+            it.copy(tags = tags.toPersistentList())
         }
     }
 
@@ -289,7 +291,7 @@ class AddEntryViewModel(
             title = title,
             description = description,
             done = existingItem?.done ?: false,
-            tags = tags.filter { it.selected },
+            tags = tags.filter { it.selected }.toPersistentList(),
             priority = priority,
             dueDate = dueDate,
             notificationDateTime = notificationDateTime,
@@ -305,9 +307,9 @@ data class AddEntryState(
     val description: String,
     val dueDate: LocalDate?,
     val notificationDateTime: LocalDateTime?,
-    val tags: List<Tag>,
+    val tags: PersistentList<Tag>,
     val priority: Priority,
-    val subtasks: List<Subtask>
+    val subtasks: PersistentList<Subtask>
 ) {
     fun isValid(): Boolean {
         return this.title.isNotBlank()

@@ -47,6 +47,8 @@ import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.models.TodoItemSortType
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -56,11 +58,11 @@ fun TodoItemsFilterBottomSheet(
     onSortTypeClicked: (TodoItemSortType) -> Unit,
     hideDoneItems: Boolean,
     onHideDoneItemsChanged: (Boolean) -> Unit,
-    tags: List<Tag>,
-    selectedTags: List<Tag>,
+    tags: PersistentList<Tag>,
+    selectedTags: PersistentList<Tag>,
     onTagClicked: (Tag) -> Unit,
     onResetTagsClicked: () -> Unit,
-    selectedPriorities: List<Priority>,
+    selectedPriorities: PersistentList<Priority>,
     onPriorityClicked: (Priority) -> Unit,
     onResetPrioritiesClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -168,8 +170,8 @@ fun TodoItemsFilterSwitch(
 
 @Composable
 fun TodoItemsFilterTags(
-    tags: List<Tag>,
-    selectedTags: List<Tag>,
+    tags: PersistentList<Tag>,
+    selectedTags: PersistentList<Tag>,
     onTagClicked: (Tag) -> Unit,
     onResetClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -262,7 +264,7 @@ fun TodoItemsFilterTag(
 
 @Composable
 fun TodoItemsFilterPriorities(
-    selectedPriorities: List<Priority>,
+    selectedPriorities: PersistentList<Priority>,
     onPriorityClicked: (Priority) -> Unit,
     onResetClicked: () -> Unit,
     modifier: Modifier = Modifier,
@@ -502,11 +504,11 @@ fun TodoItemsFilterHeader(
     )
 }
 
-fun List<TodoItem>.applyFilter(
-    tags: List<Tag>,
-    priorities: List<Priority>,
+fun PersistentList<TodoItem>.applyFilter(
+    tags: PersistentList<Tag>,
+    priorities: PersistentList<Priority>,
     hideDoneItems: Boolean
-): List<TodoItem> {
+): PersistentList<TodoItem> {
     return this.filter {
         if (hideDoneItems && it.done) {
             return@filter false
@@ -517,10 +519,10 @@ fun List<TodoItem>.applyFilter(
         }
 
         return@filter priorities.isEmpty() || priorities.contains(it.priority)
-    }
+    }.toPersistentList()
 }
 
-fun List<TodoItem>.sort(type: TodoItemSortType): List<TodoItem> {
+fun PersistentList<TodoItem>.sort(type: TodoItemSortType): PersistentList<TodoItem> {
     return when (type) {
         TodoItemSortType.ALPHABETICAL -> this.sortedBy {
             it.title.lowercase()
@@ -537,5 +539,5 @@ fun List<TodoItem>.sort(type: TodoItemSortType): List<TodoItem> {
         TodoItemSortType.CREATION_DATE -> this.sortedByDescending {
             it.creationDateTime
         }
-    }
+    }.toPersistentList()
 }

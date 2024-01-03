@@ -11,6 +11,7 @@ import com.example.doit.testing.TodoItems
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
@@ -146,7 +147,7 @@ class TagRepositoryTest : TestBase() {
         }
 
         val fullItemEntityNoTags = TodoItemWithSubtasksEntity(
-            item = item.copy(tags = emptyList()).toEntity(),
+            item = item.copy(tags = persistentListOf()).toEntity(),
             subtasks = item.subtasks.map {
                 it.toEntity(item.id)
             }

@@ -81,6 +81,8 @@ import com.google.accompanist.permissions.rememberPermissionState
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
 import java.time.LocalDate
@@ -442,7 +444,7 @@ fun NotificationPermissionRationale(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AddEntryTagSelection(
-    tags: List<Tag>,
+    tags: PersistentList<Tag>,
     onTagClicked: (Tag) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -533,7 +535,7 @@ fun AddEntryTagSelection(
     }
 }
 
-private fun List<Tag>.search(term: String): List<Tag> {
+private fun PersistentList<Tag>.search(term: String): PersistentList<Tag> {
     return if (term.isBlank()) {
         this
     } else {
@@ -542,7 +544,7 @@ private fun List<Tag>.search(term: String): List<Tag> {
                 other = term,
                 ignoreCase = true
             )
-        }
+        }.toPersistentList()
     }
 }
 
@@ -557,10 +559,14 @@ fun PrioritySelection(
 
         Spacer(modifier = Modifier.height(8.dp))
 
+        val entries = remember {
+            Priority.entries.toPersistentList()
+        }
+
         VerticalGrid(
             modifier = Modifier.fillMaxWidth(),
             columns = 2,
-            items = Priority.entries
+            items = entries
         ) { item ->
             PriorityItem(
                 modifier = Modifier
@@ -586,7 +592,7 @@ fun PrioritySelection(
 @Composable
 fun SubtaskSection(
     onSubtaskAdded: (Subtask) -> Unit,
-    subtasks: List<Subtask>,
+    subtasks: PersistentList<Subtask>,
     onTitleUpdated: (Subtask, String) -> Unit,
     onDoneChanged: (Subtask, Boolean) -> Unit,
     onRemoveClicked: (Subtask) -> Unit,

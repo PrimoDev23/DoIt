@@ -16,6 +16,7 @@ import com.example.doit.testing.TodoItems
 import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.mockk
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Test
@@ -224,7 +225,7 @@ class AddEntryViewModelTest : CoroutineTestBase() {
             val selectedTags = item.tags.map {
                 it.copy(selected = true)
             }
-            val selectedTagsItem = item.copy(tags = selectedTags)
+            val selectedTagsItem = item.copy(tags = selectedTags.toPersistentList())
 
             coVerify { saveTodoItemUseCase.save(selectedTagsItem) }
 

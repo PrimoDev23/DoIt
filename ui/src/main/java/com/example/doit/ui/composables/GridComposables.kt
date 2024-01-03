@@ -10,11 +10,12 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
+import kotlinx.collections.immutable.PersistentList
 
 @Composable
 fun <T> VerticalGrid(
     columns: Int,
-    items: List<T>,
+    items: PersistentList<T>,
     modifier: Modifier = Modifier,
     verticalArrangement: Arrangement.Vertical = Arrangement.spacedBy(8.dp),
     horizontalArrangement: Arrangement.Horizontal = Arrangement.spacedBy(8.dp),

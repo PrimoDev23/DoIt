@@ -1,6 +1,7 @@
 package com.example.doit.domain.models
 
 import androidx.compose.runtime.Immutable
+import kotlinx.collections.immutable.PersistentList
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -10,10 +11,10 @@ data class TodoItem(
     val title: String,
     val description: String,
     val done: Boolean,
-    val tags: List<Tag>,
+    val tags: PersistentList<Tag>,
     val priority: Priority,
     val dueDate: LocalDate?,
-    val subtasks: List<Subtask>,
+    val subtasks: PersistentList<Subtask>,
     val notificationDateTime: LocalDateTime?,
     val creationDateTime: LocalDateTime
 )

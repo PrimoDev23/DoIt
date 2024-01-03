@@ -66,6 +66,8 @@ import com.example.doit.ui.composables.rememberFocusRequester
 import com.example.doit.ui.viewmodels.TagListViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import org.koin.androidx.compose.getViewModel
 
 @OptIn(ExperimentalFoundationApi::class)
@@ -222,8 +224,8 @@ fun CreateTagDialog(
     onDismiss: () -> Unit,
     onConfirm: (String, Color) -> Unit,
     modifier: Modifier = Modifier,
-    colors: List<Color> = remember {
-        listOf(
+    colors: PersistentList<Color> = remember {
+        persistentListOf(
             Color(0xFFF44336),
             Color(0xFFE91E63),
             Color(0xFF9C27B0),

@@ -6,6 +6,7 @@ import com.example.doit.common.constants.DatabaseConstants
 import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.repositories.TagRepository
+import kotlinx.collections.immutable.toPersistentList
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -41,10 +42,10 @@ data class TodoItemWithSubtasksEntity(
             title = title,
             description = description,
             done = done,
-            tags = tags,
+            tags = tags.toPersistentList(),
             priority = priority,
             dueDate = date,
-            subtasks = subtasks,
+            subtasks = subtasks.toPersistentList(),
             notificationDateTime = notificationDateTime,
             creationDateTime = creationDateTime
         )

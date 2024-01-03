@@ -2,6 +2,7 @@ package com.example.doit.testing
 
 import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.TodoItem
+import kotlinx.collections.immutable.persistentListOf
 import java.time.LocalDate
 import java.time.LocalDateTime
 
@@ -25,7 +26,7 @@ object TodoItems {
         title = "A",
         description = "Description",
         done = true,
-        tags = emptyList(),
+        tags = persistentListOf(),
         priority = Priority.NONE,
         dueDate = LocalDate.of(2020, 12, 10),
         subtasks = Subtasks.subtasks,
@@ -38,7 +39,7 @@ object TodoItems {
         title = "D",
         description = "Description",
         done = true,
-        tags = listOf(Tags.tagOne),
+        tags = persistentListOf(Tags.tagOne),
         priority = Priority.LOW,
         dueDate = LocalDate.of(2020, 12, 8),
         subtasks = Subtasks.subtasks,
@@ -51,7 +52,7 @@ object TodoItems {
         title = "C",
         description = "Description",
         done = false,
-        tags = emptyList(),
+        tags = persistentListOf(),
         priority = Priority.HIGH,
         dueDate = LocalDate.of(2020, 12, 12),
         subtasks = Subtasks.subtasks,
@@ -59,28 +60,28 @@ object TodoItems {
         creationDateTime = LocalDateTime.of(2020, 12, 10, 0, 0)
     )
 
-    val todoList = listOf(
+    val todoList = persistentListOf(
         todoItemOne,
         todoItemTwo,
         todoItemThree,
         todoItemFour
     )
 
-    val todoListCreationDate = listOf(
+    val todoListCreationDate = persistentListOf(
         todoItemThree,
         todoItemOne,
         todoItemFour,
         todoItemTwo
     )
 
-    val todoListAlphabetical = listOf(
+    val todoListAlphabetical = persistentListOf(
         todoItemTwo,
         todoItemOne,
         todoItemFour,
         todoItemThree
     )
 
-    val todoListPriority = listOf(
+    val todoListPriority = persistentListOf(
         todoItemFour,
         todoItemOne,
         todoItemThree,

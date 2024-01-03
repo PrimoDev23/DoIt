@@ -2,6 +2,7 @@ package com.example.doit.testing
 
 import androidx.compose.ui.graphics.Color
 import com.example.doit.domain.models.Tag
+import kotlinx.collections.immutable.persistentListOf
 
 object Tags {
 
@@ -17,7 +18,7 @@ object Tags {
         color = Color.Green
     )
 
-    val tagList = listOf(
+    val tagList = persistentListOf(
         tagOne,
         tagTwo
     )

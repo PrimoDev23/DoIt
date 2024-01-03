@@ -15,6 +15,11 @@ import com.example.doit.domain.usecases.interfaces.GetTodoListPreferencesUseCase
 import com.example.doit.domain.usecases.interfaces.SetHideDoneItemsUseCase
 import com.example.doit.domain.usecases.interfaces.SetTodoItemSortTypeUseCase
 import com.example.doit.domain.usecases.interfaces.UpdateDoneUseCase
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.minus
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.plus
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -59,11 +64,11 @@ class TodoListViewModel(
             todayFilterActive = state.todayFilterActive,
             todayUndone = todayUndone,
             todayDone = todayDone,
-            items = allItems,
+            items = allItems.toPersistentList(),
             selectedItems = state.selectedItems,
             sortType = preferences.sortType,
             hideDoneItems = preferences.hideDoneItems,
-            tags = tags,
+            tags = tags.toPersistentList(),
             selectedTags = state.selectedTags,
             selectedPriorities = state.selectedPriorities
         )
@@ -75,19 +80,19 @@ class TodoListViewModel(
                 todayFilterActive = false,
                 todayUndone = 0,
                 todayDone = 0,
-                items = emptyList(),
-                selectedItems = emptyList(),
+                items = persistentListOf(),
+                selectedItems = persistentListOf(),
                 sortType = TodoItemSortType.ALPHABETICAL,
                 hideDoneItems = false,
-                tags = emptyList(),
-                selectedTags = emptyList(),
-                selectedPriorities = emptyList()
+                tags = persistentListOf(),
+                selectedTags = persistentListOf(),
+                selectedPriorities = persistentListOf()
             )
         )
 
     fun onClearSelectionClicked() {
         _state.update {
-            it.copy(selectedItems = emptyList())
+            it.copy(selectedItems = persistentListOf())
         }
     }
 
@@ -113,7 +118,7 @@ class TodoListViewModel(
 
     fun onResetTagsClicked() {
         _state.update {
-            it.copy(selectedTags = emptyList())
+            it.copy(selectedTags = persistentListOf())
         }
     }
 
@@ -133,18 +138,17 @@ class TodoListViewModel(
 
     fun onResetPrioritiesClicked() {
         _state.update {
-            it.copy(selectedPriorities = emptyList())
+            it.copy(selectedPriorities = persistentListOf())
         }
     }
 
     fun onItemSelected(item: TodoItem) {
         _state.update {
-            val newList = it.selectedItems.toMutableList()
-
-            if (newList.contains(item)) {
-                newList.remove(item)
+            val oldList = it.selectedItems
+            val newList = if (oldList.contains(item)) {
+                oldList - item
             } else {
-                newList.add(item)
+                oldList + item
             }
 
             it.copy(selectedItems = newList)
@@ -164,14 +168,14 @@ class TodoListViewModel(
             deleteTodoItemsUseCase.delete(items)
 
             _state.update {
-                it.copy(selectedItems = emptyList())
+                it.copy(selectedItems = persistentListOf())
             }
         }
     }
 
     fun onEditClicked() {
         _state.update {
-            it.copy(selectedItems = emptyList())
+            it.copy(selectedItems = persistentListOf())
         }
     }
 
@@ -190,9 +194,9 @@ class TodoListViewModel(
 
 data class TodoListViewModelState(
     val todayFilterActive: Boolean = false,
-    val selectedItems: List<TodoItem> = emptyList(),
-    val selectedTags: List<Tag> = emptyList(),
-    val selectedPriorities: List<Priority> = emptyList()
+    val selectedItems: PersistentList<TodoItem> = persistentListOf(),
+    val selectedTags: PersistentList<Tag> = persistentListOf(),
+    val selectedPriorities: PersistentList<Priority> = persistentListOf()
 )
 
 @Immutable
@@ -200,11 +204,11 @@ data class TodoListState(
     val todayFilterActive: Boolean,
     val todayUndone: Int,
     val todayDone: Int,
-    val items: List<TodoItem>,
-    val selectedItems: List<TodoItem>,
+    val items: PersistentList<TodoItem>,
+    val selectedItems: PersistentList<TodoItem>,
     val sortType: TodoItemSortType,
     val hideDoneItems: Boolean,
-    val tags: List<Tag>,
-    val selectedTags: List<Tag>,
-    val selectedPriorities: List<Priority>
+    val tags: PersistentList<Tag>,
+    val selectedTags: PersistentList<Tag>,
+    val selectedPriorities: PersistentList<Priority>
 )

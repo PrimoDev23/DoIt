@@ -4,6 +4,7 @@ import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.TodoItemSortType
 import com.example.doit.testing.Tags
 import com.example.doit.testing.TodoItems
+import kotlinx.collections.immutable.persistentListOf
 import org.junit.Assert.assertEquals
 import org.junit.Test
 
@@ -30,16 +31,17 @@ class TodoListFilterComposablesTest {
 
     @Test
     fun `test filtering`() {
-        val noFilter = TodoItems.todoList.applyFilter(emptyList(), emptyList(), false)
+        val noFilter = TodoItems.todoList.applyFilter(persistentListOf(), persistentListOf(), false)
 
         assertEquals(TodoItems.todoList, noFilter)
 
-        val tagTwoFilter = TodoItems.todoList.applyFilter(listOf(Tags.tagTwo), emptyList(), false)
+        val tagTwoFilter =
+            TodoItems.todoList.applyFilter(persistentListOf(Tags.tagTwo), persistentListOf(), false)
 
         val resultTagTwoFilter = listOf(TodoItems.todoItemOne)
         assertEquals(resultTagTwoFilter, tagTwoFilter)
 
-        val allTagsFilter = TodoItems.todoList.applyFilter(Tags.tagList, emptyList(), false)
+        val allTagsFilter = TodoItems.todoList.applyFilter(Tags.tagList, persistentListOf(), false)
 
         val resultAllTagsFilter = listOf(
             TodoItems.todoItemOne,
@@ -49,15 +51,19 @@ class TodoListFilterComposablesTest {
         assertEquals(resultAllTagsFilter, allTagsFilter)
 
         val priorityMediumFilter =
-            TodoItems.todoList.applyFilter(emptyList(), listOf(Priority.MEDIUM), false)
+            TodoItems.todoList.applyFilter(
+                persistentListOf(),
+                persistentListOf(Priority.MEDIUM),
+                false
+            )
 
         val resultPriorityMediumFilter = listOf(TodoItems.todoItemOne)
         assertEquals(resultPriorityMediumFilter, priorityMediumFilter)
 
         val priorityMediumHighFilter =
             TodoItems.todoList.applyFilter(
-                emptyList(),
-                listOf(Priority.MEDIUM, Priority.HIGH),
+                persistentListOf(),
+                persistentListOf(Priority.MEDIUM, Priority.HIGH),
                 false
             )
 
@@ -67,7 +73,8 @@ class TodoListFilterComposablesTest {
         )
         assertEquals(resultPriorityMediumHighFilter, priorityMediumHighFilter)
 
-        val doneFilter = TodoItems.todoList.applyFilter(emptyList(), emptyList(), true)
+        val doneFilter =
+            TodoItems.todoList.applyFilter(persistentListOf(), persistentListOf(), true)
 
         val resultDoneFilter = listOf(
             TodoItems.todoItemOne,

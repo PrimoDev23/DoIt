@@ -53,6 +53,8 @@ import com.example.doit.ui.viewmodels.CalendarViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
+import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.toPersistentList
 import org.koin.androidx.compose.koinViewModel
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -107,7 +109,7 @@ fun CalendarScreen(
                 derivedStateOf {
                     state.items.filter { item ->
                         item.dueDate == calendarState.selectedDate
-                    }
+                    }.toPersistentList()
                 }
             }
 
@@ -205,6 +207,7 @@ fun MonthSelection(
     }
 }
 
+@OptIn(ExperimentalStdlibApi::class)
 @Composable
 fun CalendarHeader(modifier: Modifier = Modifier) {
     val days = remember {
@@ -270,7 +273,7 @@ fun CalendarDay(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun CalendarBottomSection(
-    itemsForDate: List<TodoItem>,
+    itemsForDate: PersistentList<TodoItem>,
     onDoneChanged: (TodoItem, Boolean) -> Unit,
     onItemClicked: (TodoItem) -> Unit,
     modifier: Modifier = Modifier

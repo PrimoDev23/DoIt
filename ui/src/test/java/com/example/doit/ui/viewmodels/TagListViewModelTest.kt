@@ -9,6 +9,7 @@ import io.mockk.coEvery
 import io.mockk.coVerify
 import io.mockk.every
 import io.mockk.mockk
+import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
@@ -61,7 +62,7 @@ class TagListViewModelTest : CoroutineTestBase() {
 
             val newTags = Tags.tagList.subList(1, Tags.tagList.lastIndex)
 
-            tagFlow.emit(newTags)
+            tagFlow.emit(newTags.toPersistentList())
 
             state = awaitItem()
 
