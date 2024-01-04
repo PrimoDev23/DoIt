@@ -1,6 +1,7 @@
 package com.example.doit.domain.usecases
 
 import com.example.doit.domain.repositories.SubtaskRepository
+import com.example.doit.domain.repositories.TagMappingRepository
 import com.example.doit.domain.repositories.TodoItemRepository
 import com.example.doit.domain.utils.interfaces.WorkScheduler
 import com.example.doit.domain.worker.NotificationWorker
@@ -21,9 +22,11 @@ class SaveTodoItemUseCaseTest : TestBase() {
         val workScheduler = mockk<WorkScheduler>()
         val todoItemRepo = mockk<TodoItemRepository>()
         val subtaskRepo = mockk<SubtaskRepository>()
+        val tagMappingRepository = mockk<TagMappingRepository>()
 
         coEvery { todoItemRepo.saveTodoItem(any()) } returns Unit
         coEvery { subtaskRepo.saveSubtasksForParent(any(), any()) } returns Unit
+        coEvery { tagMappingRepository.saveTagMappings(any(), any()) } returns Unit
 
         every { workScheduler.cancelById(any()) } returns Unit
         every { workScheduler.enqueueNotification(any(), any(), any()) } returns Unit
@@ -31,7 +34,8 @@ class SaveTodoItemUseCaseTest : TestBase() {
         val useCase = SaveTodoItemUseCaseImpl(
             workScheduler = workScheduler,
             todoItemRepository = todoItemRepo,
-            subtaskRepository = subtaskRepo
+            subtaskRepository = subtaskRepo,
+            tagMappingRepository = tagMappingRepository
         )
 
         val item = TodoItems.todoItemOne
@@ -40,6 +44,7 @@ class SaveTodoItemUseCaseTest : TestBase() {
 
         coVerify { todoItemRepo.saveTodoItem(item) }
         coVerify { subtaskRepo.saveSubtasksForParent(item.id, item.subtasks) }
+        coVerify { tagMappingRepository.saveTagMappings(item.id, item.tags) }
 
         verify { workScheduler.cancelById(item.id) }
         verify {
@@ -56,9 +61,11 @@ class SaveTodoItemUseCaseTest : TestBase() {
         val workScheduler = mockk<WorkScheduler>()
         val todoItemRepo = mockk<TodoItemRepository>()
         val subtaskRepo = mockk<SubtaskRepository>()
+        val tagMappingRepository = mockk<TagMappingRepository>()
 
         coEvery { todoItemRepo.saveTodoItem(any()) } returns Unit
         coEvery { subtaskRepo.saveSubtasksForParent(any(), any()) } returns Unit
+        coEvery { tagMappingRepository.saveTagMappings(any(), any()) } returns Unit
 
         every { workScheduler.cancelById(any()) } returns Unit
         every { workScheduler.enqueueNotification(any(), any(), any()) } returns Unit
@@ -66,7 +73,8 @@ class SaveTodoItemUseCaseTest : TestBase() {
         val useCase = SaveTodoItemUseCaseImpl(
             workScheduler = workScheduler,
             todoItemRepository = todoItemRepo,
-            subtaskRepository = subtaskRepo
+            subtaskRepository = subtaskRepo,
+            tagMappingRepository = tagMappingRepository
         )
 
         val item = TodoItems.todoItemThree
@@ -75,6 +83,7 @@ class SaveTodoItemUseCaseTest : TestBase() {
 
         coVerify { todoItemRepo.saveTodoItem(item) }
         coVerify { subtaskRepo.saveSubtasksForParent(item.id, item.subtasks) }
+        coVerify { tagMappingRepository.saveTagMappings(item.id, item.tags) }
 
         verify { workScheduler.cancelById(item.id) }
     }
@@ -84,9 +93,11 @@ class SaveTodoItemUseCaseTest : TestBase() {
         val workScheduler = mockk<WorkScheduler>()
         val todoItemRepo = mockk<TodoItemRepository>()
         val subtaskRepo = mockk<SubtaskRepository>()
+        val tagMappingRepository = mockk<TagMappingRepository>()
 
         coEvery { todoItemRepo.saveTodoItem(any()) } returns Unit
         coEvery { subtaskRepo.saveSubtasksForParent(any(), any()) } returns Unit
+        coEvery { tagMappingRepository.saveTagMappings(any(), any()) } returns Unit
 
         every { workScheduler.cancelById(any()) } returns Unit
         every { workScheduler.enqueueNotification(any(), any(), any()) } returns Unit
@@ -94,7 +105,8 @@ class SaveTodoItemUseCaseTest : TestBase() {
         val useCase = SaveTodoItemUseCaseImpl(
             workScheduler = workScheduler,
             todoItemRepository = todoItemRepo,
-            subtaskRepository = subtaskRepo
+            subtaskRepository = subtaskRepo,
+            tagMappingRepository = tagMappingRepository
         )
 
         val item = TodoItems.todoItemFour
@@ -103,6 +115,7 @@ class SaveTodoItemUseCaseTest : TestBase() {
 
         coVerify { todoItemRepo.saveTodoItem(item) }
         coVerify { subtaskRepo.saveSubtasksForParent(item.id, item.subtasks) }
+        coVerify { tagMappingRepository.saveTagMappings(item.id, item.tags) }
 
         verify { workScheduler.cancelById(item.id) }
     }

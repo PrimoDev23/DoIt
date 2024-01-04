@@ -2,8 +2,9 @@ package com.example.doit.data.repositories
 
 import com.example.doit.common.constants.DatabaseConstants
 import com.example.doit.data.daos.TodoItemDao
+import com.example.doit.data.models.TagMappingEntity
+import com.example.doit.data.models.TagMappingWithTagEntity
 import com.example.doit.data.models.TodoItemWithSubtasksEntity
-import com.example.doit.data.models.getTagsForItem
 import com.example.doit.data.models.toEntity
 import com.example.doit.domain.repositories.TagRepository
 import com.example.doit.testing.Tags
@@ -36,6 +37,15 @@ class TodoItemRepositoryTest : TestBase() {
                 item = entity,
                 subtasks = item.subtasks.map {
                     it.toEntity(item.id)
+                },
+                tags = item.tags.map {
+                    TagMappingWithTagEntity(
+                        mapping = TagMappingEntity(
+                            itemId = item.id,
+                            tagId = it.id
+                        ),
+                        tag = it.toEntity()
+                    )
                 }
             )
         }
@@ -53,19 +63,11 @@ class TodoItemRepositoryTest : TestBase() {
         }
 
         val repo = TodoItemRepositoryImpl(
-            dao = dao,
-            tagRepository = tagRepo
+            dao = dao
         )
 
         val result = repo.getItemsFlow().first()
-        val countWithSubtask = items.count { it.tags.isNotEmpty() }
 
-        coVerify {
-            entities.forEach {
-                tagRepo.getTagsForItem(it)
-            }
-        }
-        coVerify(exactly = countWithSubtask) { tagRepo.getTagsByIds(any()) }
         verify { dao.selectFlow() }
 
         assertEquals(items, result)
@@ -84,6 +86,15 @@ class TodoItemRepositoryTest : TestBase() {
                 item = entity,
                 subtasks = item.subtasks.map {
                     it.toEntity(item.id)
+                },
+                tags = item.tags.map {
+                    TagMappingWithTagEntity(
+                        mapping = TagMappingEntity(
+                            itemId = item.id,
+                            tagId = it.id
+                        ),
+                        tag = it.toEntity()
+                    )
                 }
             )
         }
@@ -103,19 +114,10 @@ class TodoItemRepositoryTest : TestBase() {
         }
 
         val repo = TodoItemRepositoryImpl(
-            dao = dao,
-            tagRepository = tagRepo
+            dao = dao
         )
 
         val result = repo.getTodayItemsFlow().first()
-        val countWithSubtask = items.count { it.tags.isNotEmpty() }
-
-        coVerify {
-            entities.forEach {
-                tagRepo.getTagsForItem(it)
-            }
-        }
-        coVerify(exactly = countWithSubtask) { tagRepo.getTagsByIds(any()) }
 
         verify { dao.selectByDate(date) }
 
@@ -133,6 +135,15 @@ class TodoItemRepositoryTest : TestBase() {
             item = entity,
             subtasks = item.subtasks.map {
                 it.toEntity(item.id)
+            },
+            tags = item.tags.map {
+                TagMappingWithTagEntity(
+                    mapping = TagMappingEntity(
+                        itemId = item.id,
+                        tagId = it.id
+                    ),
+                    tag = it.toEntity()
+                )
             }
         )
 
@@ -147,14 +158,11 @@ class TodoItemRepositoryTest : TestBase() {
         }
 
         val repo = TodoItemRepositoryImpl(
-            dao = dao,
-            tagRepository = tagRepo
+            dao = dao
         )
 
         val result = repo.getItemById(item.id)
 
-        coVerify { tagRepo.getTagsForItem(fullEntity) }
-        coVerify { tagRepo.getTagsByIds(any()) }
         coVerify { dao.selectById(item.id) }
 
         assertEquals(item, result)
@@ -171,6 +179,15 @@ class TodoItemRepositoryTest : TestBase() {
             item = entity,
             subtasks = item.subtasks.map {
                 it.toEntity(item.id)
+            },
+            tags = item.tags.map {
+                TagMappingWithTagEntity(
+                    mapping = TagMappingEntity(
+                        itemId = item.id,
+                        tagId = it.id
+                    ),
+                    tag = it.toEntity()
+                )
             }
         )
 
@@ -187,14 +204,11 @@ class TodoItemRepositoryTest : TestBase() {
         }
 
         val repo = TodoItemRepositoryImpl(
-            dao = dao,
-            tagRepository = tagRepo
+            dao = dao
         )
 
         val result = repo.getItemFlowById(item.id).first()
 
-        coVerify { tagRepo.getTagsForItem(fullEntity) }
-        coVerify { tagRepo.getTagsByIds(any()) }
         coVerify { dao.selectByIdFlow(item.id) }
 
         assertEquals(item, result)
@@ -210,8 +224,7 @@ class TodoItemRepositoryTest : TestBase() {
         coEvery { dao.insert(any()) } returns Unit
 
         val repo = TodoItemRepositoryImpl(
-            dao = dao,
-            tagRepository = mockk()
+            dao = dao
         )
 
         repo.saveTodoItem(item)
@@ -231,8 +244,7 @@ class TodoItemRepositoryTest : TestBase() {
         coEvery { dao.insert(any()) } returns Unit
 
         val repo = TodoItemRepositoryImpl(
-            dao = dao,
-            tagRepository = mockk()
+            dao = dao
         )
 
         repo.saveTodoItems(items)
@@ -256,8 +268,7 @@ class TodoItemRepositoryTest : TestBase() {
         coEvery { dao.delete(any()) } returns Unit
 
         val repo = TodoItemRepositoryImpl(
-            dao = dao,
-            tagRepository = mockk()
+            dao = dao
         )
 
         repo.deleteTodoItems(items)
@@ -278,56 +289,11 @@ class TodoItemRepositoryTest : TestBase() {
         coEvery { dao.deleteById(any()) } returns Unit
 
         val repo = TodoItemRepositoryImpl(
-            dao = dao,
-            tagRepository = mockk()
+            dao = dao
         )
 
         repo.deleteItemById(item.id)
 
         coVerify { dao.deleteById(item.id) }
-    }
-
-    @Test
-    fun getItemsWithTagIds() = runTest {
-        val dao = mockk<TodoItemDao>()
-        val tagRepo = mockk<TagRepository>()
-
-        val tagId = 0L
-        val tagIds = listOf(tagId)
-        val itemsWithTagIds = listOf(
-            TodoItems.todoItemOne,
-            TodoItems.todoItemThree
-        )
-        val entitiesWithTagIds = itemsWithTagIds.map { item ->
-            val entity = item.toEntity()
-
-            TodoItemWithSubtasksEntity(
-                item = entity,
-                subtasks = item.subtasks.map {
-                    it.toEntity(item.id)
-                }
-            )
-        }
-
-        coEvery { dao.selectContainsTagId(tagId) } returns entitiesWithTagIds
-
-        coEvery { tagRepo.getTagsByIds(any()) } answers {
-            val ids = firstArg<List<Long>>()
-
-            Tags.tagList.filter {
-                ids.contains(it.id)
-            }
-        }
-
-        val repo = TodoItemRepositoryImpl(
-            dao = dao,
-            tagRepository = tagRepo
-        )
-
-        val result = repo.getItemsWithTagIds(tagIds)
-
-        coVerify { dao.selectContainsTagId(tagId) }
-
-        assertEquals(itemsWithTagIds, result)
     }
 }
