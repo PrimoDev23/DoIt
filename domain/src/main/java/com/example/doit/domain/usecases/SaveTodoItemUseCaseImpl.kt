@@ -2,6 +2,7 @@ package com.example.doit.domain.usecases
 
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.repositories.SubtaskRepository
+import com.example.doit.domain.repositories.TagMappingRepository
 import com.example.doit.domain.repositories.TodoItemRepository
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import com.example.doit.domain.utils.interfaces.WorkScheduler
@@ -11,11 +12,13 @@ import java.time.LocalDateTime
 class SaveTodoItemUseCaseImpl(
     private val workScheduler: WorkScheduler,
     private val todoItemRepository: TodoItemRepository,
-    private val subtaskRepository: SubtaskRepository
+    private val subtaskRepository: SubtaskRepository,
+    private val tagMappingRepository: TagMappingRepository
 ) : SaveTodoItemUseCase {
 
     override suspend fun save(item: TodoItem) {
         todoItemRepository.saveTodoItem(item)
+        tagMappingRepository.saveTagMappings(item.id, item.tags)
         subtaskRepository.saveSubtasksForParent(item.id, item.subtasks)
 
         workScheduler.cancelById(item.id)

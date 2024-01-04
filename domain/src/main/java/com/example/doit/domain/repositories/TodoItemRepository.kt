@@ -13,5 +13,4 @@ interface TodoItemRepository {
     suspend fun saveTodoItems(items: List<TodoItem>)
     suspend fun deleteTodoItems(items: List<TodoItem>)
     suspend fun deleteItemById(id: String)
-    suspend fun getItemsWithTagIds(ids: List<Long>): List<TodoItem>
 }

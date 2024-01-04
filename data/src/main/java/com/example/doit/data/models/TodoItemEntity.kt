@@ -13,7 +13,6 @@ data class TodoItemEntity(
     val title: String,
     val description: String,
     val done: Boolean,
-    val tags: String,
     val priority: Priority,
     val dueDate: String?,
     val notificationDateTime: String?,
@@ -21,14 +20,11 @@ data class TodoItemEntity(
 )
 
 fun TodoItem.toEntity(): TodoItemEntity {
-    val ids = tags.map { it.id }
-
     return TodoItemEntity(
         id = id,
         title = title,
         description = description,
         done = done,
-        tags = ids.joinToString(DatabaseConstants.LIST_SEPARATOR),
         priority = priority,
         dueDate = dueDate?.format(DatabaseConstants.DATE_FORMATTER),
         notificationDateTime = notificationDateTime?.format(DatabaseConstants.DATE_TIME_FORMATTER),

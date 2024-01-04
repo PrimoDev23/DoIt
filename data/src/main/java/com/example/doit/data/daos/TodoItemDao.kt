@@ -26,10 +26,6 @@ interface TodoItemDao : BaseDao<TodoItemEntity> {
     @Query("SELECT * FROM TodoItemEntity WHERE id = :id")
     fun selectByIdFlow(id: String): Flow<TodoItemWithSubtasksEntity?>
 
-    @Transaction
-    @Query("SELECT * FROM TodoItemEntity WHERE tags LIKE '%' || :id || '%'")
-    suspend fun selectContainsTagId(id: Long): List<TodoItemWithSubtasksEntity>
-
     @Query("DELETE FROM TodoItemEntity WHERE id = :id")
     suspend fun deleteById(id: String)
 

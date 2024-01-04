@@ -3,9 +3,7 @@ package com.example.doit.data.models
 import androidx.room.Embedded
 import androidx.room.Relation
 import com.example.doit.common.constants.DatabaseConstants
-import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
-import com.example.doit.domain.repositories.TagRepository
 import kotlinx.collections.immutable.toPersistentList
 import java.time.LocalDate
 import java.time.LocalDateTime
@@ -17,9 +15,15 @@ data class TodoItemWithSubtasksEntity(
         parentColumn = "id",
         entityColumn = "parent"
     )
-    val subtasks: List<SubtaskEntity>
+    val subtasks: List<SubtaskEntity>,
+    @Relation(
+        entity = TagMappingEntity::class,
+        parentColumn = "id",
+        entityColumn = "itemId"
+    )
+    val tags: List<TagMappingWithTagEntity>
 ) {
-    fun toDomainModel(tags: List<Tag>): TodoItem = with(item) {
+    fun toDomainModel(): TodoItem = with(item) {
         val date = dueDate?.let {
             LocalDate.parse(it, DatabaseConstants.DATE_FORMATTER)
         }
@@ -37,6 +41,11 @@ data class TodoItemWithSubtasksEntity(
                 it.creationDateTime
             }
 
+        val tags = tags
+            .map {
+                it.tag.toDomainModel()
+            }
+
         TodoItem(
             id = id,
             title = title,
@@ -49,15 +58,5 @@ data class TodoItemWithSubtasksEntity(
             notificationDateTime = notificationDateTime,
             creationDateTime = creationDateTime
         )
-    }
-}
-
-// This is more related to this specific entity, so it should belong here
-suspend fun TagRepository.getTagsForItem(item: TodoItemWithSubtasksEntity): List<Tag> {
-    return if (item.item.tags.isEmpty()) {
-        emptyList()
-    } else {
-        val tagIds = item.item.tags.split(DatabaseConstants.LIST_SEPARATOR).map { it.toLong() }
-        this.getTagsByIds(tagIds)
     }
 }

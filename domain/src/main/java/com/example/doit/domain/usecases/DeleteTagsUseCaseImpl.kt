@@ -2,28 +2,12 @@ package com.example.doit.domain.usecases
 
 import com.example.doit.domain.models.Tag
 import com.example.doit.domain.repositories.TagRepository
-import com.example.doit.domain.repositories.TodoItemRepository
 import com.example.doit.domain.usecases.interfaces.DeleteTagsUseCase
-import kotlinx.collections.immutable.toPersistentList
 
 class DeleteTagsUseCaseImpl(
-    private val tagRepository: TagRepository,
-    private val todoItemRepository: TodoItemRepository
+    private val tagRepository: TagRepository
 ) : DeleteTagsUseCase {
     override suspend operator fun invoke(tags: List<Tag>) {
-        val ids = tags.map { it.id }
-        val todoItems = todoItemRepository.getItemsWithTagIds(ids)
-
-        val updatedTodoItems = todoItems.map {
-            val newTags = it.tags.filter { tag ->
-                !tags.contains(tag)
-            }
-
-            it.copy(tags = newTags.toPersistentList())
-        }
-
-        todoItemRepository.saveTodoItems(updatedTodoItems)
-
         tagRepository.deleteTags(tags)
     }
 }
