@@ -8,7 +8,7 @@ import kotlinx.collections.immutable.toPersistentList
 import java.time.LocalDate
 import java.time.LocalDateTime
 
-data class TodoItemWithSubtasksEntity(
+data class FullTodoItemEntity(
     @Embedded
     val item: TodoItemEntity,
     @Relation(

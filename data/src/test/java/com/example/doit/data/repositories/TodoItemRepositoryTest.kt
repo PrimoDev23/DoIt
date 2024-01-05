@@ -2,9 +2,9 @@ package com.example.doit.data.repositories
 
 import com.example.doit.common.constants.DatabaseConstants
 import com.example.doit.data.daos.TodoItemDao
+import com.example.doit.data.models.FullTodoItemEntity
 import com.example.doit.data.models.TagMappingEntity
 import com.example.doit.data.models.TagMappingWithTagEntity
-import com.example.doit.data.models.TodoItemWithSubtasksEntity
 import com.example.doit.data.models.toEntity
 import com.example.doit.domain.repositories.TagRepository
 import com.example.doit.testing.Tags
@@ -33,7 +33,7 @@ class TodoItemRepositoryTest : TestBase() {
         val entities = items.map { item ->
             val entity = item.toEntity()
 
-            TodoItemWithSubtasksEntity(
+            FullTodoItemEntity(
                 item = entity,
                 subtasks = item.subtasks.map {
                     it.toEntity(item.id)
@@ -82,7 +82,7 @@ class TodoItemRepositoryTest : TestBase() {
         val entities = items.map { item ->
             val entity = item.toEntity()
 
-            TodoItemWithSubtasksEntity(
+            FullTodoItemEntity(
                 item = entity,
                 subtasks = item.subtasks.map {
                     it.toEntity(item.id)
@@ -131,7 +131,7 @@ class TodoItemRepositoryTest : TestBase() {
 
         val item = TodoItems.todoItemOne
         val entity = item.toEntity()
-        val fullEntity = TodoItemWithSubtasksEntity(
+        val fullEntity = FullTodoItemEntity(
             item = entity,
             subtasks = item.subtasks.map {
                 it.toEntity(item.id)
@@ -175,7 +175,7 @@ class TodoItemRepositoryTest : TestBase() {
 
         val item = TodoItems.todoItemOne
         val entity = item.toEntity()
-        val fullEntity = TodoItemWithSubtasksEntity(
+        val fullEntity = FullTodoItemEntity(
             item = entity,
             subtasks = item.subtasks.map {
                 it.toEntity(item.id)
