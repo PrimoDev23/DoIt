@@ -2,6 +2,7 @@ package com.example.doit.domain
 
 import com.example.doit.domain.usecases.DeleteTagsUseCaseImpl
 import com.example.doit.domain.usecases.DeleteTodoItemUseCaseImpl
+import com.example.doit.domain.usecases.GetTagMappingsFlowUseCaseImpl
 import com.example.doit.domain.usecases.GetTagsFlowUseCaseImpl
 import com.example.doit.domain.usecases.GetTagsUseCaseImpl
 import com.example.doit.domain.usecases.GetTodayTodoItemsFlowUseCaseImpl
@@ -17,6 +18,7 @@ import com.example.doit.domain.usecases.UpdateDoneUseCaseImpl
 import com.example.doit.domain.usecases.UpdateSubtaskDoneUseCaseImpl
 import com.example.doit.domain.usecases.interfaces.DeleteTagsUseCase
 import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
+import com.example.doit.domain.usecases.interfaces.GetTagMappingsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodayTodoItemsFlowUseCase
@@ -54,6 +56,7 @@ val useCaseModule = module {
     factoryOf(::UpdateDoneUseCaseImpl) bind UpdateDoneUseCase::class
     factoryOf(::UpdateSubtaskDoneUseCaseImpl) bind UpdateSubtaskDoneUseCase::class
     factoryOf(::GetTodoItemFlowUseCaseImpl) bind GetTodoItemFlowUseCase::class
+    factoryOf(::GetTagMappingsFlowUseCaseImpl) bind GetTagMappingsFlowUseCase::class
 }
 
 val workerModule = module {

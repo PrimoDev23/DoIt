@@ -6,13 +6,16 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.doit.domain.models.Tag
 import com.example.doit.domain.usecases.interfaces.DeleteTagsUseCase
+import com.example.doit.domain.usecases.interfaces.GetTagMappingsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTagUseCase
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.PersistentMap
 import kotlinx.collections.immutable.minus
 import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.persistentMapOf
 import kotlinx.collections.immutable.plus
-import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.toPersistentMap
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
@@ -22,16 +25,20 @@ import kotlinx.coroutines.launch
 
 class TagListViewModel(
     getTagsFlowUseCase: GetTagsFlowUseCase,
+    getTagMappingsFlowUseCase: GetTagMappingsFlowUseCase,
     private val saveTagUseCase: SaveTagUseCase,
     private val deleteTagsUseCase: DeleteTagsUseCase
 ) : ViewModel() {
 
     private val tagFlow = getTagsFlowUseCase.getFlow()
+    private val mappingFlow = getTagMappingsFlowUseCase()
 
     private val _state = MutableStateFlow(TagListViewModelState())
-    val state = combine(_state, tagFlow) { state, tags ->
+    val state = combine(_state, tagFlow, mappingFlow) { state, tags, mappings ->
+        val tagMap = tags.associateWith { tag -> mappings.count { it.tagId == tag.id } }
+
         TagListState(
-            items = tags.toPersistentList(),
+            items = tagMap.toPersistentMap(),
             selectedTags = state.selectedTags
         )
     }
@@ -39,7 +46,7 @@ class TagListViewModel(
             scope = viewModelScope,
             started = SharingStarted.Eagerly,
             initialValue = TagListState(
-                items = persistentListOf(),
+                items = persistentMapOf(),
                 selectedTags = persistentListOf()
             )
         )
@@ -93,6 +100,6 @@ data class TagListViewModelState(
 
 @Immutable
 data class TagListState(
-    val items: PersistentList<Tag>,
+    val items: PersistentMap<Tag, Int>,
     val selectedTags: PersistentList<Tag>
 )

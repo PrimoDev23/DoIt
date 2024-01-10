@@ -2,6 +2,7 @@ package com.example.doit.data.models
 
 import androidx.room.Entity
 import androidx.room.ForeignKey
+import com.example.doit.domain.models.TagMapping
 
 @Entity(
     primaryKeys = ["itemId", "tagId"],
@@ -25,4 +26,9 @@ import androidx.room.ForeignKey
 data class TagMappingEntity(
     val itemId: String,
     val tagId: Long
-)
+) {
+    fun toDomainModel() = TagMapping(
+        itemId = itemId,
+        tagId = tagId
+    )
+}

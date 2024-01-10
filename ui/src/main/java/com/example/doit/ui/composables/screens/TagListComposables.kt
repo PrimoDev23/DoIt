@@ -23,7 +23,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -135,37 +134,35 @@ fun TagListScreen(
                     modifier = modifier,
                     contentPadding = PaddingValues(vertical = 16.dp)
                 ) {
-                    items(
-                        items = state.items,
-                        key = { tag ->
-                            tag.id
-                        }
-                    ) { item ->
-                        val isSelected by remember {
-                            derivedStateOf {
-                                state.selectedTags.contains(item)
+                    state.items.forEach { tag, count ->
+                        item(key = tag.id) {
+                            val isSelected by remember(tag) {
+                                derivedStateOf {
+                                    state.selectedTags.contains(tag)
+                                }
                             }
-                        }
 
-                        TagListEntry(
-                            modifier = Modifier
-                                .animateItemPlacement()
-                                .height(64.dp)
-                                .fillMaxWidth()
-                                .combinedClickable(
-                                    onClick = {
-                                        if (state.selectedTags.isNotEmpty()) {
-                                            viewModel.onTagSelected(item)
+                            TagListEntry(
+                                modifier = Modifier
+                                    .animateItemPlacement()
+                                    .height(64.dp)
+                                    .fillMaxWidth()
+                                    .combinedClickable(
+                                        onClick = {
+                                            if (state.selectedTags.isNotEmpty()) {
+                                                viewModel.onTagSelected(tag)
+                                            }
+                                        },
+                                        onLongClick = {
+                                            viewModel.onTagSelected(tag)
                                         }
-                                    },
-                                    onLongClick = {
-                                        viewModel.onTagSelected(item)
-                                    }
-                                ),
-                            title = item.title,
-                            color = item.color,
-                            highlighted = isSelected
-                        )
+                                    ),
+                                title = tag.title,
+                                color = tag.color,
+                                highlighted = isSelected,
+                                amount = count
+                            )
+                        }
                     }
                 }
             } else {

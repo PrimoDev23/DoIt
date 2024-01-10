@@ -5,9 +5,14 @@ import androidx.room.Insert
 import androidx.room.Query
 import androidx.room.Transaction
 import com.example.doit.data.models.TagMappingEntity
+import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface TagMappingDao {
+
+    @Query("SELECT * FROM TagMappingEntity")
+    fun selectAllFlow(): Flow<List<TagMappingEntity>>
+
     @Insert
     suspend fun insertTagMapping(entities: List<TagMappingEntity>)
 
