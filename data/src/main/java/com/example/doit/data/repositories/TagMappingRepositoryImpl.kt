@@ -1,6 +1,7 @@
-package com.example.doit.data.models
+package com.example.doit.data.repositories
 
 import com.example.doit.data.daos.TagMappingDao
+import com.example.doit.data.models.TagMappingEntity
 import com.example.doit.domain.models.Tag
 import com.example.doit.domain.repositories.TagMappingRepository
 

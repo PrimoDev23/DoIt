@@ -1,10 +1,10 @@
 package com.example.doit.data
 
 import androidx.room.Room
-import com.example.doit.data.models.TagMappingRepositoryImpl
 import com.example.doit.data.preferences.TodoListPrefsImpl
 import com.example.doit.data.preferences.dataStore
 import com.example.doit.data.repositories.SubtaskRepositoryImpl
+import com.example.doit.data.repositories.TagMappingRepositoryImpl
 import com.example.doit.data.repositories.TagRepositoryImpl
 import com.example.doit.data.repositories.TodoItemRepositoryImpl
 import com.example.doit.domain.preferences.TodoListPrefs
