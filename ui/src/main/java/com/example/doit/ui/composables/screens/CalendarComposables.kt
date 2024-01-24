@@ -21,11 +21,14 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Divider
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
@@ -39,6 +42,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextDecoration
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.doit.common.R
@@ -48,13 +52,15 @@ import com.example.doit.ui.composables.RootScaffold
 import com.example.doit.ui.composables.calendar.Calendar
 import com.example.doit.ui.composables.calendar.CalendarWeek
 import com.example.doit.ui.composables.calendar.rememberCalendarState
+import com.example.doit.ui.composables.locals.LocalDrawerState
 import com.example.doit.ui.composables.screens.destinations.TodoDetailScreenDestination
+import com.example.doit.ui.viewmodels.CalendarState
 import com.example.doit.ui.viewmodels.CalendarViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.toPersistentList
+import kotlinx.collections.immutable.persistentListOf
 import org.koin.androidx.compose.koinViewModel
 import java.time.DayOfWeek
 import java.time.LocalDate
@@ -72,10 +78,28 @@ fun CalendarScreen(
     viewModel: CalendarViewModel = koinViewModel()
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val calendarState = rememberCalendarState()
 
-    RootScaffold(
+    CalendarScreenContent(
         modifier = Modifier.fillMaxSize(),
+        state = state,
+        calendarState = viewModel.calendarState,
+        onDoneChanged = viewModel::onDoneChanged,
+        onItemClicked = { item ->
+            navigator.navigate(TodoDetailScreenDestination(id = item.id))
+        }
+    )
+}
+
+@Composable
+fun CalendarScreenContent(
+    state: CalendarState,
+    calendarState: com.example.doit.ui.composables.calendar.CalendarState,
+    onDoneChanged: (TodoItem, Boolean) -> Unit,
+    onItemClicked: (TodoItem) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    RootScaffold(
+        modifier = modifier,
         title = stringResource(id = R.string.calendar_title),
         navigationIcon = {
             DrawerMenuButton()
@@ -105,14 +129,6 @@ fun CalendarScreen(
                 selectedMonth = calendarState.displayMonth
             )
 
-            val itemsForDate by remember {
-                derivedStateOf {
-                    state.items.filter { item ->
-                        item.dueDate == calendarState.selectedDate
-                    }.toPersistentList()
-                }
-            }
-
             Calendar(
                 modifier = Modifier
                     .padding(horizontal = 16.dp)
@@ -136,9 +152,7 @@ fun CalendarScreen(
                             if (date != null) {
                                 val hasEntries by remember(date) {
                                     derivedStateOf {
-                                        state.items.any { item ->
-                                            item.dueDate == date
-                                        }
+                                        state.datesWithItems.contains(date)
                                     }
                                 }
 
@@ -167,13 +181,9 @@ fun CalendarScreen(
 
             CalendarBottomSection(
                 modifier = Modifier.weight(1f),
-                itemsForDate = itemsForDate,
-                onDoneChanged = { item, done ->
-                    viewModel.onDoneChanged(item, done)
-                },
-                onItemClicked = { item ->
-                    navigator.navigate(TodoDetailScreenDestination(id = item.id))
-                }
+                itemsForDate = state.items,
+                onDoneChanged = onDoneChanged,
+                onItemClicked = onItemClicked
             )
         }
     }
@@ -207,7 +217,6 @@ fun MonthSelection(
     }
 }
 
-@OptIn(ExperimentalStdlibApi::class)
 @Composable
 fun CalendarHeader(modifier: Modifier = Modifier) {
     val days = remember {
@@ -323,5 +332,22 @@ fun CalendarBottomSection(
                 }
             }
         }
+    }
+}
+
+@Preview
+@Composable
+fun CalendarScreenPreview() {
+    CompositionLocalProvider(LocalDrawerState provides rememberDrawerState(initialValue = DrawerValue.Closed)) {
+        CalendarScreenContent(
+            modifier = Modifier.fillMaxSize(),
+            state = CalendarState(
+                datesWithItems = listOf(LocalDate.now().plusDays(1)),
+                items = persistentListOf()
+            ),
+            calendarState = rememberCalendarState(),
+            onDoneChanged = { _, _ -> },
+            onItemClicked = {}
+        )
     }
 }
