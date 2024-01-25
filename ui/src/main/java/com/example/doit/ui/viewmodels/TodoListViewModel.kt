@@ -8,12 +8,14 @@ import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.models.TodoItemSortType
 import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
+import com.example.doit.domain.usecases.interfaces.FilterTodoItemsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodayTodoItemsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoListPreferencesUseCase
 import com.example.doit.domain.usecases.interfaces.SetHideDoneItemsUseCase
 import com.example.doit.domain.usecases.interfaces.SetTodoItemSortTypeUseCase
+import com.example.doit.domain.usecases.interfaces.SortTodoItemsUseCase
 import com.example.doit.domain.usecases.interfaces.UpdateDoneUseCase
 import kotlinx.collections.immutable.PersistentList
 import kotlinx.collections.immutable.minus
@@ -23,6 +25,7 @@ import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.combine
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
@@ -35,42 +38,80 @@ class TodoListViewModel(
     private val deleteTodoItemsUseCase: DeleteTodoItemsUseCase,
     private val setTodoItemSortTypeUseCase: SetTodoItemSortTypeUseCase,
     private val setHideDoneItemsUseCase: SetHideDoneItemsUseCase,
-    private val updateDoneUseCase: UpdateDoneUseCase
+    private val updateDoneUseCase: UpdateDoneUseCase,
+    private val filterTodoItemsUseCase: FilterTodoItemsUseCase,
+    private val sortTodoItemsUseCase: SortTodoItemsUseCase
 ) : ViewModel() {
 
     private val preferences = getTodoListPreferencesUseCase()
+    private val hideDoneItems = preferences.map {
+        it.hideDoneItems
+    }
+    private val sortType = preferences.map {
+        it.sortType
+    }
+
     private val todoItems = getTodoItemsFlowUseCase.getItemFlow()
-    private val tags = getTagsFlowUseCase.getFlow()
     private val todayItems = getTodayTodoItemsFlowUseCase()
 
     private val _state = MutableStateFlow(TodoListViewModelState())
-    val state = combine(
-        _state,
-        preferences,
-        todoItems,
-        tags,
-        todayItems
-    ) { state, preferences, items, tags, todayItems ->
-        val allItems = if (state.todayFilterActive) {
-            todayItems
-        } else {
-            items
+
+    private val todayFilterActive = MutableStateFlow(false)
+    private val todayFilterStats = combine(todayFilterActive, todayItems) { filterActive, items ->
+        val todayDone = items.count { it.done }
+        val todayUndone = items.size - todayDone
+
+        TodayFilterStats(
+            todayFilterActive = filterActive,
+            todayDone = todayDone,
+            todayUndone = todayUndone
+        )
+    }
+
+    private val unfilteredItems =
+        combine(todayFilterActive, todoItems, todayItems) { todayFilterActive, items, todayItems ->
+            if (todayFilterActive) {
+                todayItems
+            } else {
+                items
+            }
         }
 
-        val todayUndone = todayItems.count { !it.done }
-        val todayDone = todayItems.count { it.done }
+    private val filterState = MutableStateFlow(TodoListFilterState())
+    private val filteredItems =
+        combine(unfilteredItems, filterState, hideDoneItems) { items, filter, hideDoneItems ->
+            filterTodoItemsUseCase(
+                items,
+                filter.selectedTags,
+                filter.selectedPriorities,
+                hideDoneItems
+            )
+        }
+    private val sortedItems = combine(filteredItems, sortType) { items, sortType ->
+        sortTodoItemsUseCase(items, sortType)
+    }
 
+    private val tags = getTagsFlowUseCase.getFlow()
+
+    val state = com.example.doit.domain.extensions.combine(
+        _state,
+        preferences,
+        sortedItems,
+        tags,
+        todayFilterStats,
+        filterState
+    ) { state, preferences, items, tags, todayFilterStats, filterState ->
         TodoListState(
-            todayFilterActive = state.todayFilterActive,
-            todayUndone = todayUndone,
-            todayDone = todayDone,
-            items = allItems.toPersistentList(),
+            todayFilterActive = todayFilterStats.todayFilterActive,
+            todayUndone = todayFilterStats.todayUndone,
+            todayDone = todayFilterStats.todayDone,
+            items = items.toPersistentList(),
             selectedItems = state.selectedItems,
             sortType = preferences.sortType,
             hideDoneItems = preferences.hideDoneItems,
             tags = tags.toPersistentList(),
-            selectedTags = state.selectedTags,
-            selectedPriorities = state.selectedPriorities
+            selectedTags = filterState.selectedTags,
+            selectedPriorities = filterState.selectedPriorities
         )
     }
         .stateIn(
@@ -97,13 +138,13 @@ class TodoListViewModel(
     }
 
     fun onTodayInfoCardClicked(filterActive: Boolean) {
-        _state.update {
-            it.copy(todayFilterActive = filterActive)
+        viewModelScope.launch {
+            todayFilterActive.emit(filterActive)
         }
     }
 
     fun onTagClicked(tag: Tag) {
-        _state.update { state ->
+        filterState.update { state ->
             val tags = state.selectedTags
 
             val newTags = if (tags.contains(tag)) {
@@ -117,13 +158,13 @@ class TodoListViewModel(
     }
 
     fun onResetTagsClicked() {
-        _state.update {
+        filterState.update {
             it.copy(selectedTags = persistentListOf())
         }
     }
 
     fun onPriorityClicked(priority: Priority) {
-        _state.update { state ->
+        filterState.update { state ->
             val priorities = state.selectedPriorities
 
             val newPriorities = if (priorities.contains(priority)) {
@@ -137,7 +178,7 @@ class TodoListViewModel(
     }
 
     fun onResetPrioritiesClicked() {
-        _state.update {
+        filterState.update {
             it.copy(selectedPriorities = persistentListOf())
         }
     }
@@ -193,10 +234,18 @@ class TodoListViewModel(
 }
 
 data class TodoListViewModelState(
-    val todayFilterActive: Boolean = false,
-    val selectedItems: PersistentList<TodoItem> = persistentListOf(),
+    val selectedItems: PersistentList<TodoItem> = persistentListOf()
+)
+
+data class TodoListFilterState(
     val selectedTags: PersistentList<Tag> = persistentListOf(),
     val selectedPriorities: PersistentList<Priority> = persistentListOf()
+)
+
+data class TodayFilterStats(
+    val todayFilterActive: Boolean,
+    val todayDone: Int,
+    val todayUndone: Int
 )
 
 @Immutable

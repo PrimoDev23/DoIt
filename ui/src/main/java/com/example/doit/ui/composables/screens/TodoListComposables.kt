@@ -34,7 +34,6 @@ import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -52,6 +51,9 @@ import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import com.example.doit.common.R
 import com.example.doit.domain.models.Priority
+import com.example.doit.domain.models.Tag
+import com.example.doit.domain.models.TodoItem
+import com.example.doit.domain.models.TodoItemSortType
 import com.example.doit.ui.composables.ClearSelectionButton
 import com.example.doit.ui.composables.DeleteToolbarItem
 import com.example.doit.ui.composables.DoItCheckbox
@@ -61,11 +63,10 @@ import com.example.doit.ui.composables.FilterToolbarItem
 import com.example.doit.ui.composables.RootScaffold
 import com.example.doit.ui.composables.StrikethroughText
 import com.example.doit.ui.composables.TodoItemsFilterBottomSheet
-import com.example.doit.ui.composables.applyFilter
 import com.example.doit.ui.composables.rememberSnackbarHostState
 import com.example.doit.ui.composables.screens.destinations.AddEntryScreenDestination
 import com.example.doit.ui.composables.screens.destinations.TodoDetailScreenDestination
-import com.example.doit.ui.composables.sort
+import com.example.doit.ui.viewmodels.TodoListState
 import com.example.doit.ui.viewmodels.TodoListViewModel
 import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
@@ -74,7 +75,6 @@ import kotlinx.coroutines.launch
 import org.koin.androidx.compose.getViewModel
 import java.util.UUID
 
-@OptIn(ExperimentalFoundationApi::class, ExperimentalMaterial3Api::class)
 @RootNavGraph(start = true)
 @Destination
 @Composable
@@ -84,10 +84,71 @@ fun TodoListScreen(
 ) {
     val state by viewModel.state.collectAsStateWithLifecycle()
 
-    val hasItemsSelected by remember {
-        derivedStateOf {
-            state.selectedItems.isNotEmpty()
-        }
+    TodoListScreenContent(
+        modifier = Modifier.fillMaxSize(),
+        state = state,
+        onEditClicked = {
+            val id = state.selectedItems.first().id
+
+            navigator.navigate(
+                AddEntryScreenDestination(
+                    id = id,
+                    edit = true
+                )
+            )
+            viewModel.onEditClicked()
+        },
+        onDeleteClicked = viewModel::onDeleteClicked,
+        onAddEntryClicked = {
+            navigator.navigate(
+                AddEntryScreenDestination(
+                    id = UUID.randomUUID().toString(),
+                    edit = false
+                )
+            )
+        },
+        onClearSelectionClicked = viewModel::onClearSelectionClicked,
+        onTodayInfoCardClicked = viewModel::onTodayInfoCardClicked,
+        onDoneChanged = viewModel::onDoneChanged,
+        onItemClicked = { item ->
+            if (state.selectedItems.isNotEmpty()) {
+                viewModel.onItemSelected(item)
+            } else {
+                navigator.navigate(TodoDetailScreenDestination(id = item.id))
+            }
+        },
+        onItemSelected = viewModel::onItemSelected,
+        onSortTypeChanged = viewModel::onSortTypeChanged,
+        onHideDoneItemsChanged = viewModel::onHideDoneItemsChanged,
+        onTagClicked = viewModel::onTagClicked,
+        onResetTagsClicked = viewModel::onResetTagsClicked,
+        onPriorityClicked = viewModel::onPriorityClicked,
+        onResetPrioritiesClicked = viewModel::onResetPrioritiesClicked
+    )
+}
+
+@OptIn(ExperimentalMaterial3Api::class, ExperimentalFoundationApi::class)
+@Composable
+fun TodoListScreenContent(
+    state: TodoListState,
+    onEditClicked: () -> Unit,
+    onDeleteClicked: () -> Unit,
+    onAddEntryClicked: () -> Unit,
+    onClearSelectionClicked: () -> Unit,
+    onTodayInfoCardClicked: (Boolean) -> Unit,
+    onDoneChanged: (TodoItem, Boolean) -> Unit,
+    onItemClicked: (TodoItem) -> Unit,
+    onItemSelected: (TodoItem) -> Unit,
+    onSortTypeChanged: (TodoItemSortType) -> Unit,
+    onHideDoneItemsChanged: (Boolean) -> Unit,
+    onTagClicked: (Tag) -> Unit,
+    onResetTagsClicked: () -> Unit,
+    onPriorityClicked: (Priority) -> Unit,
+    onResetPrioritiesClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
+    val hasItemsSelected = remember(state.selectedItems) {
+        state.selectedItems.isNotEmpty()
     }
 
     val scope = rememberCoroutineScope()
@@ -99,46 +160,25 @@ fun TodoListScreen(
     val filterSheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true)
 
     RootScaffold(
-        modifier = Modifier.fillMaxSize(),
+        modifier = modifier,
         title = stringResource(id = R.string.todo_list_title),
         actions = {
-            val hasOneItemSelected by remember {
-                derivedStateOf {
-                    state.selectedItems.size == 1
-                }
+            val hasOneItemSelected = remember(state.selectedItems.size) {
+                state.selectedItems.size == 1
             }
 
             TodoListToolbarActions(
                 hasItemsSelected = hasItemsSelected,
                 hasOneItemSelected = hasOneItemSelected,
-                onEditClicked = {
-                    val id = state.selectedItems.first().id
-
-                    navigator.navigate(
-                        AddEntryScreenDestination(
-                            id = id,
-                            edit = true
-                        )
-                    )
-                    viewModel.onEditClicked()
-                },
-                onDeleteClicked = viewModel::onDeleteClicked,
+                onEditClicked = onEditClicked,
+                onDeleteClicked = onDeleteClicked,
                 onFilterClicked = {
                     filterSheetVisible = true
                 }
             )
         },
         floatingActionButton = {
-            TodoListFloatingActionButton(
-                onClick = {
-                    navigator.navigate(
-                        AddEntryScreenDestination(
-                            id = UUID.randomUUID().toString(),
-                            edit = false
-                        )
-                    )
-                }
-            )
+            TodoListFloatingActionButton(onClick = onAddEntryClicked)
         },
         navigationIcon = {
             AnimatedContent(
@@ -146,7 +186,7 @@ fun TodoListScreen(
                 label = "ShowClearIconAnimation"
             ) { showClearSelection ->
                 if (showClearSelection) {
-                    ClearSelectionButton(onClick = viewModel::onClearSelectionClicked)
+                    ClearSelectionButton(onClick = onClearSelectionClicked)
                 } else {
                     DrawerMenuButton()
                 }
@@ -167,27 +207,11 @@ fun TodoListScreen(
                 filterActive = state.todayFilterActive,
                 undone = state.todayUndone,
                 done = state.todayDone,
-                onClick = viewModel::onTodayInfoCardClicked
+                onClick = onTodayInfoCardClicked
             )
 
-            val filteredItems by remember {
-                derivedStateOf {
-                    state.items.applyFilter(
-                        state.selectedTags,
-                        state.selectedPriorities,
-                        state.hideDoneItems
-                    )
-                }
-            }
-            val sortedItems by remember {
-                derivedStateOf {
-                    filteredItems.sort(state.sortType)
-                }
-            }
-            val hasItems by remember {
-                derivedStateOf {
-                    filteredItems.isNotEmpty()
-                }
+            val hasItems = remember(state.items) {
+                state.items.isNotEmpty()
             }
 
             AnimatedContent(
@@ -208,15 +232,13 @@ fun TodoListScreen(
                         verticalArrangement = Arrangement.spacedBy(16.dp)
                     ) {
                         items(
-                            items = sortedItems,
+                            items = state.items,
                             key = { item ->
                                 item.id
                             }
                         ) { item ->
-                            val selected by remember(item) {
-                                derivedStateOf {
-                                    state.selectedItems.contains(item)
-                                }
+                            val selected = remember(state.selectedItems, item) {
+                                state.selectedItems.contains(item)
                             }
 
                             TodoItemListEntry(
@@ -227,19 +249,15 @@ fun TodoListScreen(
                                 priority = item.priority,
                                 done = item.done,
                                 onDoneChanged = { done ->
-                                    viewModel.onDoneChanged(item, done)
+                                    onDoneChanged(item, done)
                                 },
                                 title = item.title,
                                 description = item.description,
                                 onClick = {
-                                    if (state.selectedItems.isNotEmpty()) {
-                                        viewModel.onItemSelected(item)
-                                    } else {
-                                        navigator.navigate(TodoDetailScreenDestination(id = item.id))
-                                    }
+                                    onItemClicked(item)
                                 },
                                 onLongClick = {
-                                    viewModel.onItemSelected(item)
+                                    onItemSelected(item)
                                 }
                             )
                         }
@@ -262,16 +280,16 @@ fun TodoListScreen(
                 }
             },
             selectedSortType = state.sortType,
-            onSortTypeClicked = viewModel::onSortTypeChanged,
+            onSortTypeClicked = onSortTypeChanged,
             hideDoneItems = state.hideDoneItems,
-            onHideDoneItemsChanged = viewModel::onHideDoneItemsChanged,
+            onHideDoneItemsChanged = onHideDoneItemsChanged,
             tags = state.tags,
             selectedTags = state.selectedTags,
-            onTagClicked = viewModel::onTagClicked,
-            onResetTagsClicked = viewModel::onResetTagsClicked,
+            onTagClicked = onTagClicked,
+            onResetTagsClicked = onResetTagsClicked,
             selectedPriorities = state.selectedPriorities,
-            onPriorityClicked = viewModel::onPriorityClicked,
-            onResetPrioritiesClicked = viewModel::onResetPrioritiesClicked
+            onPriorityClicked = onPriorityClicked,
+            onResetPrioritiesClicked = onResetPrioritiesClicked
         )
     }
 }

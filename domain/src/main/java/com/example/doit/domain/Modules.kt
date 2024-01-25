@@ -2,6 +2,7 @@ package com.example.doit.domain
 
 import com.example.doit.domain.usecases.DeleteTagsUseCaseImpl
 import com.example.doit.domain.usecases.DeleteTodoItemUseCaseImpl
+import com.example.doit.domain.usecases.FilterTodoItemsUseCaseImpl
 import com.example.doit.domain.usecases.GetTagMappingsFlowUseCaseImpl
 import com.example.doit.domain.usecases.GetTagsFlowUseCaseImpl
 import com.example.doit.domain.usecases.GetTagsUseCaseImpl
@@ -14,10 +15,12 @@ import com.example.doit.domain.usecases.SaveTagUseCaseImpl
 import com.example.doit.domain.usecases.SaveTodoItemUseCaseImpl
 import com.example.doit.domain.usecases.SetHideDoneItemsUseCaseImpl
 import com.example.doit.domain.usecases.SetTodoItemSortTypeUseCaseImpl
+import com.example.doit.domain.usecases.SortTodoItemsUseCaseImpl
 import com.example.doit.domain.usecases.UpdateDoneUseCaseImpl
 import com.example.doit.domain.usecases.UpdateSubtaskDoneUseCaseImpl
 import com.example.doit.domain.usecases.interfaces.DeleteTagsUseCase
 import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
+import com.example.doit.domain.usecases.interfaces.FilterTodoItemsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagMappingsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsUseCase
@@ -30,6 +33,7 @@ import com.example.doit.domain.usecases.interfaces.SaveTagUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import com.example.doit.domain.usecases.interfaces.SetHideDoneItemsUseCase
 import com.example.doit.domain.usecases.interfaces.SetTodoItemSortTypeUseCase
+import com.example.doit.domain.usecases.interfaces.SortTodoItemsUseCase
 import com.example.doit.domain.usecases.interfaces.UpdateDoneUseCase
 import com.example.doit.domain.usecases.interfaces.UpdateSubtaskDoneUseCase
 import com.example.doit.domain.utils.WorkManagerScheduler
@@ -57,6 +61,8 @@ val useCaseModule = module {
     factoryOf(::UpdateSubtaskDoneUseCaseImpl) bind UpdateSubtaskDoneUseCase::class
     factoryOf(::GetTodoItemFlowUseCaseImpl) bind GetTodoItemFlowUseCase::class
     factoryOf(::GetTagMappingsFlowUseCaseImpl) bind GetTagMappingsFlowUseCase::class
+    factoryOf(::FilterTodoItemsUseCaseImpl) bind FilterTodoItemsUseCase::class
+    factoryOf(::SortTodoItemsUseCaseImpl) bind SortTodoItemsUseCase::class
 }
 
 val workerModule = module {

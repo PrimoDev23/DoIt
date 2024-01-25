@@ -45,10 +45,8 @@ import androidx.compose.ui.unit.dp
 import com.example.doit.common.R
 import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.Tag
-import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.models.TodoItemSortType
 import kotlinx.collections.immutable.PersistentList
-import kotlinx.collections.immutable.toPersistentList
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -502,42 +500,4 @@ fun TodoItemsFilterHeader(
         overflow = TextOverflow.Ellipsis,
         textAlign = TextAlign.Center
     )
-}
-
-fun PersistentList<TodoItem>.applyFilter(
-    tags: PersistentList<Tag>,
-    priorities: PersistentList<Priority>,
-    hideDoneItems: Boolean
-): PersistentList<TodoItem> {
-    return this.filter {
-        if (hideDoneItems && it.done) {
-            return@filter false
-        }
-
-        if (tags.isNotEmpty() && !it.tags.any(tags::contains)) {
-            return@filter false
-        }
-
-        return@filter priorities.isEmpty() || priorities.contains(it.priority)
-    }.toPersistentList()
-}
-
-fun PersistentList<TodoItem>.sort(type: TodoItemSortType): PersistentList<TodoItem> {
-    return when (type) {
-        TodoItemSortType.ALPHABETICAL -> this.sortedBy {
-            it.title.lowercase()
-        }
-
-        TodoItemSortType.PRIORITY -> this.sortedByDescending {
-            it.priority
-        }
-
-        TodoItemSortType.DUE_DATE -> this.sortedByDescending {
-            it.dueDate
-        }
-
-        TodoItemSortType.CREATION_DATE -> this.sortedByDescending {
-            it.creationDateTime
-        }
-    }.toPersistentList()
 }

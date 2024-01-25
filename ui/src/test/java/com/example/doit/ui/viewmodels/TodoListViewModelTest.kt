@@ -7,12 +7,14 @@ import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.models.TodoItemSortType
 import com.example.doit.domain.models.TodoListPreferences
 import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
+import com.example.doit.domain.usecases.interfaces.FilterTodoItemsUseCase
 import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodayTodoItemsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoListPreferencesUseCase
 import com.example.doit.domain.usecases.interfaces.SetHideDoneItemsUseCase
 import com.example.doit.domain.usecases.interfaces.SetTodoItemSortTypeUseCase
+import com.example.doit.domain.usecases.interfaces.SortTodoItemsUseCase
 import com.example.doit.domain.usecases.interfaces.UpdateDoneUseCase
 import com.example.doit.testing.CoroutineTestBase
 import com.example.doit.testing.Tags
@@ -39,6 +41,8 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val getTodoItemsFlowUseCase = mockk<GetTodoItemsFlowUseCase>()
         val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
+        val filterUseCase = mockk<FilterTodoItemsUseCase>()
+        val sortUseCase = mockk<SortTodoItemsUseCase>()
 
         every { getTodoListPreferencesUseCase() } returns flow {
             val preferences = TodoListPreferences(
@@ -66,6 +70,14 @@ class TodoListViewModelTest : CoroutineTestBase() {
             emit(todayItems)
         }
 
+        every { filterUseCase(any(), any(), any(), any()) } answers {
+            firstArg()
+        }
+
+        every { sortUseCase(any(), any()) } answers {
+            firstArg()
+        }
+
         val viewModel = TodoListViewModel(
             getTodoListPreferencesUseCase = getTodoListPreferencesUseCase,
             getTodoItemsFlowUseCase = getTodoItemsFlowUseCase,
@@ -74,7 +86,9 @@ class TodoListViewModelTest : CoroutineTestBase() {
             deleteTodoItemsUseCase = mockk(),
             setTodoItemSortTypeUseCase = mockk(),
             setHideDoneItemsUseCase = mockk(),
-            updateDoneUseCase = mockk()
+            updateDoneUseCase = mockk(),
+            filterTodoItemsUseCase = filterUseCase,
+            sortTodoItemsUseCase = sortUseCase
         )
 
         viewModel.state.test {
@@ -92,6 +106,8 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val getTodoItemsFlowUseCase = mockk<GetTodoItemsFlowUseCase>()
         val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
+        val filterUseCase = mockk<FilterTodoItemsUseCase>()
+        val sortUseCase = mockk<SortTodoItemsUseCase>()
 
         every { getTodoListPreferencesUseCase() } returns flow {
             val preferences = TodoListPreferences(
@@ -119,6 +135,14 @@ class TodoListViewModelTest : CoroutineTestBase() {
             emit(todayItems)
         }
 
+        every { filterUseCase(any(), any(), any(), any()) } answers {
+            firstArg()
+        }
+
+        every { sortUseCase(any(), any()) } answers {
+            firstArg()
+        }
+
         val viewModel = TodoListViewModel(
             getTodoListPreferencesUseCase = getTodoListPreferencesUseCase,
             getTodoItemsFlowUseCase = getTodoItemsFlowUseCase,
@@ -127,7 +151,9 @@ class TodoListViewModelTest : CoroutineTestBase() {
             deleteTodoItemsUseCase = mockk(),
             setTodoItemSortTypeUseCase = mockk(),
             setHideDoneItemsUseCase = mockk(),
-            updateDoneUseCase = mockk()
+            updateDoneUseCase = mockk(),
+            filterTodoItemsUseCase = filterUseCase,
+            sortTodoItemsUseCase = sortUseCase
         )
 
         viewModel.state.test {
@@ -138,6 +164,7 @@ class TodoListViewModelTest : CoroutineTestBase() {
 
             viewModel.onTodayInfoCardClicked(true)
 
+            awaitItem()
             state = awaitItem()
 
             Assert.assertEquals(todayItems, state.items)
@@ -151,6 +178,8 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val getTodoItemsFlowUseCase = mockk<GetTodoItemsFlowUseCase>()
         val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
+        val filterUseCase = mockk<FilterTodoItemsUseCase>()
+        val sortUseCase = mockk<SortTodoItemsUseCase>()
 
         every { getTodoListPreferencesUseCase() } returns flow {
             val preferences = TodoListPreferences(
@@ -177,6 +206,14 @@ class TodoListViewModelTest : CoroutineTestBase() {
 
         every { getTodayTodoItemsFlowUseCase() } returns todayItemFlow
 
+        every { filterUseCase(any(), any(), any(), any()) } answers {
+            firstArg()
+        }
+
+        every { sortUseCase(any(), any()) } answers {
+            firstArg()
+        }
+
         val viewModel = TodoListViewModel(
             getTodoListPreferencesUseCase = getTodoListPreferencesUseCase,
             getTodoItemsFlowUseCase = getTodoItemsFlowUseCase,
@@ -185,7 +222,9 @@ class TodoListViewModelTest : CoroutineTestBase() {
             deleteTodoItemsUseCase = mockk(),
             setTodoItemSortTypeUseCase = mockk(),
             setHideDoneItemsUseCase = mockk(),
-            updateDoneUseCase = mockk()
+            updateDoneUseCase = mockk(),
+            filterTodoItemsUseCase = filterUseCase,
+            sortTodoItemsUseCase = sortUseCase
         )
 
         viewModel.state.test {
@@ -213,6 +252,8 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
         val updateDoneUseCase = mockk<UpdateDoneUseCase>()
+        val filterUseCase = mockk<FilterTodoItemsUseCase>()
+        val sortUseCase = mockk<SortTodoItemsUseCase>()
 
         every { getTodoListPreferencesUseCase() } returns flow {
             val preferences = TodoListPreferences(
@@ -241,6 +282,14 @@ class TodoListViewModelTest : CoroutineTestBase() {
 
         coEvery { updateDoneUseCase(any(), any()) } returns Unit
 
+        every { filterUseCase(any(), any(), any(), any()) } answers {
+            firstArg()
+        }
+
+        every { sortUseCase(any(), any()) } answers {
+            firstArg()
+        }
+
         val viewModel = TodoListViewModel(
             getTodoListPreferencesUseCase = getTodoListPreferencesUseCase,
             getTodoItemsFlowUseCase = getTodoItemsFlowUseCase,
@@ -249,7 +298,9 @@ class TodoListViewModelTest : CoroutineTestBase() {
             deleteTodoItemsUseCase = mockk(),
             setTodoItemSortTypeUseCase = mockk(),
             setHideDoneItemsUseCase = mockk(),
-            updateDoneUseCase = updateDoneUseCase
+            updateDoneUseCase = updateDoneUseCase,
+            filterTodoItemsUseCase = filterUseCase,
+            sortTodoItemsUseCase = sortUseCase
         )
 
         viewModel.onDoneChanged(TodoItems.todoItemOne, true)
@@ -270,6 +321,8 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
         val deleteTodoItemsUseCase = mockk<DeleteTodoItemsUseCase>()
+        val filterUseCase = mockk<FilterTodoItemsUseCase>()
+        val sortUseCase = mockk<SortTodoItemsUseCase>()
 
         every { getTodoListPreferencesUseCase() } returns flow {
             val preferences = TodoListPreferences(
@@ -298,6 +351,14 @@ class TodoListViewModelTest : CoroutineTestBase() {
 
         coEvery { deleteTodoItemsUseCase.delete(any()) } returns Unit
 
+        every { filterUseCase(any(), any(), any(), any()) } answers {
+            firstArg()
+        }
+
+        every { sortUseCase(any(), any()) } answers {
+            firstArg()
+        }
+
         val viewModel = TodoListViewModel(
             getTodoListPreferencesUseCase = getTodoListPreferencesUseCase,
             getTodoItemsFlowUseCase = getTodoItemsFlowUseCase,
@@ -306,7 +367,9 @@ class TodoListViewModelTest : CoroutineTestBase() {
             deleteTodoItemsUseCase = deleteTodoItemsUseCase,
             setTodoItemSortTypeUseCase = mockk(),
             setHideDoneItemsUseCase = mockk(),
-            updateDoneUseCase = mockk()
+            updateDoneUseCase = mockk(),
+            filterTodoItemsUseCase = filterUseCase,
+            sortTodoItemsUseCase = sortUseCase
         )
 
         viewModel.onDeleteClicked()
@@ -329,6 +392,8 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val getTodoItemsFlowUseCase = mockk<GetTodoItemsFlowUseCase>()
         val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
+        val filterUseCase = mockk<FilterTodoItemsUseCase>()
+        val sortUseCase = mockk<SortTodoItemsUseCase>()
 
         every { getTodoListPreferencesUseCase() } returns flow {
             val preferences = TodoListPreferences(
@@ -356,6 +421,14 @@ class TodoListViewModelTest : CoroutineTestBase() {
             emit(todayItems)
         }
 
+        every { filterUseCase(any(), any(), any(), any()) } answers {
+            firstArg()
+        }
+
+        every { sortUseCase(any(), any()) } answers {
+            firstArg()
+        }
+
         val viewModel = TodoListViewModel(
             getTodoListPreferencesUseCase = getTodoListPreferencesUseCase,
             getTodoItemsFlowUseCase = getTodoItemsFlowUseCase,
@@ -364,7 +437,9 @@ class TodoListViewModelTest : CoroutineTestBase() {
             deleteTodoItemsUseCase = mockk(),
             setTodoItemSortTypeUseCase = mockk(),
             setHideDoneItemsUseCase = mockk(),
-            updateDoneUseCase = mockk()
+            updateDoneUseCase = mockk(),
+            filterTodoItemsUseCase = filterUseCase,
+            sortTodoItemsUseCase = sortUseCase
         )
 
         viewModel.state.test {
@@ -393,6 +468,8 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val getTodoItemsFlowUseCase = mockk<GetTodoItemsFlowUseCase>()
         val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
+        val filterUseCase = mockk<FilterTodoItemsUseCase>()
+        val sortUseCase = mockk<SortTodoItemsUseCase>()
 
         every { getTodoListPreferencesUseCase() } returns flow {
             val preferences = TodoListPreferences(
@@ -420,6 +497,14 @@ class TodoListViewModelTest : CoroutineTestBase() {
             emit(todayItems)
         }
 
+        every { filterUseCase(any(), any(), any(), any()) } answers {
+            firstArg()
+        }
+
+        every { sortUseCase(any(), any()) } answers {
+            firstArg()
+        }
+
         val viewModel = TodoListViewModel(
             getTodoListPreferencesUseCase = getTodoListPreferencesUseCase,
             getTodoItemsFlowUseCase = getTodoItemsFlowUseCase,
@@ -428,7 +513,9 @@ class TodoListViewModelTest : CoroutineTestBase() {
             deleteTodoItemsUseCase = mockk(),
             setTodoItemSortTypeUseCase = mockk(),
             setHideDoneItemsUseCase = mockk(),
-            updateDoneUseCase = mockk()
+            updateDoneUseCase = mockk(),
+            filterTodoItemsUseCase = filterUseCase,
+            sortTodoItemsUseCase = sortUseCase
         )
 
         viewModel.state.test {
@@ -459,6 +546,8 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val getTodoItemsFlowUseCase = mockk<GetTodoItemsFlowUseCase>()
         val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
+        val filterUseCase = mockk<FilterTodoItemsUseCase>()
+        val sortUseCase = mockk<SortTodoItemsUseCase>()
 
         every { getTodoListPreferencesUseCase() } returns flow {
             val preferences = TodoListPreferences(
@@ -486,6 +575,14 @@ class TodoListViewModelTest : CoroutineTestBase() {
             emit(todayItems)
         }
 
+        every { filterUseCase(any(), any(), any(), any()) } answers {
+            firstArg()
+        }
+
+        every { sortUseCase(any(), any()) } answers {
+            firstArg()
+        }
+
         val viewModel = TodoListViewModel(
             getTodoListPreferencesUseCase = getTodoListPreferencesUseCase,
             getTodoItemsFlowUseCase = getTodoItemsFlowUseCase,
@@ -494,7 +591,9 @@ class TodoListViewModelTest : CoroutineTestBase() {
             deleteTodoItemsUseCase = mockk(),
             setTodoItemSortTypeUseCase = mockk(),
             setHideDoneItemsUseCase = mockk(),
-            updateDoneUseCase = mockk()
+            updateDoneUseCase = mockk(),
+            filterTodoItemsUseCase = filterUseCase,
+            sortTodoItemsUseCase = sortUseCase
         )
 
         viewModel.state.test {
@@ -527,6 +626,8 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
         val setTodoItemSortTypeUseCase = mockk<SetTodoItemSortTypeUseCase>()
         val setHideDoneItemsUseCase = mockk<SetHideDoneItemsUseCase>()
+        val filterUseCase = mockk<FilterTodoItemsUseCase>()
+        val sortUseCase = mockk<SortTodoItemsUseCase>()
 
         every { getTodoListPreferencesUseCase() } returns flow {
             emit(
@@ -558,6 +659,14 @@ class TodoListViewModelTest : CoroutineTestBase() {
 
         coEvery { setHideDoneItemsUseCase(any()) } returns Unit
 
+        every { filterUseCase(any(), any(), any(), any()) } answers {
+            firstArg()
+        }
+
+        every { sortUseCase(any(), any()) } answers {
+            firstArg()
+        }
+
         val viewModel = TodoListViewModel(
             getTodoListPreferencesUseCase = getTodoListPreferencesUseCase,
             getTodoItemsFlowUseCase = getTodoItemsFlowUseCase,
@@ -566,7 +675,9 @@ class TodoListViewModelTest : CoroutineTestBase() {
             deleteTodoItemsUseCase = mockk(),
             setTodoItemSortTypeUseCase = setTodoItemSortTypeUseCase,
             setHideDoneItemsUseCase = setHideDoneItemsUseCase,
-            updateDoneUseCase = mockk()
+            updateDoneUseCase = mockk(),
+            filterTodoItemsUseCase = filterUseCase,
+            sortTodoItemsUseCase = sortUseCase
         )
 
         viewModel.onSortTypeChanged(TodoItemSortType.ALPHABETICAL)
@@ -586,6 +697,8 @@ class TodoListViewModelTest : CoroutineTestBase() {
         val getTodoItemsFlowUseCase = mockk<GetTodoItemsFlowUseCase>()
         val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
+        val filterUseCase = mockk<FilterTodoItemsUseCase>()
+        val sortUseCase = mockk<SortTodoItemsUseCase>()
 
         val preferencesFlow = MutableStateFlow(
             TodoListPreferences(
@@ -613,6 +726,14 @@ class TodoListViewModelTest : CoroutineTestBase() {
             emit(todayItems)
         }
 
+        every { filterUseCase(any(), any(), any(), any()) } answers {
+            firstArg()
+        }
+
+        every { sortUseCase(any(), any()) } answers {
+            firstArg()
+        }
+
         val viewModel = TodoListViewModel(
             getTodoListPreferencesUseCase = getTodoListPreferencesUseCase,
             getTodoItemsFlowUseCase = getTodoItemsFlowUseCase,
@@ -621,7 +742,9 @@ class TodoListViewModelTest : CoroutineTestBase() {
             deleteTodoItemsUseCase = mockk(),
             setTodoItemSortTypeUseCase = mockk(),
             setHideDoneItemsUseCase = mockk(),
-            updateDoneUseCase = mockk()
+            updateDoneUseCase = mockk(),
+            filterTodoItemsUseCase = filterUseCase,
+            sortTodoItemsUseCase = sortUseCase
         )
 
         viewModel.state.test {
