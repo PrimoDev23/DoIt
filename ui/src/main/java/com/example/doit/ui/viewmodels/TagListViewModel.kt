@@ -33,12 +33,14 @@ class TagListViewModel(
     private val tagFlow = getTagsFlowUseCase.getFlow()
     private val mappingFlow = getTagMappingsFlowUseCase()
 
-    private val _state = MutableStateFlow(TagListViewModelState())
-    val state = combine(_state, tagFlow, mappingFlow) { state, tags, mappings ->
-        val tagMap = tags.associateWith { tag -> mappings.count { it.tagId == tag.id } }
+    private val mappedTags = combine(tagFlow, mappingFlow) { tags, mappings ->
+        tags.associateWith { tag -> mappings.count { it.tagId == tag.id } }
+    }
 
+    private val _state = MutableStateFlow(TagListViewModelState())
+    val state = combine(_state, mappedTags) { state, mappedTags ->
         TagListState(
-            items = tagMap.toPersistentMap(),
+            items = mappedTags.toPersistentMap(),
             selectedTags = state.selectedTags
         )
     }
