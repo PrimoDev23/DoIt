@@ -33,7 +33,7 @@ class CalendarViewModelTest : CoroutineTestBase() {
             awaitItem()
             val state = awaitItem()
 
-            Assert.assertEquals(TodoItems.todoListCreationDate, state.items)
+            Assert.assertEquals(TodoItems.todayTodoItems, state.items)
         }
     }
 
