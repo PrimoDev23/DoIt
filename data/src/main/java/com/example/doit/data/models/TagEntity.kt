@@ -15,8 +15,7 @@ data class TagEntity(
     fun toDomainModel() = Tag(
         id = id,
         title = title,
-        color = Color(color.toULong()),
-        selected = false
+        color = Color(color.toULong())
     )
 }
 

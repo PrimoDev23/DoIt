@@ -6,7 +6,7 @@ import app.cash.turbine.test
 import com.example.doit.domain.models.Priority
 import com.example.doit.domain.models.Subtask
 import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
-import com.example.doit.domain.usecases.interfaces.GetTagsUseCase
+import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import com.example.doit.testing.CoroutineTestBase
@@ -15,8 +15,10 @@ import com.example.doit.testing.Tags
 import com.example.doit.testing.TodoItems
 import io.mockk.coEvery
 import io.mockk.coVerify
+import io.mockk.every
 import io.mockk.mockk
 import kotlinx.collections.immutable.toPersistentList
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
 import org.junit.Assert
 import org.junit.Test
@@ -35,32 +37,25 @@ class AddEntryViewModelTest : CoroutineTestBase() {
 
     @Test
     fun `init ViewModel`() = runTest {
-        val getTagsUseCase = mockk<GetTagsUseCase>()
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodoItemUseCase = mockk<GetTodoItemUseCase>()
 
         val item = TodoItems.todoItemOne
 
-        coEvery { getTagsUseCase() } returns Tags.tagList
+        every { getTagsFlowUseCase.getFlow() } returns flow { emit(Tags.tagList) }
         coEvery { getTodoItemUseCase(any()) } returns item
 
         val viewModel = AddEntryViewModel(
             savedStateHandle = buildSavedStateHandle(),
             saveTodoItemUseCase = mockk(),
-            getTagsUseCase = getTagsUseCase,
+            getTagsFlowUseCase = getTagsFlowUseCase,
             getTodoItemUseCase = getTodoItemUseCase,
             deleteTodoItemsUseCase = mockk()
         )
 
         viewModel.state.test {
             awaitItem()
-            awaitItem()
             val state = awaitItem()
-
-            val selectedTags = Tags.tagList.map {
-                it.copy(selected = true)
-            }
-
-            Assert.assertEquals(selectedTags, state.tags)
 
             with(item) {
                 Assert.assertEquals(title, state.title)
@@ -75,18 +70,18 @@ class AddEntryViewModelTest : CoroutineTestBase() {
 
     @Test
     fun onBackClicked() = runTest {
-        val getTagsUseCase = mockk<GetTagsUseCase>()
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodoItemUseCase = mockk<GetTodoItemUseCase>()
 
         val item = TodoItems.todoItemOne
 
-        coEvery { getTagsUseCase() } returns Tags.tagList
+        every { getTagsFlowUseCase.getFlow() } returns flow { emit(Tags.tagList) }
         coEvery { getTodoItemUseCase(any()) } returns item
 
         val viewModel = AddEntryViewModel(
             savedStateHandle = buildSavedStateHandle(),
             saveTodoItemUseCase = mockk(),
-            getTagsUseCase = getTagsUseCase,
+            getTagsFlowUseCase = getTagsFlowUseCase,
             getTodoItemUseCase = getTodoItemUseCase,
             deleteTodoItemsUseCase = mockk()
         )
@@ -102,20 +97,20 @@ class AddEntryViewModelTest : CoroutineTestBase() {
 
     @Test
     fun `onDeleteClicked - existing`() = runTest {
-        val getTagsUseCase = mockk<GetTagsUseCase>()
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodoItemUseCase = mockk<GetTodoItemUseCase>()
         val deleteTodoItemsUseCase = mockk<DeleteTodoItemsUseCase>()
 
         val item = TodoItems.todoItemOne
 
-        coEvery { getTagsUseCase() } returns Tags.tagList
+        every { getTagsFlowUseCase.getFlow() } returns flow { emit(Tags.tagList) }
         coEvery { getTodoItemUseCase(any()) } returns item
         coEvery { deleteTodoItemsUseCase.delete(any()) } returns Unit
 
         val viewModel = AddEntryViewModel(
             savedStateHandle = buildSavedStateHandle(),
             saveTodoItemUseCase = mockk(),
-            getTagsUseCase = getTagsUseCase,
+            getTagsFlowUseCase = getTagsFlowUseCase,
             getTodoItemUseCase = getTodoItemUseCase,
             deleteTodoItemsUseCase = deleteTodoItemsUseCase
         )
@@ -136,18 +131,18 @@ class AddEntryViewModelTest : CoroutineTestBase() {
 
     @Test
     fun `onDeleteClicked - new`() = runTest {
-        val getTagsUseCase = mockk<GetTagsUseCase>()
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodoItemUseCase = mockk<GetTodoItemUseCase>()
         val deleteTodoItemsUseCase = mockk<DeleteTodoItemsUseCase>()
 
-        coEvery { getTagsUseCase() } returns Tags.tagList
+        every { getTagsFlowUseCase.getFlow() } returns flow { emit(Tags.tagList) }
         coEvery { getTodoItemUseCase(any()) } returns null
         coEvery { deleteTodoItemsUseCase.delete(any()) } returns Unit
 
         val viewModel = AddEntryViewModel(
             savedStateHandle = buildSavedStateHandle(),
             saveTodoItemUseCase = mockk(),
-            getTagsUseCase = getTagsUseCase,
+            getTagsFlowUseCase = getTagsFlowUseCase,
             getTodoItemUseCase = getTodoItemUseCase,
             deleteTodoItemsUseCase = deleteTodoItemsUseCase
         )
@@ -168,18 +163,18 @@ class AddEntryViewModelTest : CoroutineTestBase() {
 
     @Test
     fun `onSaveClicked - invalid`() = runTest {
-        val getTagsUseCase = mockk<GetTagsUseCase>()
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodoItemUseCase = mockk<GetTodoItemUseCase>()
         val saveTodoItemUseCase = mockk<SaveTodoItemUseCase>()
 
-        coEvery { getTagsUseCase() } returns Tags.tagList
+        every { getTagsFlowUseCase.getFlow() } returns flow { emit(Tags.tagList) }
         coEvery { getTodoItemUseCase(any()) } returns null
         coEvery { saveTodoItemUseCase.save(any()) } returns Unit
 
         val viewModel = AddEntryViewModel(
             savedStateHandle = buildSavedStateHandle(),
             saveTodoItemUseCase = saveTodoItemUseCase,
-            getTagsUseCase = getTagsUseCase,
+            getTagsFlowUseCase = getTagsFlowUseCase,
             getTodoItemUseCase = getTodoItemUseCase,
             deleteTodoItemsUseCase = mockk()
         )
@@ -198,37 +193,40 @@ class AddEntryViewModelTest : CoroutineTestBase() {
 
     @Test
     fun `onSaveClicked - valid`() = runTest {
-        val getTagsUseCase = mockk<GetTagsUseCase>()
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodoItemUseCase = mockk<GetTodoItemUseCase>()
         val saveTodoItemUseCase = mockk<SaveTodoItemUseCase>()
 
         val item = TodoItems.todoItemOne
 
-        coEvery { getTagsUseCase() } returns Tags.tagList
+        every { getTagsFlowUseCase.getFlow() } returns flow { emit(Tags.tagList) }
         coEvery { getTodoItemUseCase(any()) } returns item
         coEvery { saveTodoItemUseCase.save(any()) } returns Unit
 
         val viewModel = AddEntryViewModel(
             savedStateHandle = buildSavedStateHandle(),
             saveTodoItemUseCase = saveTodoItemUseCase,
-            getTagsUseCase = getTagsUseCase,
+            getTagsFlowUseCase = getTagsFlowUseCase,
             getTodoItemUseCase = getTodoItemUseCase,
             deleteTodoItemsUseCase = mockk()
         )
 
         dispatcher.scheduler.advanceUntilIdle()
 
-        viewModel.events.test {
+        viewModel.state.test {
+            awaitItem()
+            awaitItem()
+
             viewModel.onSaveClicked()
             dispatcher.scheduler.advanceUntilIdle()
 
-            val selectedTags = item.tags.map {
-                it.copy(selected = true)
-            }
+            val selectedTags = item.tags
             val selectedTagsItem = item.copy(tags = selectedTags.toPersistentList())
 
             coVerify { saveTodoItemUseCase.save(selectedTagsItem) }
+        }
 
+        viewModel.events.test {
             val event = awaitItem()
 
             Assert.assertTrue(event is AddEntryEvent.PopBackStack)
@@ -237,16 +235,16 @@ class AddEntryViewModelTest : CoroutineTestBase() {
 
     @Test
     fun onTitleChanged() = runTest {
-        val getTagsUseCase = mockk<GetTagsUseCase>()
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodoItemUseCase = mockk<GetTodoItemUseCase>()
 
-        coEvery { getTagsUseCase() } returns Tags.tagList
+        every { getTagsFlowUseCase.getFlow() } returns flow { emit(Tags.tagList) }
         coEvery { getTodoItemUseCase(any()) } returns null
 
         val viewModel = AddEntryViewModel(
             savedStateHandle = buildSavedStateHandle(),
             saveTodoItemUseCase = mockk(),
-            getTagsUseCase = getTagsUseCase,
+            getTagsFlowUseCase = getTagsFlowUseCase,
             getTodoItemUseCase = getTodoItemUseCase,
             deleteTodoItemsUseCase = mockk()
         )
@@ -269,16 +267,16 @@ class AddEntryViewModelTest : CoroutineTestBase() {
 
     @Test
     fun onDescriptionChanged() = runTest {
-        val getTagsUseCase = mockk<GetTagsUseCase>()
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodoItemUseCase = mockk<GetTodoItemUseCase>()
 
-        coEvery { getTagsUseCase() } returns Tags.tagList
+        every { getTagsFlowUseCase.getFlow() } returns flow { emit(Tags.tagList) }
         coEvery { getTodoItemUseCase(any()) } returns null
 
         val viewModel = AddEntryViewModel(
             savedStateHandle = buildSavedStateHandle(),
             saveTodoItemUseCase = mockk(),
-            getTagsUseCase = getTagsUseCase,
+            getTagsFlowUseCase = getTagsFlowUseCase,
             getTodoItemUseCase = getTodoItemUseCase,
             deleteTodoItemsUseCase = mockk()
         )
@@ -302,16 +300,16 @@ class AddEntryViewModelTest : CoroutineTestBase() {
     @OptIn(ExperimentalMaterial3Api::class)
     @Test
     fun `date handling`() = runTest {
-        val getTagsUseCase = mockk<GetTagsUseCase>()
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodoItemUseCase = mockk<GetTodoItemUseCase>()
 
-        coEvery { getTagsUseCase() } returns Tags.tagList
+        every { getTagsFlowUseCase.getFlow() } returns flow { emit(Tags.tagList) }
         coEvery { getTodoItemUseCase(any()) } returns null
 
         val viewModel = AddEntryViewModel(
             savedStateHandle = buildSavedStateHandle(),
             saveTodoItemUseCase = mockk(),
-            getTagsUseCase = getTagsUseCase,
+            getTagsFlowUseCase = getTagsFlowUseCase,
             getTodoItemUseCase = getTodoItemUseCase,
             deleteTodoItemsUseCase = mockk()
         )
@@ -344,16 +342,16 @@ class AddEntryViewModelTest : CoroutineTestBase() {
 
     @Test
     fun onNotificationDateTimePicked() = runTest {
-        val getTagsUseCase = mockk<GetTagsUseCase>()
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodoItemUseCase = mockk<GetTodoItemUseCase>()
 
-        coEvery { getTagsUseCase() } returns Tags.tagList
+        every { getTagsFlowUseCase.getFlow() } returns flow { emit(Tags.tagList) }
         coEvery { getTodoItemUseCase(any()) } returns null
 
         val viewModel = AddEntryViewModel(
             savedStateHandle = buildSavedStateHandle(),
             saveTodoItemUseCase = mockk(),
-            getTagsUseCase = getTagsUseCase,
+            getTagsFlowUseCase = getTagsFlowUseCase,
             getTodoItemUseCase = getTodoItemUseCase,
             deleteTodoItemsUseCase = mockk()
         )
@@ -377,16 +375,16 @@ class AddEntryViewModelTest : CoroutineTestBase() {
 
     @Test
     fun onTagClicked() = runTest {
-        val getTagsUseCase = mockk<GetTagsUseCase>()
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodoItemUseCase = mockk<GetTodoItemUseCase>()
 
-        coEvery { getTagsUseCase() } returns Tags.tagList
+        every { getTagsFlowUseCase.getFlow() } returns flow { emit(Tags.tagList) }
         coEvery { getTodoItemUseCase(any()) } returns null
 
         val viewModel = AddEntryViewModel(
             savedStateHandle = buildSavedStateHandle(),
             saveTodoItemUseCase = mockk(),
-            getTagsUseCase = getTagsUseCase,
+            getTagsFlowUseCase = getTagsFlowUseCase,
             getTodoItemUseCase = getTodoItemUseCase,
             deleteTodoItemsUseCase = mockk()
         )
@@ -396,7 +394,7 @@ class AddEntryViewModelTest : CoroutineTestBase() {
         viewModel.state.test {
             var state = awaitItem()
 
-            val anyTagSelected = state.tags.any { it.selected }
+            val anyTagSelected = state.selectedTags.isNotEmpty()
 
             Assert.assertFalse(anyTagSelected)
 
@@ -404,7 +402,7 @@ class AddEntryViewModelTest : CoroutineTestBase() {
 
             state = awaitItem()
 
-            val selectedTagCount = state.tags.count { it.selected }
+            val selectedTagCount = state.selectedTags.size
 
             Assert.assertEquals(1, selectedTagCount)
         }
@@ -412,16 +410,16 @@ class AddEntryViewModelTest : CoroutineTestBase() {
 
     @Test
     fun onPriorityChanged() = runTest {
-        val getTagsUseCase = mockk<GetTagsUseCase>()
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodoItemUseCase = mockk<GetTodoItemUseCase>()
 
-        coEvery { getTagsUseCase() } returns Tags.tagList
+        every { getTagsFlowUseCase.getFlow() } returns flow { emit(Tags.tagList) }
         coEvery { getTodoItemUseCase(any()) } returns null
 
         val viewModel = AddEntryViewModel(
             savedStateHandle = buildSavedStateHandle(),
             saveTodoItemUseCase = mockk(),
-            getTagsUseCase = getTagsUseCase,
+            getTagsFlowUseCase = getTagsFlowUseCase,
             getTodoItemUseCase = getTodoItemUseCase,
             deleteTodoItemsUseCase = mockk()
         )
@@ -443,16 +441,16 @@ class AddEntryViewModelTest : CoroutineTestBase() {
 
     @Test
     fun onSubtaskAdded() = runTest {
-        val getTagsUseCase = mockk<GetTagsUseCase>()
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodoItemUseCase = mockk<GetTodoItemUseCase>()
 
-        coEvery { getTagsUseCase() } returns Tags.tagList
+        every { getTagsFlowUseCase.getFlow() } returns flow { emit(Tags.tagList) }
         coEvery { getTodoItemUseCase(any()) } returns null
 
         val viewModel = AddEntryViewModel(
             savedStateHandle = buildSavedStateHandle(),
             saveTodoItemUseCase = mockk(),
-            getTagsUseCase = getTagsUseCase,
+            getTagsFlowUseCase = getTagsFlowUseCase,
             getTodoItemUseCase = getTodoItemUseCase,
             deleteTodoItemsUseCase = mockk()
         )
@@ -476,16 +474,16 @@ class AddEntryViewModelTest : CoroutineTestBase() {
 
     @Test
     fun onSubtaskTitleUpdated() = runTest {
-        val getTagsUseCase = mockk<GetTagsUseCase>()
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodoItemUseCase = mockk<GetTodoItemUseCase>()
 
-        coEvery { getTagsUseCase() } returns Tags.tagList
+        every { getTagsFlowUseCase.getFlow() } returns flow { emit(Tags.tagList) }
         coEvery { getTodoItemUseCase(any()) } returns null
 
         val viewModel = AddEntryViewModel(
             savedStateHandle = buildSavedStateHandle(),
             saveTodoItemUseCase = mockk(),
-            getTagsUseCase = getTagsUseCase,
+            getTagsFlowUseCase = getTagsFlowUseCase,
             getTodoItemUseCase = getTodoItemUseCase,
             deleteTodoItemsUseCase = mockk()
         )
@@ -514,16 +512,16 @@ class AddEntryViewModelTest : CoroutineTestBase() {
 
     @Test
     fun onSubtaskDoneChanged() = runTest {
-        val getTagsUseCase = mockk<GetTagsUseCase>()
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodoItemUseCase = mockk<GetTodoItemUseCase>()
 
-        coEvery { getTagsUseCase() } returns Tags.tagList
+        every { getTagsFlowUseCase.getFlow() } returns flow { emit(Tags.tagList) }
         coEvery { getTodoItemUseCase(any()) } returns null
 
         val viewModel = AddEntryViewModel(
             savedStateHandle = buildSavedStateHandle(),
             saveTodoItemUseCase = mockk(),
-            getTagsUseCase = getTagsUseCase,
+            getTagsFlowUseCase = getTagsFlowUseCase,
             getTodoItemUseCase = getTodoItemUseCase,
             deleteTodoItemsUseCase = mockk()
         )
@@ -552,16 +550,16 @@ class AddEntryViewModelTest : CoroutineTestBase() {
 
     @Test
     fun onSubtaskRemoveClicked() = runTest {
-        val getTagsUseCase = mockk<GetTagsUseCase>()
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTodoItemUseCase = mockk<GetTodoItemUseCase>()
 
-        coEvery { getTagsUseCase() } returns Tags.tagList
+        every { getTagsFlowUseCase.getFlow() } returns flow { emit(Tags.tagList) }
         coEvery { getTodoItemUseCase(any()) } returns null
 
         val viewModel = AddEntryViewModel(
             savedStateHandle = buildSavedStateHandle(),
             saveTodoItemUseCase = mockk(),
-            getTagsUseCase = getTagsUseCase,
+            getTagsFlowUseCase = getTagsFlowUseCase,
             getTodoItemUseCase = getTodoItemUseCase,
             deleteTodoItemsUseCase = mockk()
         )

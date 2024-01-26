@@ -26,6 +26,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.DatePicker
 import androidx.compose.material3.DatePickerDialog
+import androidx.compose.material3.DrawerValue
 import androidx.compose.material3.ElevatedCard
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FloatingActionButton
@@ -38,7 +39,9 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.minimumInteractiveComponentSize
+import androidx.compose.material3.rememberDrawerState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
@@ -56,6 +59,7 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.window.Dialog
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -72,8 +76,10 @@ import com.example.doit.ui.composables.InputTitle
 import com.example.doit.ui.composables.PriorityItem
 import com.example.doit.ui.composables.TagListEntry
 import com.example.doit.ui.composables.VerticalGrid
+import com.example.doit.ui.composables.locals.LocalDrawerState
 import com.example.doit.ui.composables.rememberFocusRequester
 import com.example.doit.ui.viewmodels.AddEntryEvent
+import com.example.doit.ui.viewmodels.AddEntryState
 import com.example.doit.ui.viewmodels.AddEntryViewModel
 import com.google.accompanist.permissions.ExperimentalPermissionsApi
 import com.google.accompanist.permissions.isGranted
@@ -82,6 +88,7 @@ import com.ramcosta.composedestinations.annotation.Destination
 import com.ramcosta.composedestinations.annotation.RootNavGraph
 import com.ramcosta.composedestinations.navigation.DestinationsNavigator
 import kotlinx.collections.immutable.PersistentList
+import kotlinx.collections.immutable.persistentListOf
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.flow.collectLatest
 import org.koin.androidx.compose.getViewModel
@@ -105,10 +112,6 @@ fun AddEntryScreen(
     }
 
     val state by viewModel.state.collectAsStateWithLifecycle()
-    val titleFocusRequester = rememberFocusRequester()
-    var showTitleError by remember {
-        mutableStateOf(false)
-    }
 
     BackHandler(onBack = viewModel::onBackClicked)
 
@@ -120,105 +123,27 @@ fun AddEntryScreen(
         }
     }
 
-    Scaffold(
+    AddEntryContent(
         modifier = Modifier.fillMaxSize(),
-        topBar = {
-            AddEntryTopBar(
-                modifier = Modifier.fillMaxWidth(),
-                title = stringResource(id = R.string.add_entry_title),
-                onBackClicked = viewModel::onBackClicked,
-                onDeleteClicked = viewModel::onDeleteClicked
-            )
+        edit = navArgs.edit,
+        state = state,
+        onBackClicked = viewModel::onBackClicked,
+        onDeleteClicked = viewModel::onDeleteClicked,
+        onSaveClicked = viewModel::onSaveClicked,
+        onTitleChanged = viewModel::onTitleChanged,
+        onDescriptionChanged = viewModel::onDescriptionChanged,
+        onSubtaskAdded = viewModel::onSubtaskAdded,
+        onSubtaskTitleUpdated = viewModel::onSubtaskTitleUpdated,
+        onSubtaskDoneChanged = viewModel::onSubtaskDoneChanged,
+        onRemoveSubtaskClicked = viewModel::onSubtaskRemoveClicked,
+        onDueDateClicked = {
+            showDatePickerDialog = true
         },
-        floatingActionButton = {
-            SaveFloatingActionButton(
-                onClick = {
-                    if (state.title.isBlank()) {
-                        showTitleError = true
-                        titleFocusRequester.requestFocus()
-                    } else {
-                        viewModel.onSaveClicked()
-                    }
-                }
-            )
-        }
-    ) {
-        Column(
-            modifier = Modifier
-                .padding(it)
-                .padding(horizontal = 16.dp)
-                .fillMaxSize()
-                .verticalScroll(state = rememberScrollState()),
-            verticalArrangement = Arrangement.spacedBy(24.dp)
-        ) {
-            LaunchedEffect(true) {
-                if (!navArgs.edit) {
-                    titleFocusRequester.requestFocus()
-                }
-            }
-
-            DoItTextField(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .focusRequester(titleFocusRequester),
-                value = state.title,
-                onValueChange = viewModel::onTitleChanged,
-                label = stringResource(id = R.string.add_entry_title_title),
-                singleLine = true,
-                isError = showTitleError,
-                errorText = stringResource(id = R.string.add_entry_title_error)
-            )
-
-            DoItTextField(
-                modifier = Modifier.fillMaxWidth(),
-                value = state.description,
-                onValueChange = viewModel::onDescriptionChanged,
-                label = stringResource(id = R.string.add_entry_description_title),
-                maxLines = 5,
-                minLines = 3
-            )
-
-            SubtaskSection(
-                modifier = Modifier.fillMaxWidth(),
-                onSubtaskAdded = viewModel::onSubtaskAdded,
-                subtasks = state.subtasks,
-                onTitleUpdated = viewModel::onSubtaskTitleUpdated,
-                onDoneChanged = viewModel::onSubtaskDoneChanged,
-                onRemoveClicked = viewModel::onSubtaskRemoveClicked
-            )
-
-            DueDateSection(
-                modifier = Modifier.fillMaxWidth(),
-                title = stringResource(id = R.string.add_entry_due_date_title),
-                date = state.dueDate,
-                onClick = {
-                    showDatePickerDialog = true
-                }
-            )
-
-            NotificationRow(
-                modifier = Modifier.fillMaxWidth(),
-                title = stringResource(id = R.string.add_entry_notification_title),
-                notificationDateTime = state.notificationDateTime,
-                dueDate = state.dueDate,
-                onDateTimePicked = viewModel::onNotificationDateTimePicked
-            )
-
-            AddEntryTagSelection(
-                modifier = Modifier.fillMaxWidth(),
-                tags = state.tags,
-                onTagClicked = viewModel::onTagClicked
-            )
-
-            PrioritySelection(
-                modifier = Modifier.fillMaxWidth(),
-                priority = state.priority,
-                onPriorityChanged = viewModel::onPriorityChanged
-            )
-
-            Spacer(modifier = Modifier.height(8.dp))
-        }
-    }
+        onNotificationDateTimePicked = viewModel::onNotificationDateTimePicked,
+        onTagSearchTermChanged = viewModel::onTagSearchTermChanged,
+        onTagClicked = viewModel::onTagClicked,
+        onPriorityChanged = viewModel::onPriorityChanged
+    )
 
     if (showDatePickerDialog) {
         DatePickerDialog(
@@ -253,6 +178,157 @@ fun AddEntryScreen(
                 state = viewModel.datePickerState,
                 title = null
             )
+        }
+    }
+}
+
+@Preview(apiLevel = 32) // API 32 to disable permission check
+@Composable
+fun AddEntryContentPreview() {
+    CompositionLocalProvider(LocalDrawerState provides rememberDrawerState(initialValue = DrawerValue.Closed)) {
+        AddEntryContent(
+            edit = false,
+            state = AddEntryState(
+                title = "Test",
+                titleHasError = false,
+                description = "Test description",
+                dueDate = LocalDate.now(),
+                notificationDateTime = LocalDateTime.now(),
+                tagSearchTerm = "",
+                tags = persistentListOf(),
+                selectedTags = persistentListOf(),
+                priority = Priority.HIGH,
+                subtasks = persistentListOf()
+            ),
+            onBackClicked = {},
+            onDeleteClicked = {},
+            onSaveClicked = {},
+            onTitleChanged = {},
+            onDescriptionChanged = {},
+            onSubtaskAdded = {},
+            onSubtaskTitleUpdated = { _, _ -> },
+            onSubtaskDoneChanged = { _, _ -> },
+            onRemoveSubtaskClicked = {},
+            onDueDateClicked = {},
+            onNotificationDateTimePicked = {},
+            onTagSearchTermChanged = {},
+            onTagClicked = {},
+            onPriorityChanged = {}
+        )
+    }
+}
+
+@Composable
+fun AddEntryContent(
+    edit: Boolean,
+    state: AddEntryState,
+    onBackClicked: () -> Unit,
+    onDeleteClicked: () -> Unit,
+    onSaveClicked: () -> Unit,
+    onTitleChanged: (String) -> Unit,
+    onDescriptionChanged: (String) -> Unit,
+    onSubtaskAdded: (Subtask) -> Unit,
+    onSubtaskTitleUpdated: (Subtask, String) -> Unit,
+    onSubtaskDoneChanged: (Subtask, Boolean) -> Unit,
+    onRemoveSubtaskClicked: (Subtask) -> Unit,
+    onDueDateClicked: () -> Unit,
+    onNotificationDateTimePicked: (LocalDateTime?) -> Unit,
+    onTagSearchTermChanged: (String) -> Unit,
+    onTagClicked: (Tag) -> Unit,
+    onPriorityChanged: (Priority) -> Unit,
+    modifier: Modifier = Modifier
+) {
+    Scaffold(
+        modifier = modifier,
+        topBar = {
+            AddEntryTopBar(
+                modifier = Modifier.fillMaxWidth(),
+                title = stringResource(id = R.string.add_entry_title),
+                onBackClicked = onBackClicked,
+                onDeleteClicked = onDeleteClicked
+            )
+        },
+        floatingActionButton = {
+            SaveFloatingActionButton(onClick = onSaveClicked)
+        }
+    ) {
+        Column(
+            modifier = Modifier
+                .padding(it)
+                .padding(horizontal = 16.dp)
+                .fillMaxSize()
+                .verticalScroll(state = rememberScrollState()),
+            verticalArrangement = Arrangement.spacedBy(24.dp)
+        ) {
+            val titleFocusRequester = rememberFocusRequester()
+
+            LaunchedEffect(true) {
+                if (!edit) {
+                    titleFocusRequester.requestFocus()
+                }
+            }
+
+            DoItTextField(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .focusRequester(titleFocusRequester),
+                value = state.title,
+                onValueChange = onTitleChanged,
+                label = stringResource(id = R.string.add_entry_title_title),
+                singleLine = true,
+                isError = state.titleHasError,
+                errorText = stringResource(id = R.string.add_entry_title_error)
+            )
+
+            DoItTextField(
+                modifier = Modifier.fillMaxWidth(),
+                value = state.description,
+                onValueChange = onDescriptionChanged,
+                label = stringResource(id = R.string.add_entry_description_title),
+                maxLines = 5,
+                minLines = 3
+            )
+
+            SubtaskSection(
+                modifier = Modifier.fillMaxWidth(),
+                onSubtaskAdded = onSubtaskAdded,
+                subtasks = state.subtasks,
+                onTitleUpdated = onSubtaskTitleUpdated,
+                onDoneChanged = onSubtaskDoneChanged,
+                onRemoveClicked = onRemoveSubtaskClicked
+            )
+
+            DueDateSection(
+                modifier = Modifier.fillMaxWidth(),
+                title = stringResource(id = R.string.add_entry_due_date_title),
+                date = state.dueDate,
+                onClick = onDueDateClicked
+            )
+
+            NotificationRow(
+                modifier = Modifier.fillMaxWidth(),
+                title = stringResource(id = R.string.add_entry_notification_title),
+                notificationDateTime = state.notificationDateTime,
+                dueDate = state.dueDate,
+                onDateTimePicked = onNotificationDateTimePicked
+            )
+
+            AddEntryTagSelection(
+                modifier = Modifier.fillMaxWidth(),
+                tagSearchTerm = state.tagSearchTerm,
+                onTagSearchTermChanged = onTagSearchTermChanged,
+                tags = state.tags,
+                selectedTags = state.selectedTags,
+                onTagClicked = onTagClicked
+            )
+
+            PrioritySelection(
+                modifier = Modifier.fillMaxWidth(),
+                priority = state.priority,
+                onPriorityChanged = onPriorityChanged
+            )
+
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
@@ -444,35 +520,26 @@ fun NotificationPermissionRationale(
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun AddEntryTagSelection(
+    tagSearchTerm: String,
+    onTagSearchTermChanged: (String) -> Unit,
     tags: PersistentList<Tag>,
+    selectedTags: PersistentList<Tag>,
     onTagClicked: (Tag) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    var searchTerm by remember {
-        mutableStateOf("")
-    }
-    val searchedTags by remember(tags) {
-        derivedStateOf { tags.search(searchTerm) }
-    }
-    val hasTags = remember(searchedTags) {
-        searchedTags.isNotEmpty()
-    }
-
     Column(modifier = modifier) {
         DoItTextField(
             modifier = Modifier.fillMaxWidth(),
             label = stringResource(id = R.string.add_entry_add_tags_title),
-            value = searchTerm,
-            onValueChange = {
-                searchTerm = it
-            },
+            value = tagSearchTerm,
+            onValueChange = onTagSearchTermChanged,
             placeholder = {
                 Text(text = stringResource(id = R.string.add_entry_tag_search_placeholder))
             },
             trailingIcon = {
                 IconButton(
                     onClick = {
-                        searchTerm = ""
+                        onTagSearchTermChanged("")
                     }
                 ) {
                     Icon(
@@ -496,17 +563,23 @@ fun AddEntryTagSelection(
             contentAlignment = Alignment.Center
         ) {
             AnimatedContent(
-                targetState = hasTags,
+                targetState = tags.isNotEmpty(),
                 label = "TagListAnimation"
-            ) { innerHasTags ->
-                if (innerHasTags) {
+            ) { hasTags ->
+                if (hasTags) {
                     LazyColumn(modifier = Modifier.fillMaxSize()) {
                         items(
-                            items = searchedTags,
+                            items = tags,
                             key = { tag ->
                                 tag.id
                             }
                         ) { tag ->
+                            val selected = remember(selectedTags, tag) {
+                                selectedTags.any {
+                                    it.id == tag.id
+                                }
+                            }
+
                             TagListEntry(
                                 modifier = Modifier
                                     .animateItemPlacement()
@@ -518,7 +591,7 @@ fun AddEntryTagSelection(
                                     },
                                 title = tag.title,
                                 color = tag.color,
-                                selected = tag.selected
+                                selected = selected
                             )
                         }
                     }
@@ -532,19 +605,6 @@ fun AddEntryTagSelection(
                 }
             }
         }
-    }
-}
-
-private fun PersistentList<Tag>.search(term: String): PersistentList<Tag> {
-    return if (term.isBlank()) {
-        this
-    } else {
-        this.filter { tag ->
-            tag.title.contains(
-                other = term,
-                ignoreCase = true
-            )
-        }.toPersistentList()
     }
 }
 

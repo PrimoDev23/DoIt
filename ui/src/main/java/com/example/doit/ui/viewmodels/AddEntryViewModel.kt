@@ -13,7 +13,7 @@ import com.example.doit.domain.models.Subtask
 import com.example.doit.domain.models.Tag
 import com.example.doit.domain.models.TodoItem
 import com.example.doit.domain.usecases.interfaces.DeleteTodoItemsUseCase
-import com.example.doit.domain.usecases.interfaces.GetTagsUseCase
+import com.example.doit.domain.usecases.interfaces.GetTagsFlowUseCase
 import com.example.doit.domain.usecases.interfaces.GetTodoItemUseCase
 import com.example.doit.domain.usecases.interfaces.SaveTodoItemUseCase
 import com.example.doit.ui.arguments.AddEntryNavArgs
@@ -24,8 +24,10 @@ import kotlinx.collections.immutable.plus
 import kotlinx.collections.immutable.toPersistentList
 import kotlinx.coroutines.channels.Channel
 import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.SharingStarted
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.receiveAsFlow
+import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.flow.update
 import kotlinx.coroutines.launch
 import java.time.Instant
@@ -37,7 +39,7 @@ import java.time.ZoneId
 class AddEntryViewModel(
     savedStateHandle: SavedStateHandle,
     private val saveTodoItemUseCase: SaveTodoItemUseCase,
-    private val getTagsUseCase: GetTagsUseCase,
+    getTagsFlowUseCase: GetTagsFlowUseCase,
     private val getTodoItemUseCase: GetTodoItemUseCase,
     private val deleteTodoItemsUseCase: DeleteTodoItemsUseCase
 ) : ViewModel() {
@@ -50,18 +52,61 @@ class AddEntryViewModel(
     private val _events = Channel<AddEntryEvent>()
     val events = _events.receiveAsFlow()
 
+    private val tags = getTagsFlowUseCase.getFlow()
+    private val tagSearchTerm = MutableStateFlow("")
+    private val searchedTags = combine(tags, tagSearchTerm) { tags, term ->
+        tags.filter {
+            it.title.contains(
+                other = term,
+                ignoreCase = true
+            )
+        }
+    }
+
     private val _state = MutableStateFlow(
-        AddEntryState(
+        AddEntryViewModelState(
             title = "",
             description = "",
             dueDate = null,
             notificationDateTime = null,
-            tags = persistentListOf(),
+            selectedTags = persistentListOf(),
             priority = Priority.NONE,
             subtasks = persistentListOf()
         )
     )
-    val state = _state.asStateFlow()
+
+    val state = combine(_state, searchedTags, tagSearchTerm) { state, tags, tagSearchTerm ->
+        with(state) {
+            AddEntryState(
+                title = title,
+                titleHasError = title.isBlank(),
+                description = description,
+                dueDate = dueDate,
+                notificationDateTime = notificationDateTime,
+                tagSearchTerm = tagSearchTerm,
+                tags = tags.toPersistentList(),
+                selectedTags = selectedTags,
+                priority = priority,
+                subtasks = subtasks
+            )
+        }
+    }
+        .stateIn(
+            scope = viewModelScope,
+            started = SharingStarted.WhileSubscribed(),
+            initialValue = AddEntryState(
+                title = "",
+                titleHasError = false,
+                description = "",
+                dueDate = null,
+                notificationDateTime = null,
+                tagSearchTerm = "",
+                tags = persistentListOf(),
+                selectedTags = persistentListOf(),
+                priority = Priority.NONE,
+                subtasks = persistentListOf()
+            )
+        )
 
     val datePickerState = DatePickerState(
         initialSelectedDateMillis = Instant.now().toEpochMilli(),
@@ -73,7 +118,6 @@ class AddEntryViewModel(
     init {
         viewModelScope.launch {
             launch {
-                loadTags()
                 initData()
             }
         }
@@ -91,33 +135,19 @@ class AddEntryViewModel(
             datePickerState.setSelection(millis)
 
             _state.update { state ->
-                val newTags = state.tags.map { tag ->
-                    val selected = item.tags.any { it.id == tag.id }
-
-                    if (selected) {
-                        tag.copy(selected = true)
-                    } else {
-                        tag
-                    }
+                with(item) {
+                    state.copy(
+                        title = title,
+                        description = description,
+                        selectedTags = tags,
+                        priority = priority,
+                        dueDate = dueDate,
+                        notificationDateTime = notificationDateTime,
+                        subtasks = subtasks.toPersistentList()
+                    )
                 }
-
-                state.copy(
-                    title = item.title,
-                    description = item.description,
-                    tags = newTags.toPersistentList(),
-                    priority = item.priority,
-                    dueDate = item.dueDate,
-                    notificationDateTime = item.notificationDateTime,
-                    subtasks = item.subtasks.toPersistentList()
-                )
             }
         }
-    }
-
-    private suspend fun loadTags() {
-        val tags = getTagsUseCase()
-
-        updateTags(tags)
     }
 
     fun onBackClicked() {
@@ -182,6 +212,12 @@ class AddEntryViewModel(
         }
     }
 
+    fun onTagSearchTermChanged(term: String) {
+        viewModelScope.launch {
+            tagSearchTerm.emit(term)
+        }
+    }
+
     fun onTagClicked(tag: Tag) {
         toggleTagSelection(tag)
     }
@@ -241,19 +277,16 @@ class AddEntryViewModel(
     }
 
     private fun toggleTagSelection(tag: Tag) {
-        _state.update {
-            val tags = it.tags.toMutableList()
+        _state.update { state ->
+            val selectedTags = state.selectedTags
 
-            val index = tags.indexOf(tag)
-
-            if (index == -1) {
-                return@update it
+            val newTags = if (selectedTags.contains(tag)) {
+                selectedTags - tag
+            } else {
+                selectedTags + tag
             }
 
-            val newTag = tag.copy(selected = !tag.selected)
-            tags[index] = newTag
-
-            it.copy(tags = tags.toPersistentList())
+            state.copy(selectedTags = newTags.toPersistentList())
         }
     }
 
@@ -273,12 +306,6 @@ class AddEntryViewModel(
         }
     }
 
-    private fun updateTags(tags: List<Tag>) {
-        _state.update {
-            it.copy(tags = tags.toPersistentList())
-        }
-    }
-
     private fun updatePriority(priority: Priority) {
         _state.update {
             it.copy(priority = priority)
@@ -291,7 +318,7 @@ class AddEntryViewModel(
             title = title,
             description = description,
             done = existingItem?.done ?: false,
-            tags = tags.filter { it.selected }.toPersistentList(),
+            tags = selectedTags,
             priority = priority,
             dueDate = dueDate,
             notificationDateTime = notificationDateTime,
@@ -301,13 +328,26 @@ class AddEntryViewModel(
     }
 }
 
-@Immutable
-data class AddEntryState(
+data class AddEntryViewModelState(
     val title: String,
     val description: String,
     val dueDate: LocalDate?,
     val notificationDateTime: LocalDateTime?,
+    val selectedTags: PersistentList<Tag>,
+    val priority: Priority,
+    val subtasks: PersistentList<Subtask>
+)
+
+@Immutable
+data class AddEntryState(
+    val title: String,
+    val titleHasError: Boolean,
+    val description: String,
+    val dueDate: LocalDate?,
+    val notificationDateTime: LocalDateTime?,
+    val tagSearchTerm: String,
     val tags: PersistentList<Tag>,
+    val selectedTags: PersistentList<Tag>,
     val priority: Priority,
     val subtasks: PersistentList<Subtask>
 ) {
