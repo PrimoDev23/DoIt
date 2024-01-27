@@ -100,8 +100,10 @@ class TagListViewModelTest : CoroutineTestBase() {
         val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
         val getTagMappingsFlowUseCase = mockk<GetTagMappingsFlowUseCase>()
 
+        val tags = Tags.tagList
+
         every { getTagsFlowUseCase.getFlow() } returns flow {
-            emit(Tags.tagList)
+            emit(tags)
         }
 
         every { getTagMappingsFlowUseCase() } returns flow {
@@ -121,13 +123,21 @@ class TagListViewModelTest : CoroutineTestBase() {
 
             Assert.assertTrue(state.selectedTags.isEmpty())
 
-            val selectedTag = Tags.tagList.first()
-
-            viewModel.onTagSelected(selectedTag)
+            tags.forEach {
+                viewModel.onTagSelected(it)
+            }
 
             state = awaitItem()
 
-            Assert.assertEquals(listOf(selectedTag), state.selectedTags)
+            Assert.assertEquals(tags, state.selectedTags)
+
+            val removedTag = Tags.tagOne
+
+            viewModel.onTagSelected(removedTag)
+
+            state = awaitItem()
+
+            Assert.assertEquals(listOf(Tags.tagTwo), state.selectedTags)
 
             viewModel.onClearSelectionClicked()
 

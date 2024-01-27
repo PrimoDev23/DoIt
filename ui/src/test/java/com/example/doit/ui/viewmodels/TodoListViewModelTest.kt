@@ -768,4 +768,76 @@ class TodoListViewModelTest : CoroutineTestBase() {
         }
     }
 
+    @Test
+    fun onEditClicked() = runTest {
+        val getTodoListPreferencesUseCase = mockk<GetTodoListPreferencesUseCase>()
+        val getTodoItemsFlowUseCase = mockk<GetTodoItemsFlowUseCase>()
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
+        val getTodayTodoItemsFlowUseCase = mockk<GetTodayTodoItemsFlowUseCase>()
+        val filterUseCase = mockk<FilterTodoItemsUseCase>()
+        val sortUseCase = mockk<SortTodoItemsUseCase>()
+
+        every { getTodoListPreferencesUseCase() } returns flow {
+            val preferences = TodoListPreferences(
+                sortType = TodoItemSortType.CREATION_DATE,
+                hideDoneItems = false
+            )
+
+            emit(preferences)
+        }
+
+        val todoItemList = TodoItems.todoList
+        val todayItems = todoItemList.filter {
+            it.dueDate == LocalDate.now()
+        }
+
+        every { getTodoItemsFlowUseCase.getItemFlow() } returns flow {
+            emit(todoItemList)
+        }
+
+        every { getTagsFlowUseCase.getFlow() } returns flow {
+            emit(Tags.tagList)
+        }
+
+        every { getTodayTodoItemsFlowUseCase() } returns flow {
+            emit(todayItems)
+        }
+
+        every { filterUseCase(any(), any(), any(), any()) } answers {
+            firstArg()
+        }
+
+        every { sortUseCase(any(), any()) } answers {
+            firstArg()
+        }
+
+        val viewModel = TodoListViewModel(
+            getTodoListPreferencesUseCase = getTodoListPreferencesUseCase,
+            getTodoItemsFlowUseCase = getTodoItemsFlowUseCase,
+            getTagsFlowUseCase = getTagsFlowUseCase,
+            getTodayTodoItemsFlowUseCase = getTodayTodoItemsFlowUseCase,
+            deleteTodoItemsUseCase = mockk(),
+            setTodoItemSortTypeUseCase = mockk(),
+            setHideDoneItemsUseCase = mockk(),
+            updateDoneUseCase = mockk(),
+            filterTodoItemsUseCase = filterUseCase,
+            sortTodoItemsUseCase = sortUseCase
+        )
+
+        viewModel.state.test {
+            viewModel.onItemSelected(todoItemList.first())
+
+            skipItems(1)
+            var state = awaitItem()
+
+            Assert.assertEquals(1, state.selectedItems.size)
+
+            viewModel.onEditClicked()
+
+            state = awaitItem()
+
+            Assert.assertTrue(state.selectedItems.isEmpty())
+        }
+    }
+
 }

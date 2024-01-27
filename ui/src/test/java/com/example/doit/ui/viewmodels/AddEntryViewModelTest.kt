@@ -584,4 +584,43 @@ class AddEntryViewModelTest : CoroutineTestBase() {
         }
     }
 
+    @Test
+    fun onTagSearchTermChanged() = runTest {
+        val getTagsFlowUseCase = mockk<GetTagsFlowUseCase>()
+        val getTodoItemUseCase = mockk<GetTodoItemUseCase>()
+
+        val tags = Tags.tagList
+
+        every { getTagsFlowUseCase.getFlow() } returns flow { emit(tags) }
+        coEvery { getTodoItemUseCase(any()) } returns null
+
+        val viewModel = AddEntryViewModel(
+            savedStateHandle = buildSavedStateHandle(),
+            saveTodoItemUseCase = mockk(),
+            getTagsFlowUseCase = getTagsFlowUseCase,
+            getTodoItemUseCase = getTodoItemUseCase,
+            deleteTodoItemsUseCase = mockk()
+        )
+
+        viewModel.state.test {
+            skipItems(1)
+            var state = awaitItem()
+
+            Assert.assertTrue(state.tagSearchTerm.isEmpty())
+            Assert.assertEquals(tags, state.tags)
+
+            val searchTerm = "2"
+
+            viewModel.onTagSearchTermChanged(searchTerm)
+
+            skipItems(1)
+            state = awaitItem()
+
+            val filteredTags = listOf(Tags.tagTwo)
+
+            Assert.assertEquals(searchTerm, state.tagSearchTerm)
+            Assert.assertEquals(filteredTags, state.tags)
+        }
+    }
+
 }
