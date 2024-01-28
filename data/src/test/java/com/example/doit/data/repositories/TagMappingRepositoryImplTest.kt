@@ -10,6 +10,7 @@ import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.test.runTest
+import org.junit.Assert
 import org.junit.Test
 
 class TagMappingRepositoryImplTest : TestBase() {
@@ -37,14 +38,25 @@ class TagMappingRepositoryImplTest : TestBase() {
     }
 
     @Test
-    fun getTagMappingsFlow() {
+    fun getTagMappingsFlow() = runTest {
         val dao = mockk<TagMappingDao>()
 
-        every { dao.selectAllFlow() } returns flow { }
+        val tagMappingEntity = TagMappingEntity(
+            itemId = "Test",
+            tagId = 0
+        )
+
+        every { dao.selectAllFlow() } returns flow {
+            emit(listOf(tagMappingEntity))
+        }
 
         val repo = TagMappingRepositoryImpl(dao = dao)
 
-        repo.getTagMappingsFlow()
+        val tagMapping = tagMappingEntity.toDomainModel()
+
+        repo.getTagMappingsFlow().collect {
+            Assert.assertEquals(listOf(tagMapping), it)
+        }
 
         coVerify { dao.selectAllFlow() }
     }
